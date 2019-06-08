@@ -8,8 +8,20 @@ IP address: http://35.184.58.3/
 
 Service Account Key
 
-Project ID
+User Name
 
 ## Submit Job
 
+Time Zone:
+
+Log file:
+
+Input File:
+
+Output file:
+
+Image file:
+
 ## Monitor
+
+Still making it looks better.
