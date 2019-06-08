@@ -1,8 +1,20 @@
 <!DOCTYPE html>
-<html>
-        <head>
-                <meta charset="utf-8">
-                <title>GCP Service account file and project ID</title>
+<html lang="en">
+<head>
+    <title>Medical Service</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="css/swiper.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <script src="js/custom.js"></script>
 		<script src="http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.2.min.js">
 		</script>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
@@ -21,15 +33,117 @@
 		<script src="bootstrap/js/bootstrap.js"></script>
 		<link href="{% static 'bootstrap-fileinput/css/fileinput.min.css' %}" rel="stylesheet" />
 		<script src="{% static 'bootstrap-fileinput/js/fileinput.min.js' %}"></script>
-		<script src="{% static 'bootstrap-fileinput/js/locales/zh.js' %}"></script>
-	</head>
-	<body>
-		<Br><Br>
-		<p align="center"><font color="blue" size="8">Welcome to the Genome Service!(Log In Page)</font></p>
+
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-bar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="site-branding d-flex align-items-center">
+                           <a class="d-block" href="index.html" rel="home"><img class="d-block" src="images/logo.png" alt="logo"></a>
+			</div><!-- .site-branding -->
+
+                        <nav class="site-navigation d-flex justify-content-end align-items-center">
+                        </nav><!-- .site-navigation -->
+
+                        <div class="hamburger-menu d-lg-none">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div><!-- .hamburger-menu -->
+                    </div><!-- .col -->
+                </div><!-- .row -->
+            </div><!-- .container -->
+        </div><!-- .nav-bar -->
+
+        <div class="swiper-container hero-slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide hero-content-wrap" style="background-image: url('images/hero.jpg')">
+		    <div class="hero-content-overlay position-absolute w-100 h-100">
+			<div class="container h-100">
+			    <div class="row h-100">
+				<div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start">
+				    <header class="entry-header">
+					<h1>The Best <br>Genetic Services</h1>
+				    </header><!-- .entry-header -->
+
+                                    <div class="entry-content mt-4">
+					<p>Gemone Technology</p>
+				    </div><!-- .entry-content -->
+
+                                    <footer class="entry-footer d-flex flex-wrap align-items-center mt-4">
+					<a href="http://med.stanford.edu/sgtc/" class="button gradient-bg">Read More</a>
+				    </footer><!-- .entry-footer -->
+				</div><!-- .col -->
+			    </div><!-- .row -->
+			</div><!-- .container -->
+		    </div><!-- .hero-content-overlay -->
+		</div><!-- .hero-content-wrap -->
+
+                <div class="swiper-slide hero-content-wrap" style="background-image: url('images/hero.jpg')">
+		    <div class="hero-content-overlay position-absolute w-100 h-100">
+			<div class="container h-100">
+			    <div class="row h-100">
+				<div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start">
+				    <header class="entry-header">
+					<h1>The Best <br>Gemone Services</h1>
+				    </header><!-- .entry-header -->
+
+                                    <div class="entry-content mt-4">
+					<p>Gemone technology Center.</p>
+				    </div><!-- .entry-content -->
+                                    <footer class="entry-footer d-flex flex-wrap align-items-center mt-4">
+                                        <a href="http://med.stanford.edu/sgtc/" class="button gradient-bg">Read More</a>
+                                    </footer><!-- .entry-footer -->
+                                </div><!-- .col -->
+                            </div><!-- .row -->
+                        </div><!-- .container -->
+                    </div><!-- .hero-content-overlay -->
+                </div><!-- .hero-content-wrap -->
+
+                <div class="swiper-slide hero-content-wrap" style="background-image: url('images/hero.jpg')">
+		    <div class="hero-content-overlay position-absolute w-100 h-100">
+			<div class="container h-100">
+			    <div class="row h-100">
+				<div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start">
+				    <header class="entry-header">
+					<h1>The Best <br>Genetic Services</h1>
+				    </header><!-- .entry-header -->
+
+                                    <div class="entry-content mt-4">
+					<p>Gemone technology.</p>
+				    </div><!-- .entry-content -->
+
+                                    <footer class="entry-footer d-flex flex-wrap align-items-center mt-4">
+					<a href="http://med.stanford.edu/sgtc/" class="button gradient-bg">Read More</a>
+				    </footer><!-- .entry-footer -->
+				</div><!-- .col -->
+			    </div><!-- .row -->
+			</div><!-- .container -->
+		    </div><!-- .hero-content-overlay -->
+		</div><!-- .hero-content-wrap -->
+	    </div><!-- .swiper-wrapper -->
+
+            <div class="pagination-wrap position-absolute w-100">
+		<div class="swiper-pagination d-flex flex-row flex-md-column"></div>
+	    </div><!-- .pagination-wrap -->
+	</div><!-- .hero-slider -->
+    </header><!-- .site-header -->
+
+    
+
+    <div class="Service account">
+	<div class="container">
+
+                    <Br><Br>
+		<h1 align="center" >Welcome to the Genome Service!</h1>
 		<Br><Br>
 		<div style=";margin:0 60px 0 50px">	
 			<form enctype="multipart/form-data" action="/cgi-bin/backend_get.py"  method="post">
-				Project ID: &nbsp&nbsp <input class="col-xs-4 col-sm-3" type="text" name="data_1" />
+				User Name: &nbsp&nbsp <input class="col-xs-4 col-sm-3" type="text" name="data_name" />
 				<Br><Br>
 				<!--	BUCKET: &nbsp&nbsp <input class="col-xs-4 col-sm-3" type="text" name="data_2" />
 				<Br><Br>-->
@@ -43,11 +157,51 @@
 		<Br><Br><Br>
 		<HR style="border:3 double #987cb9" width="100%" color=#987cb9 SIZE=3>
 		
-		<div class="footer">
-			<p>© 2019 . All rights reserved | Design by <a href="http://zhanfuyang.com">Zhanfu Yang</a></p>
-		</div>
-	</body>
-	<script>
+	</div>
+    </div>
+   
+    <footer class="site-footer">
+	<div class="footer-widgets">
+	    <div class="container">
+		<div class="row">
+		    <div class="col-12 col-md-6 col-lg-4">
+			<div class="foot-about">
+			    <h2><a href="#"><img src="images/logo.png" alt=""></a></h2>
+
+                            <p>Gemone Service.</p>
+
+                            <p class="footer">
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | by <a href="https://colorlib.com/" target="_blank">Colorlob</a>
+			    </p>
+                        </div><!-- .foot-about -->
+                    </div><!-- .col -->
+
+                    <div class="col-12 col-md-6 col-lg-4 mt-5 mt-md-0">
+    			    <div class="foot-contact">
+	    			    <h2>Contact</h2>
+
+                            <ul class="p-0 m-0">
+                                <li><span>Addtress:</span> 3165 Porter Drive, Palo Alto, California, US</li>
+                                <li><span>Phone:</span>+1 7657750242</li>
+				<li><span>Email:</span>zhfuyang@gmail.com</li>
+                            </ul>
+                        </div>
+                    </div>
+	       	</div><!-- .row -->
+            </div><!-- .container -->
+        </div><!-- .footer-widgets -->
+    </footer><!-- .site-footer -->
+
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/jquery.collapsible.min.js'></script>
+    <script type='text/javascript' src='js/swiper.min.js'></script>
+    <script type='text/javascript' src='js/jquery.countdown.min.js'></script>
+    <script type='text/javascript' src='js/circle-progress.min.js'></script>
+    <script type='text/javascript' src='js/jquery.countTo.min.js'></script>
+    <script type='text/javascript' src='js/jquery.barfiller.js'></script>
+    <script type='text/javascript' src='js/custom.js'></script>
+
+    <script>
 		$('#testfile').fileinput({
 	    	language: 'en',
 		dropZoneTitle: 'You can drap the picture here. Single file',
@@ -63,5 +217,6 @@
 				},
 		browseClass: 'btn btn-primary'
 		});
-	</script>
+    </script>
+</body>
 </html>
