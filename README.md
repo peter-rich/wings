@@ -38,3 +38,7 @@ Actually, we can add a new task accoring to different tools by add the code at
 ## Monitor
 
 Still making it looks better.
+
+## CopyRight
+
+Use the colorlib template
