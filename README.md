@@ -14,6 +14,10 @@ Service Account Key
 
 User Name
 
+### Change the Picture
+
+`/html/index.html`  ---> Start from `Line:62  <img .... >`.
+
 ## Submit Job by different tools
 
 Time Zone:
