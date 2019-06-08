@@ -1,5 +1,9 @@
 # wings
 
+## Document
+
+https://docs.google.com/document/d/1BhynelsLiLd_dWbu7-W97-tZv0bKK4HfI4Y2kaxYqVg
+
 ## IP address
 
 IP address: http://35.184.58.3/
@@ -10,7 +14,7 @@ Service Account Key
 
 User Name
 
-## Submit Job
+## Submit Job by different tools
 
 Time Zone:
 
@@ -21,6 +25,11 @@ Input File:
 Output file:
 
 Image file:
+
+`~~~~~~~~`
+
+Actually, we can add a new task accoring to different tools by add the code at 
+`cgi-bin\backend_get.py` -> `line:159` and `line:217`
 
 ## Monitor
 
