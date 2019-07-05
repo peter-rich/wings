@@ -6,7 +6,7 @@ https://docs.google.com/document/d/1BhynelsLiLd_dWbu7-W97-tZv0bKK4HfI4Y2kaxYqVg
 
 ## IP address
 
-IP address: http://35.184.58.3/
+IP address: http://34.66.182.191/
 
 ## Log In
 
