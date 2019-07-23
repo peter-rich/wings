@@ -86,13 +86,21 @@ def write_csv(data):
 
 if state1==1 and str_type=="3":
     print '<form enctype="multipart/form-data" action="/cgi-bin/monitor.py"  method="post"><div class=" no-gutters" >'
+    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    print '<font color="black">Start Time:</font> <input type="datetime-local" value="2015-09-24T13:59:59"/>'
+    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    print '<font color="black">End Time:</font> <input type="datetime-local" value="2015-09-24T13:59:59"/>'
+    
+    print '<Br>'
     print '<input type="submit" name="refresh" value="Refresh" class="btn btn-light" />'
     print '<input type="submit" name="delete" value="Delete" class="btn btn-dark"  />'
-    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
-    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
+    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
     print '<input type="text" name="search_content" type="text" size="45"  placeholder="Search Content you want">' 
     print '<input type="submit" name="search" value="Search" class="btn btn-success">'
+    print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
     print '<a href="/cgi-bin/download.py" name="download">Download The CSV</a>'
+    print '<Br>'
     print '     <div class="col-md mr-md-4 table-wrapper-scroll-y my-custom-scrollbar" id="app" >'
     print '<table class="table table-bordered  mb-0"><thead>'
     print '  <tr bgcolor="#66ccff">'

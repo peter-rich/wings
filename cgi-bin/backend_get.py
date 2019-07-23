@@ -231,12 +231,72 @@ elif message=="" and str_type == "2":
             cmd3 = 'dstat --project '+str_data_1+' --provider google-v2  --jobs '+output1[4:42]+' --state "*"'
             output2 = commands.getoutput(cmd3)
             state1=1
-        
+    
+    elif tool_type == "6":
+
+        if form.has_key('data_1') :
+            if form.getvalue('data_1') == "" :
+                message = "No key"
+        elif form.has_key('log_file') :
+            if form.getvalue('log_file') == "" :
+                message = "No Log File"
+        elif form.has_key('bigQueryDatasetId') :
+            if form.getvalue('bigQueryDatasetId') == "" :
+                message = "No bigQueryDatasetId"
+        elif form.has_key('tempLocation') :
+            if form.getvalue('tempLocation') == "" :
+                message = "No tempLocation"
+        elif form.has_key('stagingLocation') :
+            if form.getvalue('stagingLocation') == "" :
+                message = "No stagingLocation"
+        elif form.has_key('sample_name') :
+            if form.getvalue('sample_name') == "" :
+                message = "No Sample Name"
+        elif form.has_key('bucket_id') :
+            if form.getvalue('bucket_id') == "" :
+                message = "No Bucket Id"
+
+        if message == "" and state1 == 1:
+            str_data_1 = form.getvalue("data_1")
+            log_file = form.getvalue("log_file")
+            bucket_id = form.getvalue("bucket_id") 
+            sample_name = form.getvalue("sample_name")
+            time_zone = form.getvalue("time_zone")
+            fn = form.getvalue("fn")
+            environment="/var/www/cgi-bin/tmp/"+fn
+            os.putenv("GOOGLE_APPLICATION_CREDENTIALS", environment)
+            os.putenv("JAVA_HOME", "/home/yangzhanfu/jdk-12.0.1/")
+            os.putenv("HOME", "/home/zhfuyang_stanford_edu")
+            os.putenv("USER", "zhfuyang_stanford_edu")
+
+            cmd7 = 'gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS'
+            cmd8 = 'gsutil cp /var/www/cgi-bin/tmp/AnnotationHive/Samples/sample_transcript_annotation_chr17.bed gs://' + bucket_id + '/' + sample_name
+            cmd9 = 'gsutil cp /var/www/cgi-bin/tmp/AnnotationHive/Samples/sample_variant_annotation_chr17.bed gs://' + bucket_id + '/' + sample_name
+            cmd10 = 'gsutil cp /var/www/cgi-bin/tmp/AnnotationHive/Samples/NA12877-chr17.vcf gs://' + bucket_id + '/' + sample_name
+            status, output7 = commands.getstatusoutput(cmd7)
+            status, output8 = commands.getstatusoutput(cmd8)
+            status, output9 = commands.getstatusoutput(cmd9)
+            status, output10 = commands.getstatusoutput(cmd10)
+            os.chdir('/var/www/cgi-bin/tmp/AnnotationHive/')
+            
+            cmd3 = 'mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine -Dexec.args="ImportVCFFromGCSToBigQuery --project=service-test-authentication --stagingLocation=gs://anno/Staging/ --tempLocation=gs://anno/Staging/  --runner=DataflowRunner --bigQueryDatasetId=wings --createVCFListTable=true" -Pdataflow-runner'
+            
+            #status, output2 = commands.getstatusoutput(' /home/yangzhanfu/AnnotationHive/')
+            
+            #status, output3 = commands.getstatusoutput('mvn -v')
+            #os.system(cmd3)
+            
+            status, output3 = commands.getstatusoutput(cmd3)
+            #output3 = subprocess.check_output(cmd3, stderr=subprocess.STDOUT, shell=True)
+            
+            message = "AnnotationHive Table Created"
+            
+
 if message == "":
     message="Still Login"
     fn=form.getvalue("fn")
 
-tools.print_head(str_data_1,fn, message)
+tools.print_head(str_data_1, fn, message)
 
 print '             <div class="nav nav-pills text-center" id="v-pills-tab" >'
 
@@ -247,7 +307,7 @@ print '	                    <a class="nav-link" id="v-pills-3-tab" data-toggle="
 print '	                    <a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab" aria-controls="v-pills-4" aria-selected="false">GATK</a>'	    
 print '	                    <a class="nav-link" id="v-pills--5tab"  href="https://github.com/StanfordBioinformatics/gatk-mvp"  aria-selected="false">Detail Introduction</a>'	    
 
-
+print '	                    <a class="nav-link" id="v-pills-6-tab" data-toggle="pill" href="#v-pills-6" role="tab" aria-controls="v-pills-6" aria-selected="false">AnnotationHive</a>'	    
 
 print '             </div>'
 print '	        </div>'
@@ -433,6 +493,86 @@ if state1==1:
     print '</div>'
     print '</div>'
     print '</div>'
+    print '</div>'
+    print '<Br>'
+    print '</form></div>'
+
+
+    print '<div class="tab-pane fade" id="v-pills-6" role="tabpanel" aria-labelledby="v-pills-performance-tab">'
+    print '<form enctype="multipart/form-data" action="/cgi-bin/backend_get.py"  method="post"><div class=" no-gutters">'
+    print '     <div class="col-md mr-md-2">'
+    print '             <div class="form-field">'
+    #print '                     <input type="text" name="time_zone" class="form-control" placeholder="Time Zone. eg. us-*. ">'
+    print '\
+        <select name="time_zone" id="Menu" style="max-width:200%;">\
+            <option value="us-*">   Time Zone : .eg us-*   </option>\
+            <option value="us-central1-a">us-central1-a</option>\
+            <option value="us-central1-b">us-central1-b</option>\
+            <option value="us-central1-c">us-central1-c</option>\
+            <option value="us-central1-f">us-central1-f</option>\
+            <option value="us-east1-b">us-east1-b</option>\
+            <option value="us-east1-c">us-east1-c</option>\
+            <option value="us-east1-d">us-east1-d</option>\
+            <option value="us-east4-a">us-east4-a</option>' 
+    print '<option value="us-east4-b">us-east4-b</option>'
+    print '<option value="us-east4-c">us-east4-c</option>'
+    print '<option value="us-west1-a">us-west1-a</option>'
+    print '<option value="us-west1-b">us-west1-b</option>'
+    print '<option value="us-west1-c">us-west1-c</option>'
+    print '<option value="us-west2-a">us-west2-a</option>'
+    print '<option value="us-west2-b">us-west2-b</option>'
+    print '</select>'
+    print '             </div>'
+    print '     </div>'
+    print '	<br>'
+    print '	<div class="col-md mr-md-2">'
+    print '     <div class="form-field">'
+    print '     <input type="text" name="log_file" class="form-control" placeholder="Log File. eg. gs://genomics-public-data/logs. ">'
+    print '     </div>'
+    print '     </div>'
+    print '     <br>'	    
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="sample_name" class="form-control" placeholder="sample_name. eg. fastq ">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="bucket_id" class="form-control" placeholder="Bucket Id. eg.  authentication-service ">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="bigQueryDatasetId" class="form-control" placeholder="bigQueryDatasetId. eg. test2 ">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="tempLocation" class="form-control" placeholder="tempLocation. eg.  gs://gbsc-gcp-project-cba_user-abahman/Staging ">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="stagingLocation" class="form-control" placeholder="stagingLocation. eg.  gs://gbsc-gcp-project-cba_user-abahman/Staging/">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+
+    print '<input type="hidden" name="data_1" value="' + str_data_1 + '">'
+    print '<input type="hidden" name="type_file" value="2">'
+    print '<input type="hidden" name="tool_type" value="6">'
+    print '<input type="hidden" name="fn" value="' + fn + '">'
+    print '                 <button type="submit" class="btn btn-secondary" name="create_job">Create a Job</button>'
+    print '                 <button type="submit" class="btn btn-success" name="run_job">Run a Job</button>'
     print '</div>'
     print '<Br>'
     print '</form></div>'
