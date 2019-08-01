@@ -10,7 +10,7 @@ import (
 
 var counter int
 var mutex = &sync.Mutex{}
-var port int = 8081
+var PORT int = 8081
 
 func sayHello(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "hello")
@@ -26,7 +26,7 @@ func incrementCounter(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 		// http.HandleFunc("/", sayHello)
-		http.Handle("/", http.FileServer(http.Dir("./static/html")))
+		http.Handle("/", http.FileServer(http.Dir("./js/build")))
 
     http.HandleFunc("/increment", incrementCounter)
 
@@ -34,7 +34,8 @@ func main() {
         fmt.Fprintf(w, "API")
     })
 
-		portStr := fmt.Sprintf("%s%d", ":", port)
+		// Start web server on $PORT
+		portStr := fmt.Sprintf("%s%d", ":", PORT)
     log.Fatal(http.ListenAndServe(portStr, nil))
 
 }
