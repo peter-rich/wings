@@ -144,17 +144,18 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             </div><!-- .container -->\
         </div><!-- .footer-widgets -->\
     </footer><!-- .site-footer -->'
-    
+    print '<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>' 
     if type <> 1:
-        print "new Vue({"
+        strs =  '         checkedArr: ["1"' 
+        print "<script>new Vue({"
         print "     el: '#app',"
         print "     data: {"
         print "         checked: false,"
         print "         checkedNames: [],"
-        print "         checkedArr: ['1'"     
         for i in range(2,type):
-            print ",'" + str(i) + "'"
-        print "]"
+            strs = strs + ',"' + str(i) + '"'
+        strs = strs + ']'
+        print strs 
         print "     },"
         print "     methods: {"
         print "         changeAllChecked: function() {"
@@ -164,17 +165,8 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         print "                 this.checkedNames = []"
         print "             }"
         print "         }"
-        print "     },"
-        print "     watch: {"
-        print "         'checkedNames': function() {"
-        print "             if (this.checkedNames.length == this.checkedArr.length) {"
-        print "                 this.checked = true"
-        print "             } else {"
-        print "                 this.checked = false"
-        print "             }"
-        print "         }"
         print "     }"
-        print " })"
+        print " })</script>"
 
     print '<script type="text/javascript" src="/js2/jquery.js"></script>\
     <script type="text/javascript" src="/js2/jquery.collapsible.min.js"></script>\
