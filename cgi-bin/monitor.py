@@ -174,7 +174,7 @@ if state1==1 and str_type=="3":
                     tmp2 = tmp2[10:]
                     tmp3 = tmp3[13:(len(tmp3)-8)]
                     tmp4 = tmp4[16:(len(tmp4)-8)]
-                    tmp5 ="https://storage.cloud.google.com/" + tmp5[16:] + "?authuser=2" 
+                    tmp5 ="https://storage.cloud.google.com/" + tmp5[16:] + "?authuser=1" 
                     tools.print_table(tmp_id, tmp1, tmp2, tmp3, tmp4, tmp5, n)
                     if "--" in tmp_id[10:] and ("SUCCESS" in tmp2 or "FAILURE" in tmp2 or "CANCELED" in tmp2):
                         c.execute("insert or ignore into history (job_id, name, status, last_update, create_time, link) values('"+ tmp_id +"', '"+ tmp1 +"', '"+ tmp2 +"', '"+ tmp3 +"', '"+ tmp4 +"', '"+ tmp5 +"')") 
