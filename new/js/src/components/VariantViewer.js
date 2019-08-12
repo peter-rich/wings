@@ -20,7 +20,7 @@ function VariantViewer () {
             <th>FATHMM</th>
           </tr>
           {Array(numOfRows).fill().map((_, i) => (
-            <tr>
+            <tr key={i}>
               <td>{i}</td>
               <td>{i}</td>
               <td>{i}</td>

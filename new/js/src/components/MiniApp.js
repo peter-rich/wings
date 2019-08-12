@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types'
 
 const fields = {
   projectId: 'Project ID',
@@ -11,20 +12,26 @@ const fields = {
   stagingLocation: 'Staging Location'
 }
 
-function MiniApp () {
-  const title = 'Annotate';
-  const description = 'AnnotationHive: A Cloud-based Annotation Engine';
-  return (
-    <div class="card">
-      <div class="card-content">
-        <span class="card-title">{title}</span>
-        <p>{description}</p>
+class MiniApp extends Component {
+  render() {
+    const { title, description } = this.props
+    return (
+      <div className="card">
+        <div className="card-content">
+          <span className="card-title">{title}</span>
+          <p>{description}</p>
+        </div>
+        <div className="card-action">
+          <a href="#">Start</a>
+        </div>
       </div>
-      <div class="card-action">
-        <a href="#">Start</a>
-      </div>
-    </div>
-  )
+    )
+  }
 };
+
+MiniApp.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired
+}
 
 export default MiniApp;
