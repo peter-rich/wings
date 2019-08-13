@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "log"
+    "io/ioutil"
     "net/http"
     "strconv"
     "sync"
@@ -40,59 +41,48 @@ func redirectToFront(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAuth(w http.ResponseWriter, r *http.Request) {
-    log.Printf("%s", fmt.Sprintf("%s", r))
-    fmt.Fprintf(w, fmt.Sprintf("%s", r.Body))
-    // return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    //     r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
-    //     if err := r.ParseMultipartForm(maxUploadSize); err != nil {
-    //         renderError(w, "FILE_TOO_BIG", http.StatusBadRequest)
-    //         return
-    //     }
+    r.Header.Add("Content-Type", w.FormDataContentType())
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    fmt.Println(fmt.Sprintf("%s", r.Body))
+    fmt.Println("File Upload Endpoint Hit")
 
-    //     fileType := r.PostFormValue("type")
-    //     file, _, err := r.FormFile("uploadFile")
-    //     if err != nil {
-    //         renderError(w, "INVALID_FILE", http.StatusBadRequest)
-    //         return
-    //     }
-    //     defer file.Close()
-    //     fileBytes, err := ioutil.ReadAll(file)
-    //     if err != nil {
-    //         renderError(w, "INVALID_FILE", http.StatusBadRequest)
-    //         return
-    //     }
+    // Parse our multipart form, 10 << 20 specifies a maximum
+    // upload of 10 MB files.
+    r.ParseMultipartForm(10 << 20)
+    // FormFile returns the first file for the given key `myFile`
+    // it also returns the FileHeader so we can get the Filename,
+    // the Header and the size of the file
+    file, handler, err := r.FormFile("myFile")
+    if err != nil {
+        fmt.Println("Error Retrieving the File")
+        fmt.Println(err)
+        return
+    }
+    defer file.Close()
+    fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+    fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-    //     filetype := http.DetectContentType(fileBytes)
-    //     if filetype != "json" {
-    //         renderError(w, "INVALID_FILE_TYPE", http.StatusBadRequest)
-    //         return
-    //     }
+    // Create a temporary file within our temp-auth directory that follows
+    // a particular naming pattern
+    tempFile, err := ioutil.TempFile("temp-auth", ".json")
+    if err != nil {
+        fmt.Println(err)
+    }
+    defer tempFile.Close()
 
-    //     fileName := randToken(12)
-    //     fileEndings, err := mime.ExtensionsByType(fileType)
-    //     if err != nil {
-    //         renderError(w, "CANT_READ_FILE_TYPE", http.StatusInternalServerError)
-    //         return
-    //     }
-    //     newPath := filepath.Join(uploadPath, fileName+fileEndings[0])
-    //     fmt.Printf("FileType: %s, File: %s\n", fileType, newPath)
-
-    //     newFile, err := os.Create(newPath)
-    //     if err != nil {
-    //         renderError(w, "CANT_WRITE_FILE", http.StatusInternalServerError)
-    //         return
-    //     }
-    //     defer newFile.Close()
-    //     if _, err := newFile.Write(fileBytes); err != nil {
-    //         renderError(w, "CANT_WRITE_FILE", http.StatusInternalServerError)
-    //         return
-    //     }
-    //     w.Write([]byte("SUCCESS"))
-    // }
+    // read all of the contents of our uploaded file into a
+    // byte array
+    fileBytes, err := ioutil.ReadAll(file)
+    if err != nil {
+        fmt.Println(err)
+    }
+    // write this byte array to our temporary file
+    tempFile.Write(fileBytes)
+    // return that we have successfully uploaded our file!
+    fmt.Fprintf(w, "Successfully Uploaded File\n")
 }
 
-func main() {
-
+func router() {
     http.Handle("/", http.FileServer(http.Dir("./js/build")))
     // http.Handle("/web", http.StripPrefix("/web", http.FileServer(http.Dir("./js/build"))))
 
@@ -107,6 +97,12 @@ func main() {
     http.HandleFunc("/api/auth", handleAuth)
 
     http.HandleFunc("*", redirectToFront)
+}
+
+func main() {
+    // Init router
+    router()
+
     // Start web server on $PORT
     portStr := fmt.Sprintf("%s%d", ":", PORT)
     log.Printf("Serving on HTTP port: %d\n", PORT)

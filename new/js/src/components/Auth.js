@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import _ from 'lodash'
-import axios from 'axios'
 
 class Auth extends Component {
   constructor(props) {
@@ -20,13 +19,23 @@ class Auth extends Component {
     else
       newState.authBtnDisabled = true
     this.setState(newState)
-    this.authFile = event.target.files[0]
+    console.log(JSON.parse(this.state.authFile))
   }
 
-  _onSubmit = () => {
+  _onSubmit = (e) => {
+    e.preventDefault()
     const data = new FormData()
+    console.log(this.state.authFile)
     data.append('file', this.state.authFile)
-    axios.post("http://localhost:8081/api/auth", data, {
+    console.log(data)
+    fetch('http://localhost:8081/api/auth', {
+      mode: 'no-cors',
+      method: 'POST',
+      body: {adad:123123, asdaksdjnaier: 123120},
+      headers: {
+        authorization: 'SECRET_TOKEN',
+        // 'Content-Type': 'multipart/form-data'
+      }
     })
     .then(res => {
       console.log(res.statusText)
@@ -43,7 +52,7 @@ class Auth extends Component {
           name="auth-file"
           accept=".json"
           onChange={this._onChange}></input>
-        <button disabled={authBtnDisabled}>Authenticate</button>
+        <button onClick={this._onSubmit} disabled={authBtnDisabled}>Authenticate</button>
       </div>
     )
   }

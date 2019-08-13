@@ -55,7 +55,7 @@ class App extends Component {
           </div>
           <div className="divider"></div>
           <Auth />
-          <VariantViewer />
+          {/* <VariantViewer /> */}
         </div>
       </div>
     )
