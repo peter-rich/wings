@@ -5,7 +5,7 @@ function Nav () {
   return (
     <nav>
       <div className="nav-wrapper">
-        <a href={BRAND_URL} className="brand-logo"><img src="images/logo.png" />
+        <a href={BRAND_URL} className="brand-logo"><img src="images/logo.png" alt='stanford bioinformatics logo' />
           Stanford Genetics
         </a>
         <ul id="nav-mobile" className="right hide-on-med-and-down">

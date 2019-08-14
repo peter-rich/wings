@@ -19,7 +19,7 @@ const miniApps = [
     description: 'AnnotationHive: A Cloud-based Annotation Engine'
   },
   {
-    title: 'FastqToSam > 50 G',
+    title: 'FastqToSam(50G)',
     description: 'AnnotationHive: A Cloud-based Annotation Engine'
   },
   {
