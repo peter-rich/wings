@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "log"
+    "encoding/json"
     "io/ioutil"
     "net/http"
     "strconv"
@@ -41,7 +42,7 @@ func redirectToFront(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAuth(w http.ResponseWriter, r *http.Request) {
-    r.Header.Add("Content-Type", w.FormDataContentType())
+    // r.Header.Add("Content-Type", w.FormDataContentType())
     w.Header().Set("Access-Control-Allow-Origin", "*")
     fmt.Println(fmt.Sprintf("%s", r.Body))
     fmt.Println("File Upload Endpoint Hit")
@@ -82,13 +83,41 @@ func handleAuth(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Successfully Uploaded File\n")
 }
 
+type Job struct {
+    timeZone string `json: "time_zone"`
+}
+
+func handleFastqToSam(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    // anonymous struct type: handy for one-time use
+    // var newJob Job
+    // if r.Body == nil {
+    //     http.Error(w, "Please send a request body", 400)
+    //     return
+    // }
+    // err := json.NewDecoder(r.Body).Decode(&newJob)
+    // if err != nil {
+    //     http.Error(w, err.Error(), http.StatusInternalServerError)
+    //     return
+    // }
+    // fmt.Println(newJob)
+    var newJob Job
+	decoder := json.NewDecoder(r.Body)
+    if err := decoder.Decode(&newJob)
+    err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+    }
+    fmt.Println(newJob)
+}
+
 func router() {
     http.Handle("/", http.FileServer(http.Dir("./js/build")))
     // http.Handle("/web", http.StripPrefix("/web", http.FileServer(http.Dir("./js/build"))))
 
     http.HandleFunc("/increment", incrementCounter)
 
-    http.HandleFunc("/bash", execBash)
+    http.HandleFunc("/api/fastqtosam", handleFastqToSam)
 
     // http.HandleFunc("/api/auth", func(w http.ResponseWriter, r *http.Request) {
     //     fmt.Fprintf(w, "API")

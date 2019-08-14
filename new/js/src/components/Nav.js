@@ -2,8 +2,6 @@ import React from 'react';
 import { BRAND_URL } from '../Constant'
 
 function Nav () {
-  const title = 'Annotate';
-  const description = 'AnnotationHive: A Cloud-based Annotation Engine';
   return (
     <nav>
       <div className="nav-wrapper">

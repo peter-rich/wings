@@ -5,3 +5,12 @@ nav .brand-logo {
 nav .brand-logo>img {
   width: 50px;
 }
+
+.input-field.col label {
+  left: 0;
+}
+
+.input-field > label {
+  color: rgba(0, 0, 0, 0.87);
+  position: relative;
+}
