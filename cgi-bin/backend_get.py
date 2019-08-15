@@ -347,10 +347,10 @@ elif message=="" and str_type == "2":
                 platform = "illumina"
                 cmd3 = 'dsub  --project ' + str_data_1 + ' --logging ' + log_file + ' --min-cores 1 --min-ram 7.5 --preemptible \
                         --boot-disk-size 20 --disk-size 200  --zones ' + time_zone + ' \
-                        --image broadinstitute/gatk:4.1.0.0  \
+                        --image broadinstitute/gatk:4.1.0.0 \
                         --env RG="' + read_group + '" \
-                        --tasks /var/www/cgi-bin/tmp/' + f2 + '\
-                        --env PL="' + platform + '"\
+                        --tasks /var/www/cgi-bin/tmp/' + f2 + ' \
+                        --env PL="' + platform + '" \
                         --command \'/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" \
                         FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} -SM ${SAMPLE_NAME} -RG ${RG} -PL ${PL} \''
 

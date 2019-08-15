@@ -28,7 +28,7 @@ class Auth extends Component {
     console.log(this.state.authFile)
     data.append('file', this.state.authFile)
     console.log(data)
-    fetch('http://localhost:8081/api/auth', {
+    fetch('http://localhost:80/api/auth', {
       mode: 'no-cors',
       method: 'POST',
       body: {adad:123123, asdaksdjnaier: 123120},

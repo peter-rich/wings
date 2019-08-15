@@ -70,7 +70,7 @@ class MiniAppForm extends Component {
     // })
     // .then(response => response.json())
     // .then(json => console.log(json))
-    fetch('http://localhost:8081/api/fastqtosam', {
+    fetch('/api/fastqtosam', {
       method: 'POST',
       // mode: 'cors',
       headers: {
