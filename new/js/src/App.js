@@ -5,8 +5,7 @@ import './App.css';
 
 import Nav from './components/Nav'
 import Auth from './components/Auth'
-import VariantViewer from './components/VariantViewer'
-import MiniAppForm from './components/MiniAppForm'
+import FastqToSamContainer from './components/MiniApp/FastqToSamContainer'
 import MiniApp from './components/MiniApp'
 
 const miniApps = [
@@ -57,7 +56,7 @@ class App extends Component {
           <div className="divider"></div>
           <Auth />
           {/* <VariantViewer /> */}
-          <MiniAppForm />
+          <FastqToSamContainer />
         </div>
       </div>
     )

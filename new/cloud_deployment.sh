@@ -5,13 +5,15 @@
 cd ~
 mkdir projects
 cd projects
-sudo apt install virtualenv
-wget https://github.com/DataBiosphere/dsub/archive/master.zip
-unzip master.zip
-rm master.zip
-cd dsub-master
-virtualenv --python=python2.7 dsub_libs
-source dsub_libs/bin/activate
+# sudo apt install virtualenv
+# wget https://github.com/DataBiosphere/dsub/archive/master.zip
+# unzip master.zip
+# rm master.zip
+# cd dsub-master
+# virtualenv --python=python2.7 dsub_libs
+# source dsub_libs/bin/activate
+# Install python2.7 first if it is not installed: sudo apt install python2.7
+apt install python-pip
 pip install dsub
 sudo apt install unzip
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
@@ -20,9 +22,10 @@ cd ~/projects/wings-lek
 wget https://github.com/StanfordBioinformatics/wings/archive/lek.zip
 unzip lek.zip
 rm lek.zip
-cd wing-lek/new/js
+npm install forever -g
+cd new/js
 npm i
 npm run build
 cd ../
 npm i
-npm run start
+sudo forever start server.js

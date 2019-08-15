@@ -4,6 +4,7 @@ const path = require('path')
 const express = require('express')
 const app = express()
 const config = require('./config.json')
+const exec = require('child_process').exec
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
 const fs = require('fs')
@@ -49,8 +50,10 @@ app.post('/api/fastqtosam', (req, res) => {
     --env PL=' + platform    + '\
     --command \'/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" \
     FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} --SAMPLE_NAME ${SM} -RG ${RG} -PL ${PL} \''
-  // output1 = subprocess.check_output(cmd2, stderr=subprocess.STDOUT, shell=True)
-  // message="Successful Submit FastqToSam"
+    exec(cmd, function(err, stdout, stderr) {
+      console.log(stdout)
+      console.error(stderr)
+    })
 })
 // Default route
 app.use('/', (req, res) => {
