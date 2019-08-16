@@ -32,14 +32,19 @@ Image file:
 
 `~~~~~~~~`
 
-Actually, we can add a new task accoring to different tools by add the code at 
-`cgi-bin\backend_get.py` -> `line:159` and `line:217`
+Actually, we can add a new task accoring to different tools by add the code
 
 ## Monitor
 
 Finihsed List the Jobs
 
 Still making it looks better.
+
+## Database
+
+This is an empty file for the database.
+
+record.db
 
 ## CopyRight
 
