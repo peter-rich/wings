@@ -356,7 +356,109 @@ elif message=="" and str_type == "2":
                 
                 status, output3 = commands.getstatusoutput(cmd3)
                 cmd4 = 'dstat --provider google-v2 --project ' + str_data_1 + ' --jobs ' + output3[4:38] + '--status \'*\''
+                status, output4 = commands.getstatusoutput(cmd4)
+                
                 message = "Successfully run batch Fastosam jobs"
+    
+    elif tool_type == "20":
+        if form.has_key('data_1') :
+                if form.getvalue('data_1') == "" :
+                    message = "No key"
+        if form.has_key('bucket_id') :
+                if form.getvalue('bucket_id') == "" :
+                    message = "No Bucket Id"
+        
+
+        if message == "" and state1 == 1:
+                str_data_1 = form.getvalue("data_1")
+                time_zone = form.getvalue("time_zone")
+                bucket_id = form.getvalue("bucket_id")
+                input_file = form.getvalue("input_file")
+                
+                fn = form.getvalue("fn")
+                environment="/var/www/cgi-bin/tmp/"+fn
+                os.putenv("GOOGLE_APPLICATION_CREDENTIALS", environment)
+                
+                os.putenv("MY_PROJECT", str_data_1)
+                os.putenv("MY_BUCKET_PATH", bucket_id)
+                os.putenv("LOGS", bucket_id + "/CNVnator-logs")
+                os.putenv("OUTDIR", bucket_id + "/CNVnator-output/*")
+                os.putenv("INPUT_FILES_PATH", input_file)
+                
+                cmd3 = 'dsub \
+                    --project "${MY_PROJECT}" \
+                    --zones "us-west1-*" \
+                    --logging "${LOGS}" \
+                    --disk-size 500 \
+                    --name "cnvnator-sample-50bin" \
+                    --env SAMPLE_ID="Sample1_A04" \
+                    --input INPUT_BAMS_FOLDER="${INPUT_FILES_PATH}" \
+                    --input-recursive REF_CHROMOSOMES_FILEPATH="${MY_BUCKET_PATH}/CNVnator-chrom" \
+                    --output-recursive OUT_DIR="$(dirname "${OUTDIR}")" \
+                    --image vandhanak/cnvnator:0.3.3 \
+                    --script /var/www/cgi-bin/tmp/CNVnator_SingleSample1_100bin.sh \
+                    --min-ram 40 \
+                    --min-cores 2'
+                
+                status, output3 = commands.getstatusoutput(cmd3)
+                
+                cmd4 = 'dstat --provider google-v2 --project ' + str_data_1 + ' --jobs ' + output3[4:38] + '--status \'*\''
+                
+                status, output4 = commands.getstatusoutput(cmd4)
+                
+                message="Successfully submit CNV"
+    
+    elif tool_type == "9":
+        if form.has_key('data_1') :
+                if form.getvalue('data_1') == "" :
+                    message = "No key"
+        if form.has_key('tsvfile') == False :
+                message = "No tsvfile"
+
+        if form.has_key('log_file'):
+                if form.getvalue('log_file') == "" :
+                    message = "No log_file"
+        
+        if message == "" and state1 == 1:
+                str_data_1 = form.getvalue("data_1")
+                time_zone = form.getvalue("time_zone")
+                log_file = form.getvalue("log_file")
+
+                fn = form.getvalue("fn")
+                environment="/var/www/cgi-bin/tmp/"+fn
+                os.putenv("GOOGLE_APPLICATION_CREDENTIALS", environment)
+                
+                fileitem = form['tsvfile']
+                f2 = os.path.basename(fileitem.filename)
+
+                open("tmp/" + f2, "wb").write(fileitem.file.read())
+                
+                #cmd3 = 'dsub  --project ' + str_data_1 + ' --logging ' + log_file + ' --min-cores 1 --min-ram 7.5 --preemptible \
+                #        --boot-disk-size 20 --disk-size 200  --zones ' + time_zone + ' \
+                #        --image broadinstitute/gatk:4.1.0.0  \
+                #        --env RG="' + read_group + '" \
+                #        --tasks /var/www/cgi-bin/tmp/' + f2 + '\
+                #        --env PL="' + platform + '"\
+                #        --command \'/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" \
+                #        FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} -SM ${SAMPLE_NAME} -RG ${RG} -PL ${PL} \''
+                
+                cmd2 = "dsub  --provider google-v2 \
+                    --project ${mvp_project} \
+                    --zone " + time_zone + " \
+                    --tasks /var/www/cgi-bin/tmp/" + f2 + "\
+                    --min-cores 1 \
+                    --min-ram 6.5 \
+                    --image ${mvp_gatk_image}   --logging " + log_file + " --input CFG=gs://${mvp_bucket}/gatk-mvp-pipeline/google-adc.conf   --input OPTION=gs://${mvp_bucket}/gatk-mvp-pipeline/generic.google-papi.options.json   --input WDL=gs://${mvp_bucket}/gatk-mvp-pipeline/fc_germline_single_sample_workflow.wdl   --input SUBWDL=gs://${mvp_bucket}/gatk-mvp-pipeline/tasks_pipelines/*.wdl   --input INPUT=gs://${mvp_bucket}/${sample}/${sample}.hg38.inputs.json   --env MYproject=${mvp_project}   --env ROOT=gs://${mvp_bucket}/${sample}/output   --command 'java -Dconfig.file=${CFG} -Dbackend.providers.JES.config.project=${MYproject} -Dbackend.providers.JES.config.root=${ROOT} -jar /cromwell/cromwell.jar run ${WDL} --inputs ${INPUT} --options ${OPTION}'"
+                output1 = subprocess.check_output(cmd2, stderr=subprocess.STDOUT, shell=True)
+            
+                cmd3 = 'dstat --project '+str_data_1+' --provider google-v2  --jobs '+output1[4:42]+' --state "*"'
+                output2 = commands.getoutput(cmd3)
+                state1=1
+            
+                message = output8#"Successful Submit GATK"
+
+
+
 
 if message == "":
     message="Still Login"
@@ -371,11 +473,14 @@ print '	                    <a class="nav-link active mr-md-2" id="v-pills-1-tab
 print '	                    <a class="nav-link" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">FastqToSam > 50 G</a>'	    
 
 print '	                    <a class="nav-link" id="v-pills-4-tab" data-toggle="pill" href="#v-pills-4" role="tab" aria-controls="v-pills-4" aria-selected="false">GATK</a>'	    
-print '	                    <a class="nav-link" id="v-pills-5-tab" data-toggle="pill" href="#v-pills-5" role="tab" aria-controls="v-pills-5" aria-selected="false">GATK BATCH</a>'	    
 
-#print '	                    <a class="nav-link" id="v-pills--5tab"  href="https://github.com/StanfordBioinformatics/gatk-mvp"  aria-selected="false">GATK Batch</a>'	    
+print '	                    <a class="nav-link" id="v-pills-5-tab" data-toggle="pill" href="#v-pills-5" role="tab" aria-controls="v-pills-5" aria-selected="false">FastqToSam Batch</a>'	    
+
+print '	                    <a class="nav-link" id="v-pills-9-tab" data-toggle="pill" href="#v-pills-9" role="tab" aria-controls="v-pills-9" aria-selected="false">GATK Batch</a>'
 
 print '	                    <a class="nav-link" id="v-pills-6-tab" data-toggle="pill" href="#v-pills-6" role="tab" aria-controls="v-pills-6" aria-selected="false">AnnotationHive</a>'	    
+
+print '	                    <a class="nav-link" id="v-pills-8-tab" data-toggle="pill" href="#v-pills-8" role="tab" aria-controls="v-pills-8" aria-selected="false">CNVnator Singal Job</a>'	    
 
 print '             </div>'
 print '	        </div>'
@@ -477,7 +582,6 @@ if state1==1:
     print '<form enctype="multipart/form-data" action="/cgi-bin/backend_get.py"  method="post"><div class=" no-gutters">'
     print '     <div class="col-md mr-md-2">'
     print '             <div class="form-field">'
-    #print '                     <input type="text" name="time_zone" class="form-control" placeholder="Time Zone. eg. us-*. ">'
     print '\
         <select name="time_zone" id="Menu" style="max-width:200%;">\
             <option value="us-*">   Time Zone : .eg us-*   </option>\
@@ -740,6 +844,115 @@ if state1==1:
     print '<input type="hidden" name="data_1" value="' + str_data_1 + '">'
     print '<input type="hidden" name="type_file" value="2">'
     print '<input type="hidden" name="tool_type" value="7">'
+    print '<input type="hidden" name="fn" value="' + fn + '">'
+    print '     <div class="col-md">'
+    print '	    <div class="form-group">'
+    print '             <div class="form-field">'
+    print '                 <button type="submit" class="form-control btn btn-secondary">Submit a Job</button>'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<Br>'
+    print '</form></div>'
+
+    print '<div class="tab-pane fade" id="v-pills-8" role="tabpanel" aria-labelledby="v-pills-performance-tab">'
+    print '<form enctype="multipart/form-data" action="/cgi-bin/backend_get.py"  method="post"><div class=" no-gutters">'
+    print '     <div class="col-md mr-md-2">'
+    print '             <div class="form-field">'
+    print '\
+        <select name="time_zone" id="Menu" style="max-width:200%;">\
+            <option value="us-*">   Time Zone : .eg us-*   </option>\
+            <option value="us-central1-a">us-central1-a</option>\
+            <option value="us-central1-b">us-central1-b</option>\
+            <option value="us-central1-c">us-central1-c</option>\
+            <option value="us-central1-f">us-central1-f</option>\
+            <option value="us-east1-b">us-east1-b</option>\
+            <option value="us-east1-c">us-east1-c</option>\
+            <option value="us-east1-d">us-east1-d</option>\
+            <option value="us-east4-a">us-east4-a</option>' 
+    print '<option value="us-east4-b">us-east4-b</option>'
+    print '<option value="us-east4-c">us-east4-c</option>'
+    print '<option value="us-west1-a">us-west1-a</option>'
+    print '<option value="us-west1-b">us-west1-b</option>'
+    print '<option value="us-west1-c">us-west1-c</option>'
+    print '<option value="us-west2-a">us-west2-a</option>'
+    print '<option value="us-west2-b">us-west2-b</option>'
+    print '</select>'
+    print '             </div>'
+    print '     </div>'
+    print '	<br>'
+
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="input_file" class="form-control" placeholder="Path of UBAM file. eg.  gs://<your bucket id>/<your directory>/...">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+
+
+    print '<div class="col-md mr-md-2">'
+    print '<div class="form-group">'
+    print '<div class="form-field">'
+    print '<input type="text" name="bucket_id" class="form-control" placeholder="Bucket Path. eg.  gs://<your bucket id>/<your directory>/...">'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+
+    print '<input type="hidden" name="data_1" value="' + str_data_1 + '">'
+    print '<input type="hidden" name="type_file" value="2">'
+    print '<input type="hidden" name="tool_type" value="20">'
+    print '<input type="hidden" name="fn" value="' + fn + '">'
+    print '     <div class="col-md">'
+    print '	    <div class="form-group">'
+    print '             <div class="form-field">'
+    print '                 <button type="submit" class="form-control btn btn-secondary">Submit a Job</button>'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '</div>'
+    print '<Br>'
+    print '</form></div>'
+
+    print '<div class="tab-pane fade" id="v-pills-9" role="tabpanel" aria-labelledby="v-pills-performance-tab">'
+    print '<form enctype="multipart/form-data" action="/cgi-bin/backend_get.py"  method="post"><div class=" no-gutters">'
+    print '     <div class="col-md mr-md-2">'
+    print '             <div class="form-field">'
+    print '\
+        <select name="time_zone" id="Menu" style="max-width:200%;">\
+            <option value="us-*">   Time Zone : .eg us-*   </option>\
+            <option value="us-central1-a">us-central1-a</option>\
+            <option value="us-central1-b">us-central1-b</option>\
+            <option value="us-central1-c">us-central1-c</option>\
+            <option value="us-central1-f">us-central1-f</option>\
+            <option value="us-east1-b">us-east1-b</option>\
+            <option value="us-east1-c">us-east1-c</option>\
+            <option value="us-east1-d">us-east1-d</option>\
+            <option value="us-east4-a">us-east4-a</option>' 
+    print '<option value="us-east4-b">us-east4-b</option>'
+    print '<option value="us-east4-c">us-east4-c</option>'
+    print '<option value="us-west1-a">us-west1-a</option>'
+    print '<option value="us-west1-b">us-west1-b</option>'
+    print '<option value="us-west1-c">us-west1-c</option>'
+    print '<option value="us-west2-a">us-west2-a</option>'
+    print '<option value="us-west2-b">us-west2-b</option>'
+    print '</select>'
+    print '             </div>'
+    print '     </div>'
+    print '	<br>'
+    
+    print ' <div class="col-md mr-md-2">'
+    print ' <div class="form-field">'
+    print ' <input type="text" name="log_file" class="form-control" placeholder="Log File. eg. gs://.../logs. ">'
+    print ' </div>'
+    print ' </div><Br>'
+    
+    print '<input type="file" id="tsvfile" name="tsvfile" data-show-upload="false" data-show-caption="true" /><Br><Br>'
+
+    print '<input type="hidden" name="data_1" value="' + str_data_1 + '">'
+    print '<input type="hidden" name="type_file" value="2">'
+    print '<input type="hidden" name="tool_type" value="9">'
     print '<input type="hidden" name="fn" value="' + fn + '">'
     print '     <div class="col-md">'
     print '	    <div class="form-group">'
