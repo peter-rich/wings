@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import fieldShape from './fieldShape'
 import _ from 'lodash'
+import { BASE_API_URL } from '../../Constant'
 
 class Form extends Component {
   constructor(props) {
@@ -59,7 +60,8 @@ class Form extends Component {
     Object.keys(this.state.formData).forEach(key => {
       data[key] = this.state.formData[key].value
     })
-    fetch('/api/fastqtosam', {
+    const { API_ROUTE } = this.props
+    fetch(`${BASE_API_URL}/${API_ROUTE}`, {
       method: 'POST',
       headers: {
         "Accept": "application/json",
@@ -227,6 +229,7 @@ class Form extends Component {
 
 Form.propTypes = {
   title: PropTypes.string.isRequired,
+  API_ROUTE: PropTypes.string.isRequired,
   fields: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.shape(fieldShape))),
 }
 

@@ -41,14 +41,14 @@ if form.has_key("delete"):
             cmd="ddel  --project " + str_data_1 + " --provider google-v2  --jobs " + form.getvalue("id_" + str(i))
             #message = form.getvalue("id_" + str(i))
             output =  subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
-            
-if state1 == 1 and message == "": 
+
+if state1 == 1 and message == "":
     message="Monitor"
     message2=""
     fn = form.getvalue("fn")
     environment="/var/www/cgi-bin/tmp/"+fn
     os.putenv("GOOGLE_APPLICATION_CREDENTIALS", environment)
-    # Status connect the database 
+    # Status connect the database
     conn = sqlite3.connect('/var/www/cgi-bin/tmp/' + str_data_1 + '/record.db')
     # Status CMD 3 for full
     cmd3 = 'dstat --project ' + str_data_1 + ' --provider google-v2  --status "*" --full'

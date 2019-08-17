@@ -8,6 +8,10 @@ const exec = require('child_process').exec
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
 const fs = require('fs')
+const initDB = require('./database/initDB')
+
+// Init Database
+initDB()
 // Routes
 const ROUTES = {
   FASTQ_TO_SAM: '/fastqtosam',

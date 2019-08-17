@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Form from './Form'
 
+const API_ROUTE = 'fastqtosam'
 const title = 'Fastq To Sam'
 const fields = [
   {
@@ -48,11 +49,9 @@ const fields = [
 class FastqToSamContainer extends Component {
   render() {
     return (
-      <div>
-        <h1>{title}</h1>
-        <Form fields={fields} />
-        <hr />
-      </div>
+      <Form title={title}
+        API_ROUTE={API_ROUTE}
+        fields={fields} />
     )
   }
 }
