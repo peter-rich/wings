@@ -77,7 +77,7 @@ class Form extends Component {
     const { title, fields } = this.props
     return (
       <div className="row">
-        <h1>{title}</h1>
+        <h3 className="header">{title}</h3>
         <form onSubmit={this._onSubmit}
           className="col s12 m8 push-m2 l10 push-l1">
           {/* <div className="row">

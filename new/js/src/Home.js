@@ -3,9 +3,7 @@ import React, { Component } from 'react';
 import './materialize.css';
 import './App.css';
 
-import Nav from './components/Nav'
 import Auth from './components/Auth'
-import FastqToSamContainer from './components/MiniApp/FastqToSamContainer'
 import MiniApp from './components/MiniApp'
 
 const miniApps = [
@@ -34,7 +32,6 @@ class App extends Component {
   render(){
     return (
       <div>
-        <Nav />
         <div className="container">
           <div className="search-wrapper">
             <input id="search" placeholder="Search" />
@@ -55,8 +52,6 @@ class App extends Component {
           </div>
           <div className="divider"></div>
           <Auth />
-          {/* <VariantViewer /> */}
-          <FastqToSamContainer />
         </div>
       </div>
     )

@@ -1,4 +1,4 @@
 {
   "PORT": "8081",
-  "DB_FILE": "./database/test.db"
+  "DB_FILE": "./database/wings.db"
 }

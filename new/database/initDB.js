@@ -18,20 +18,20 @@ function initDB() {
     console.error(err)
   }
 
-  let db = new sqlite3.Database(DB_FILE, sqlite3.OPEN_CREATE, (err) => {
+  let db = new sqlite3.Database(DB_FILE, sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
       console.error(err.message);
     }
     console.log('Connected to the record database.');
   });
 
-  let sql = `CREATE TABLE test (
-    job_id VARCHAR(255),
-    job_name VARCHAR(255),
+  let sql = `CREATE TABLE IF NOT EXISTS jobs (
+    id VARCHAR(255),
+    name VARCHAR(255),
     status VARCHAR(16),
     last_update TIMESTAMP,
     create_time TIMESTAMP,
-    storage_link VARCHAR(255)
+    link VARCHAR(255)
   )`
 
   db.run(sql, function(err) {
