@@ -77,34 +77,9 @@ class Form extends Component {
     const { title, fields } = this.props
     return (
       <div className="row">
-        <h3 className="header">{title}</h3>
         <form onSubmit={this._onSubmit}
-          className="col s12 m8 push-m2 l10 push-l1">
-          {/* <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="timezone">Time Zone</label>
-              <select name="time_zone"
-                className="browser-default"
-                onChange={this._onChange}>
-                <option value="" disabled selected>----------------------------------------------------------------------------------------------------------------------------------------------------------------</option>
-                <option value="us-central1-a">us-central1-a</option>
-                <option value="us-central1-b">us-central1-b</option>
-                <option value="us-central1-c">us-central1-c</option>
-                <option value="us-central1-f">us-central1-f</option>
-                <option value="us-east1-b">us-east1-b</option>
-                <option value="us-east1-c">us-east1-c</option>
-                <option value="us-east1-d">us-east1-d</option>
-                <option value="us-east4-a">us-east4-a</option>
-                <option value="us-east4-b">us-east4-b</option>
-                <option value="us-east4-c">us-east4-c</option>
-                <option value="us-west1-a">us-west1-a</option>
-                <option value="us-west1-b">us-west1-b</option>
-                <option value="us-west1-c">us-west1-c</option>
-                <option value="us-west2-a">us-west2-a</option>
-                <option value="us-west2-b">us-west2-b</option>
-              </select>
-            </div>
-          </div> */}
+          className="col s12 m10 push-m1 l8 push-l2">
+          <h3 className="header">{title}</h3>
           { fields.map((field,i) =>{
             if (field.key === 'time_zone') {
               return (
@@ -149,69 +124,6 @@ class Form extends Component {
             }
           })
           }
-          {/* <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="log_file">Log File. For example, "gs://genomics-public-data/logs"</label>
-              <input name="log_file"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="sample_name">Sample Name</label>
-              <input name="sample_name"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="read_group">Read Group. For example, "RG0"</label>
-              <input name="read_group"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="platform">Platform. For example, "illumina"</label>
-              <input name="platform"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="input_file_1">Input File 1. For example, "gs://genomics-public-data/platinum-genomes/fastq/ERR194159_1.fastq.gz"</label>
-              <input name="input_file_1"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="input_file_2">Input File 2. For example, "gs://genomics-public-data/platinum-genomes/fastq/ERR194159_2.fastq.gz"</label>
-              <input name="input_file_2"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="input-field col s12">
-              <label htmlFor="output_file">Output File</label>
-              <input name="output_file"
-                type="text"
-                className="validate"
-                onChange={this._onChange} />
-            </div>
-          </div> */}
           <div className="row">
             <div className="input-field col s12">
               <button type="submit" name="action"

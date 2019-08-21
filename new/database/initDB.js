@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose()
 const fs = require('fs')
 
-const { DB_FILE } = require('../config.json')
+// const { DB_FILE } = require('../js/src/config.json')
+const { DB_FILE } = require(`${__base}/js/src/config.json`)
 
 function initDB() {
   try {

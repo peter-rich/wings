@@ -1,9 +1,10 @@
+global.__base = __dirname
 // Modules
 const colorizedMorgan = require('./serverUtils/colorizedMorgan')
 const path = require('path')
 const express = require('express')
 const app = express()
-const config = require('./config.json')
+const config = require(`${__base}/js/src/config.json`)
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
 const initDB = require('./database/initDB')

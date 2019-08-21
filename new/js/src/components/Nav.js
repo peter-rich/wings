@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { BRAND_URL } from '../Constant'
 
 function Nav () {
@@ -8,10 +9,9 @@ function Nav () {
         <a href={BRAND_URL} className="brand-logo"><img src="images/logo.png" alt='stanford bioinformatics logo' />
           Stanford Genetics
         </a>
-        <ul id="nav-mobile" className="right hide-on-med-and-down">
-          <li><a href="sass.html">Sass</a></li>
-          <li><a href="badges.html">Components</a></li>
-          <li><a href="collapsible.html">JavaScript</a></li>
+        <ul id='nav-mobile' className="right hide-on-med-and-down">
+          <li><NavLink to='/'>Apps</NavLink></li>
+          <li><NavLink to='/monitor'>Monitor</NavLink></li>
         </ul>
       </div>
     </nav>

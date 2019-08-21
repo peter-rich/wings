@@ -3,16 +3,17 @@ const router = express.Router()
 const fs = require('fs')
 const path = require('path')
 const exec = require('child_process').exec
-// Routes
-const ROUTES = {
-  FASTQ_TO_SAM: '/fastqtosam',
-  GATK: '/gatk',
-  ANNO_HIVE: '/annohive',
-  JOB_HISTORY: '/jobhistory',
-  AUTH: '/authenticate'
-}
+const { API_ROUTES } = require(`${__base}/js/src/config.json`)
+// // Routes
+// const ROUTES = {
+//   FASTQ_TO_SAM: '/fastqtosam',
+//   GATK: '/gatk',
+//   ANNO_HIVE: '/annohive',
+//   JOB_HISTORY: '/jobhistory',
+//   AUTH: '/authenticate'
+// }
 // Routing Handling
-router.post(ROUTES.FASTQ_TO_SAM, (req, res) => {
+router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
   const rawData = fs.readFileSync(path.resolve('../../../Downloads/gbsc-gcp-project-annohive-dev-2817dc37f2ed.json'));
   const cred = JSON.parse(rawData);
   console.log(req.body)
@@ -37,7 +38,7 @@ router.post(ROUTES.FASTQ_TO_SAM, (req, res) => {
     // })
 })
 
-router.post(ROUTES.AUTH, (req, res) => {
+router.post(API_ROUTES.AUTH, (req, res) => {
   console.log(req.body)
   res.json({
     "asdads": 1310398

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 const fields = {
@@ -14,7 +15,7 @@ const fields = {
 
 class MiniApp extends Component {
   render() {
-    const { title, description } = this.props
+    const { title, description, link } = this.props
     return (
       <div className="card">
         <div className="card-content">
@@ -22,7 +23,7 @@ class MiniApp extends Component {
           <p>{description}</p>
         </div>
         <div className="card-action">
-          <a href="#">Start</a>
+          <NavLink to={link}>Start</NavLink>
         </div>
       </div>
     )
