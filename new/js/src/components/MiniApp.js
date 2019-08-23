@@ -2,17 +2,6 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-const fields = {
-  projectId: 'Project ID',
-  runner: 'Runner',
-  bigQueryDatasetId: 'Big Query Dataset ID',
-  outputBigQueryTable: 'Output Bigquery Table',
-  genericAnnotationTables: 'Generic Annotation Tables',
-  VCFTables: 'VCT Tables',
-  build: 'Build',
-  stagingLocation: 'Staging Location'
-}
-
 class MiniApp extends Component {
   render() {
     const { title, description, link } = this.props

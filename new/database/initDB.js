@@ -46,3 +46,6 @@ function initDB() {
 }
 
 module.exports = initDB
+
+
+// https://stackabuse.com/using-sequelize-js-and-sqlite-in-an-express-js-app/

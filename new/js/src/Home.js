@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './materialize.css';
-import './App.css';
+import './styles/App.css';
 import { PUBLIC_ROUTES } from './config.json'
-import Auth from './components/Auth'
 import MiniApp from './components/MiniApp'
 
 const miniApps = [
@@ -26,18 +25,18 @@ const miniApps = [
 class App extends Component {
   render(){
     return (
-      <div>
-        <div className="container">
+      <>
+        {/* <div className="container"> */}
           <div className="search-wrapper">
             <input id="search" placeholder="Search" />
             <i className="material-icons">search</i>
             <div className="search-results"></div>
           </div>
-        </div>
-        <div className="container">
+        {/* </div> */}
+        {/* <div className="container"> */}
           <div className="row">
             {miniApps.map((obj, key) => (
-              <div key={key} className="col s6 m4 l3">
+              <div key={key} className="col s6 m4">
                 <MiniApp title={obj.title}
                   link={obj.link}
                   description={obj.description}
@@ -47,9 +46,8 @@ class App extends Component {
             }
           </div>
           <div className="divider"></div>
-          {/* <Auth /> */}
-        </div>
-      </div>
+        {/* </div> */}
+      </>
     )
   }
 }

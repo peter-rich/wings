@@ -5,3 +5,7 @@ dstat --provider google-v2 --project gbsc-gcp-project-annohive-dev --jobs 'gatk-
 To cancel the job, run:
   ddel --provider google-v2 --project gbsc-gcp-project-annohive-dev --jobs 'gatk--lektin-stanford-edu--190821-000637-02' --users 'lektin-stanford-edu'
 gatk--lektin-stanford-edu--190821-000637-0
+
+
+
+gcloud beta compute ssh --project gbsc-gcp-project-annohive-dev --zone us-central1-a wings-transition-lek

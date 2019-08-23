@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Route } from "react-router-dom";
 import Nav from '../components/Nav'
 
@@ -6,7 +6,9 @@ const MainLayout = ({children, ...rest}) => {
   return (
     <div>
       <Nav />
-      {children}
+      <div className="container">
+        {children}
+      </div>
     </div>
   )
 }

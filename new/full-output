@@ -1,0 +1,231 @@
+- create-time: '2019-08-21 00:06:37.351485'
+  dsub-version: v0-3-2
+  end-time: '2019-08-21 00:12:10.858631'
+  envs:
+    PL: illumina
+    RG: RG0
+    SM: ''
+  events:
+  - name: start
+    start-time: 2019-08-21 00:06:38.236481+00:00
+  - name: pulling-image
+    start-time: 2019-08-21 00:07:56.377631+00:00
+  - name: localizing-files
+    start-time: 2019-08-21 00:10:14.047898+00:00
+  - name: running-docker
+    start-time: 2019-08-21 00:11:48.321710+00:00
+  - name: fail
+    start-time: 2019-08-21 00:12:02.214388+00:00
+  - name: 'Execution failed: while running "user-command": unexpected exit status
+      4 was not ignored'
+    start-time: 2019-08-21 00:12:09.735637+00:00
+  input-recursives: {}
+  inputs:
+    FASTQ_1: gs://genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz
+    FASTQ_2: gs://genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz
+  internal-id: projects/gbsc-gcp-project-annohive-dev/operations/11969332164997528348
+  job-id: gatk--lektin-stanford-edu--190821-000637-02
+  job-name: gatk
+  labels: {}
+  last-update: '2019-08-21 00:12:10.858631'
+  logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--lektin-stanford-edu--190821-000637-02.log
+  mounts: {}
+  output-recursives: {}
+  outputs:
+    UBAM: gs://gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out
+  provider: google-v2
+  provider-attributes:
+    accelerators: []
+    boot-disk-size: 20
+    cpu_platform: ''
+    disk-size: 200
+    disk-type: pd-standard
+    enable-stackdriver-monitoring: false
+    instance-name: google-pipelines-worker-c3cb15045ac505a7cecf4d86a2ce5aaf
+    machine-type: custom-2-7680
+    network: ''
+    preemptible: true
+    regions: []
+    service-account: default
+    subnetwork: ''
+    use_private_address: false
+    zone: us-east1-b
+    zones:
+    - us-east1-b
+  script: |-
+    #!/usr/bin/env bash
+    /gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} --SAMPLE_NAME ${SM} -RG ${RG} -PL ${PL}
+  script-name: gatk
+  start-time: '2019-08-21 00:06:38.236481'
+  status: FAILURE
+  status-detail: "user-command:\n value: false. Possible values: {true, false} \n\n\
+    --version:Boolean             display the version number for this tool  Default\
+    \ value: false. Possible values: {true,\n                              false}\
+    \ \n\n\nAdvanced Arguments:\n\n--showHidden,-showHidden:Boolean\n            \
+    \                  display hidden arguments  Default value: false. Possible values:\
+    \ {true, false} \n\n\nInvalid argument 'RG0'.\nUsing GATK jar /gatk/gatk-package-4.1.0.0-local.jar\n\
+    Running:\n    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true\
+    \ -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx8G\
+    \ -Djava.io.tmpdir=bla -jar /gatk/gatk-package-4.1.0.0-local.jar FastqToSam -F1\
+    \ /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz\
+    \ -F2 /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz\
+    \ -O /mnt/data/output/gs/gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out\
+    \ --SAMPLE_NAME -RG RG0 -PL illumina\n"
+  status-message: " value: false. Possible values: {true, false} \n\n--version:Boolean\
+    \             display the version number for this tool  Default value: false.\
+    \ Possible values: {true,\n                              false} \n\n\nAdvanced\
+    \ Arguments:\n\n--showHidden,-showHidden:Boolean\n                           \
+    \   display hidden arguments  Default value: false. Possible values: {true, false}\
+    \ \n\n\nInvalid argument 'RG0'.\nUsing GATK jar /gatk/gatk-package-4.1.0.0-local.jar\n\
+    Running:\n    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true\
+    \ -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx8G\
+    \ -Djava.io.tmpdir=bla -jar /gatk/gatk-package-4.1.0.0-local.jar FastqToSam -F1\
+    \ /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz\
+    \ -F2 /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz\
+    \ -O /mnt/data/output/gs/gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out\
+    \ --SAMPLE_NAME -RG RG0 -PL illumina\n"
+  user-id: lektin-stanford-edu
+- create-time: '2019-08-20 00:08:15.513546'
+  dsub-version: v0-3-2
+  end-time: '2019-08-20 00:13:47.550702'
+  envs:
+    PL: illumina
+    RG: RG0
+    SM: ''
+  events:
+  - name: start
+    start-time: 2019-08-20 00:08:16.626068+00:00
+  - name: pulling-image
+    start-time: 2019-08-20 00:09:36.312493+00:00
+  - name: localizing-files
+    start-time: 2019-08-20 00:11:53.788753+00:00
+  - name: running-docker
+    start-time: 2019-08-20 00:13:25.790428+00:00
+  - name: fail
+    start-time: 2019-08-20 00:13:39.415826+00:00
+  - name: 'Execution failed: while running "user-command": unexpected exit status
+      4 was not ignored'
+    start-time: 2019-08-20 00:13:46.438118+00:00
+  input-recursives: {}
+  inputs:
+    FASTQ_1: gs://genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz
+    FASTQ_2: gs://genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz
+  internal-id: projects/gbsc-gcp-project-annohive-dev/operations/13132768597254998455
+  job-id: gatk--lektin-stanford-edu--190820-000815-24
+  job-name: gatk
+  labels: {}
+  last-update: '2019-08-20 00:13:47.550702'
+  logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--lektin-stanford-edu--190820-000815-24.log
+  mounts: {}
+  output-recursives: {}
+  outputs:
+    UBAM: gs://gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out
+  provider: google-v2
+  provider-attributes:
+    accelerators: []
+    boot-disk-size: 20
+    cpu_platform: ''
+    disk-size: 200
+    disk-type: pd-standard
+    enable-stackdriver-monitoring: false
+    instance-name: google-pipelines-worker-d3e250790231972752a0c37415f8a6bb
+    machine-type: custom-2-7680
+    network: ''
+    preemptible: true
+    regions: []
+    service-account: default
+    subnetwork: ''
+    use_private_address: false
+    zone: us-east1-b
+    zones:
+    - us-east1-b
+  script: |-
+    #!/usr/bin/env bash
+    /gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} --SAMPLE_NAME ${SM} -RG ${RG} -PL ${PL} \
+  script-name: gatk
+  start-time: '2019-08-20 00:08:16.626068'
+  status: FAILURE
+  status-detail: "user-command:\n value: false. Possible values: {true, false} \n\n\
+    --version:Boolean             display the version number for this tool  Default\
+    \ value: false. Possible values: {true,\n                              false}\
+    \ \n\n\nAdvanced Arguments:\n\n--showHidden,-showHidden:Boolean\n            \
+    \                  display hidden arguments  Default value: false. Possible values:\
+    \ {true, false} \n\n\nInvalid argument 'RG0'.\nUsing GATK jar /gatk/gatk-package-4.1.0.0-local.jar\n\
+    Running:\n    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true\
+    \ -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx8G\
+    \ -Djava.io.tmpdir=bla -jar /gatk/gatk-package-4.1.0.0-local.jar FastqToSam -F1\
+    \ /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz\
+    \ -F2 /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz\
+    \ -O /mnt/data/output/gs/gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out\
+    \ --SAMPLE_NAME -RG RG0 -PL illumina\n"
+  status-message: " value: false. Possible values: {true, false} \n\n--version:Boolean\
+    \             display the version number for this tool  Default value: false.\
+    \ Possible values: {true,\n                              false} \n\n\nAdvanced\
+    \ Arguments:\n\n--showHidden,-showHidden:Boolean\n                           \
+    \   display hidden arguments  Default value: false. Possible values: {true, false}\
+    \ \n\n\nInvalid argument 'RG0'.\nUsing GATK jar /gatk/gatk-package-4.1.0.0-local.jar\n\
+    Running:\n    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true\
+    \ -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -Xmx8G\
+    \ -Djava.io.tmpdir=bla -jar /gatk/gatk-package-4.1.0.0-local.jar FastqToSam -F1\
+    \ /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_1.filt.fastq.gz\
+    \ -F2 /mnt/data/input/gs/genomics-public-data/gatk-examples/example1/NA19913/ERR250256_2.filt.fastq.gz\
+    \ -O /mnt/data/output/gs/gbsc-gcp-project-annohive-dev-user-lektin/output/cli-test.out\
+    \ --SAMPLE_NAME -RG RG0 -PL illumina\n"
+  user-id: lektin-stanford-edu
+- create-time: '2019-08-15 01:12:25.921122'
+  dsub-version: v0-3-2
+  end-time: '2019-08-15 01:14:26.626054'
+  envs: {}
+  events:
+  - name: start
+    start-time: 2019-08-15 01:12:26.747127+00:00
+  - name: pulling-image
+    start-time: 2019-08-15 01:13:52.272323+00:00
+  - name: localizing-files
+    start-time: 2019-08-15 01:14:10.830809+00:00
+  - name: running-docker
+    start-time: 2019-08-15 01:14:12.590788+00:00
+  - name: delocalizing-files
+    start-time: 2019-08-15 01:14:14.017765+00:00
+  - name: ok
+    start-time: 2019-08-15 01:14:26.626054+00:00
+  input-recursives: {}
+  inputs: {}
+  internal-id: projects/gbsc-gcp-project-annohive-dev/operations/594762843663112086
+  job-id: echo--lektin-stanford-edu--190815-011225-64
+  job-name: echo
+  labels: {}
+  last-update: '2019-08-15 01:14:26.626054'
+  logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/echo--lektin-stanford-edu--190815-011225-64.log
+  mounts: {}
+  output-recursives: {}
+  outputs:
+    OUT: gs://gbsc-gcp-project-annohive-dev-user-lektin/output/out.txt
+  provider: google-v2
+  provider-attributes:
+    accelerators: []
+    boot-disk-size: 10
+    cpu_platform: ''
+    disk-size: 200
+    disk-type: pd-standard
+    enable-stackdriver-monitoring: false
+    instance-name: google-pipelines-worker-b0b27dbd08d0f5265725fd4bb33cc63d
+    machine-type: n1-standard-1
+    network: ''
+    preemptible: false
+    regions:
+    - us-central1
+    service-account: default
+    subnetwork: ''
+    use_private_address: false
+    zone: us-central1-a
+    zones: []
+  script: |-
+    #!/usr/bin/env bash
+    echo "Hello World" > "${OUT}"
+  script-name: echo
+  start-time: '2019-08-15 01:12:26.747127'
+  status: SUCCESS
+  status-detail: Success
+  status-message: Success
+  user-id: lektin-stanford-edu
