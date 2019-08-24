@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Table from '../components/Table'
-import { BASE_API_URL } from '../Constant'
+import { BASE_API_URL } from '../constants'
 
-const API_ROUTE = 'monitor'
+const API_ROUTE = 'jobs'
 
 class MonitorPage extends Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class MonitorPage extends Component {
   }
 
   _asyncRequest = () => {
-    fetch(`${BASE_API_URL}/${API_ROUTE}`, {
+    fetch(`http://localhost:8081/api/jobs`, {
       method: 'GET',
       headers: {
         "Accept": "application/json",

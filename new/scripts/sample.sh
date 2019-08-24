@@ -9,3 +9,31 @@ gatk--lektin-stanford-edu--190821-000637-0
 
 
 gcloud beta compute ssh --project gbsc-gcp-project-annohive-dev --zone us-central1-a wings-transition-lek
+
+
+
+
+# - create-time: '2019-08-22 00:46:47.583895'
+  # end-time: '2019-08-22 01:19:23.213015'
+  # job-id: gatk--li--190822-004646-47
+  # job-name: gatk
+  # logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190822-004646-47.log
+  # status: SUCCESS
+# - create-time: '2019-08-21 18:21:37.954801'
+  # end-time: '2019-08-21 18:29:52.292039'
+  # job-id: gatk--li--190821-182137-12
+  # job-name: gatk
+  # logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-182137-12.log
+  # status: FAILURE
+# - create-time: '2019-08-21 17:23:22.965318'
+  # end-time: '2019-08-21 17:26:37.934986'
+  # job-id: gatk--li--190821-172322-25
+  # job-name: gatk
+  # logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-172322-25.log
+  # status: FAILURE
+# - create-time: '2019-08-21 17:20:59.170356'
+  # end-time: '2019-08-21 17:22:05.721823'
+  # job-id: gatk--li--190821-172058-44
+  # job-name: gatk
+  # logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-172058-44.log
+  # status: FAILURE

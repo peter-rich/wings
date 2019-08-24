@@ -2,20 +2,30 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const exec = require('child_process').exec
-const { API_ROUTES } = require(`${__base}/js/src/config.json`)
+const { API_ROUTES } = require(`${__base}/config`)
 const { execPromise } = require(`${__base}/serverUtils/hoc`)
-const GOOGLE_CRED_PATH = process.env.NODE_ENV == 'development' ? '~/_CODE_/wings-SCGPM/new/local' : '~/projects/wings-lek/new/credentials'
+const GOOGLE_CRED_PATH = process.env.NODE_ENV == 'development' ? `${__base}/local` : `${__base}/credentials`
 const GOOGLE_CRED_FILE = 'gbsc-gcp-project-annohive-dev-2817dc37f2ed.json'
 
-// Routing Handling
-router.get('/about', function (req, res) {
-  res.send('About this wiki');
+router.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000/')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  next()
 })
+
+// Routing Handling
+router.get('/api/contacts', (req, res) => {
+  return db.Contact.findAll()
+    .then((contacts) => res.send(contacts))
+    .catch((err) => {
+      console.log('There was an error querying contacts', JSON.stringify(err))
+      return res.send(err)
+    });
+})
+
 router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
-  const authFile = fs.readFileSync(`${__base}/local/gbsc-gcp-project-annohive-dev-2817dc37f2ed.json`);
-  const cred = JSON.parse(authFile);
-  console.log(req.body)
-  console.log(cred)
+  const authFile = fs.readFileSync(`${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE}`)
+  const cred = JSON.parse(authFile)
   const { project_id }= cred
   const {
     time_zone,
@@ -60,9 +70,9 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
   })
 })
 
-router.get(API_ROUTES.MONITOR, (req, res) => {
-  const authFile = fs.readFileSync(`${__base}/local/gbsc-gcp-project-annohive-dev-2817dc37f2ed.json`);
-  const cred = JSON.parse(authFile);
+router.get(API_ROUTES.JOBS, (req, res) => {
+  const authFile = fs.readFileSync(`${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE}`)
+  const cred = JSON.parse(authFile)
   const { project_id }= cred
   const dstatCmd = `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
   dstat --provider google-v2 --project ${project_id} --status '*' \
@@ -70,7 +80,6 @@ router.get(API_ROUTES.MONITOR, (req, res) => {
   const runScript = async () => {
     try {
       const result = await execPromise(dstatCmd)
-      console.log(result)
       let newJobs = []
       const numOfCols = 6
       result.replace(/\r\n/g, "\r").replace(/\n/g, "\r").split(/\r/).forEach((item, i) => {
@@ -97,31 +106,6 @@ router.get(API_ROUTES.MONITOR, (req, res) => {
     }
   }
   runScript()
-
-  // - create-time: '2019-08-22 00:46:47.583895'
-  //   end-time: '2019-08-22 01:19:23.213015'
-  //   job-id: gatk--li--190822-004646-47
-  //   job-name: gatk
-  //   logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190822-004646-47.log
-  //   status: SUCCESS
-  // - create-time: '2019-08-21 18:21:37.954801'
-  //   end-time: '2019-08-21 18:29:52.292039'
-  //   job-id: gatk--li--190821-182137-12
-  //   job-name: gatk
-  //   logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-182137-12.log
-  //   status: FAILURE
-  // - create-time: '2019-08-21 17:23:22.965318'
-  //   end-time: '2019-08-21 17:26:37.934986'
-  //   job-id: gatk--li--190821-172322-25
-  //   job-name: gatk
-  //   logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-172322-25.log
-  //   status: FAILURE
-  // - create-time: '2019-08-21 17:20:59.170356'
-  //   end-time: '2019-08-21 17:22:05.721823'
-  //   job-id: gatk--li--190821-172058-44
-  //   job-name: gatk
-  //   logging: gs://gbsc-gcp-project-annohive-dev-user-lektin/logging/gatk--li--190821-172058-44.log
-  //   status: FAILURE
 })
 router.post(API_ROUTES.AUTH, (req, res) => {
   console.log(req.body)

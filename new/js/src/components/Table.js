@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types'
 import colors from '../styles/colors'
 
@@ -20,14 +20,16 @@ function Table(props) {
             }
           </tr>
           {records.map((record, i) => (
-            <tr key={i} style={{ color: record[5] === 'SUCCESS' ? colors.SUCCESS : colors.FAILURE }}>
+            <tr key={i} style={{ color: colors[record[5]] }}>
               <td>{i}</td>
               {record.map((item, j) => {
-                if (j == 4) {
+                if (j === 4) {
                   const url = 'https://storage.cloud.google.com/'.concat(item.substring(5), '?authuser=1')
                   return (
                     <td key={`cell-${i}-${j}`}>
-                      <a href={url} target='_blank'>{item}</a>
+                      <a href={url}
+                        rel='noopener noreferrer'
+                        target='_blank'>{item}</a>
                     </td>
                   )
                 } else {

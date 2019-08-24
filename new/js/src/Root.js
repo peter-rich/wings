@@ -5,7 +5,7 @@ import FastqToSamContainer from './components/MiniApp/FastqToSamContainer'
 import GATKContainer from './components/MiniApp/GATKContainer'
 import MonitorPage from './pages/MonitorPage'
 import Home from './Home'
-import { PUBLIC_ROUTES } from './config.json'
+import { PUBLIC_ROUTES } from './constants'
 
 function Root() {
   return (
@@ -22,7 +22,7 @@ function Root() {
           path={PUBLIC_ROUTES.GATK}
           component={GATKContainer}/>
         <MainLayoutRoute
-          path={PUBLIC_ROUTES.MONITOR}
+          path={PUBLIC_ROUTES.JOBS}
           component={MonitorPage}/>
         <Redirect from='*' to='/' />
       </Switch>

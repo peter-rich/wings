@@ -4,13 +4,20 @@ const colorizedMorgan = require('./serverUtils/colorizedMorgan')
 const path = require('path')
 const express = require('express')
 const app = express()
-const config = require(`${__base}/js/src/config.json`)
+const config = require(`${__base}/config`)
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
-const initDB = require('./database/initDB')
+const db = require('./database/database.js')
 const api = require('./controllers/api')
 // Init Database
-initDB()
+const updateJobs = require('./database/updateJobs')
+db.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.')
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err)
+  })
 // Parse request body
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())

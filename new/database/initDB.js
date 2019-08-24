@@ -1,8 +1,7 @@
 const sqlite3 = require('sqlite3').verbose()
 const fs = require('fs')
 
-// const { DB_FILE } = require('../js/src/config.json')
-const { DB_FILE } = require(`${__base}/js/src/config.json`)
+const { DB_FILE } = require(`${__base}/config`)
 
 function initDB() {
   try {
@@ -46,6 +45,3 @@ function initDB() {
 }
 
 module.exports = initDB
-
-
-// https://stackabuse.com/using-sequelize-js-and-sqlite-in-an-express-js-app/

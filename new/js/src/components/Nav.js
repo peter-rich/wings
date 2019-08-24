@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { BRAND_URL } from '../Constant'
+import { BRAND_URL } from '../constants'
 
 function Nav () {
   return (

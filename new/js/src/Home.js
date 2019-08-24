@@ -2,24 +2,29 @@ import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './materialize.css';
 import './styles/App.css';
-import { PUBLIC_ROUTES } from './config.json'
+import { PUBLIC_ROUTES } from './constants'
 import MiniApp from './components/MiniApp'
 
 const miniApps = [
   {
     title: 'FastqToSam',
     link: PUBLIC_ROUTES.FASTQ_TO_SAM,
-    description: 'AnnotationHive: A Cloud-based Annotation Engine'
+    description: 'FastqToSam: xxxx xxxx xxxx xxxx xxxx'
   },
   {
     title: 'FastqToSam(50G)',
     link: PUBLIC_ROUTES.FASTQ_TO_SAM_50G,
-    description: 'AnnotationHive: A Cloud-based Annotation Engine'
+    description: 'FastqToSam (50G): xxxx xxxx xxxx xxxx xxxx'
   },
   {
     title: 'GATK',
     link: PUBLIC_ROUTES.GATK,
     description: 'AnnotationHive: A Cloud-based Annotation Engine'
+  },
+  {
+    title: 'CNVnator',
+    link: PUBLIC_ROUTES.CNVNATOR,
+    description: 'CNVnator: xxxx xxxx xxxx xxxx xxxx'
   }
 ]
 class App extends Component {
