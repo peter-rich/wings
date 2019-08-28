@@ -1,16 +1,32 @@
 global.__base = __dirname
 // Modules
+const config = require(`${__base}/config`)
 const colorizedMorgan = require('./serverUtils/colorizedMorgan')
 const path = require('path')
 const express = require('express')
+const session = require('express-session')
 const app = express()
-const config = require(`${__base}/config`)
+const cookieParser = require('cookie-parser')
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
-const db = require('./database/database.js')
-const api = require('./controllers/api')
-// Init Database
-const updateJobs = require('./database/updateJobs')
+const db = require(`${__base}/database/database.js`)
+const api = require(`${__base}/controllers/api`)
+// const scheduler = require(`${__base}/scheduler`)
+// Init scheduler
+// scheduler.start()
+app.use(cookieParser())
+console.log(new Date())
+app.use(session({
+  'secret': '343ji43j4n3jn4jk3n',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 10,
+    sameSite: true,
+    secure: false,
+  }
+}))
+
 db.authenticate()
   .then(() => {
     console.log('Connection has been established successfully.')

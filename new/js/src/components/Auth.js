@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash'
-
+import { API_ROUTES, BASE_API_URL } from '../constants'
 class Auth extends Component {
   constructor(props) {
     super(props)
@@ -19,27 +19,28 @@ class Auth extends Component {
     else
       newState.authBtnDisabled = true
     this.setState(newState)
-    console.log(JSON.parse(this.state.authFile))
   }
 
   _onSubmit = (e) => {
     e.preventDefault()
-    const data = new FormData()
-    console.log(this.state.authFile)
-    data.append('file', this.state.authFile)
-    console.log(data)
-    fetch('http://localhost:80/api/auth', {
+    const formDate = new FormData()
+    formDate.append('authFile', this.state.authFile)
+    for(var pair of formDate.entries()) {
+      console.log(pair[0]+ ', '+ pair[1])
+    }
+    fetch(`${BASE_API_URL}${API_ROUTES.LOG_IN}`, {
       mode: 'no-cors',
       method: 'POST',
-      body: {adad:123123, asdaksdjnaier: 123120},
-      headers: {
-        authorization: 'SECRET_TOKEN',
-        // 'Content-Type': 'multipart/form-data'
-      }
+      body: formDate,
+      // headers: {
+      //   authorization: 'SECRET_TOKEN',
+      //   'Content-Type': 'multipart/form-data'
+      // }
     })
     .then(res => {
       console.log(res.statusText)
     })
+
   }
 
   render() {

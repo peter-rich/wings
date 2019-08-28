@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import fieldShape from './fieldShape'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
-
+import MC from "materialize-css";
 class Form extends Component {
   constructor(props) {
     super(props)
@@ -50,15 +50,16 @@ class Form extends Component {
   _onChange = (e) => {
     let newState = _.cloneDeep(this.state)
     newState.formData[e.target.name].value = e.target.value
+    console.log(newState.formData)
     this.setState(newState)
   }
 
   _onSubmit = (e) => {
     e.preventDefault()
     console.table(this.state.formData)
-    const data = {}
+    const formData = {}
     Object.keys(this.state.formData).forEach(key => {
-      data[key] = this.state.formData[key].value
+      formData[key] = this.state.formData[key].value
     })
     const { API_ROUTE } = this.props
     fetch(`${BASE_API_URL}/${API_ROUTE}`, {
@@ -67,10 +68,14 @@ class Form extends Component {
         "Accept": "application/json",
         "Content-Type": "application/json; charset=UTF-8"
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(formData)
     })
     .then(response => response.json())
     .then(json => console.log(json))
+  }
+
+  componentDidMount() {
+    MC.AutoInit()
   }
 
   render() {
@@ -83,13 +88,14 @@ class Form extends Component {
           { fields.map((field,i) =>{
             if (field.key === 'time_zone') {
               return (
-                <div className="row">
+                <div key={`form-field-${i}`} className="row">
                   <div className="input-field col s12">
                     <label htmlFor={field.key}>{field.title}</label>
                     <select name={field.key}
-                      className="browser-default"
+                      className="browser-defa______ult"
+                      defaultValue='__placeholder'
                       onChange={this._onChange}>
-                      <option value="" disabled selected>----------------------------------------------------------------------------------------------------------------------------------------------------------------</option>
+                      <option value="__placeholder" disabled>⬇️--- Please select a time zone ---️️️ ⬇️</option>
                       <option value="us-central1-a">us-central1-a</option>
                       <option value="us-central1-b">us-central1-b</option>
                       <option value="us-central1-c">us-central1-c</option>
@@ -111,7 +117,7 @@ class Form extends Component {
               )
             } else {
               return (
-                <div className="row">
+                <div key={`form-field-${i}`} className="row">
                   <div className="input-field col s12">
                     <label htmlFor={field.key}>{field.title}</label>
                     <input name={field.key}

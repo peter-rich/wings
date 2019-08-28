@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize')
-const { DB_FILE } = require('../config')
+const { DB_FILE } = require(`${__base}/config-server`)
 
 module.exports = new Sequelize({
   dialect: 'sqlite',
-  storage: `./${DB_FILE}`,
+  storage: `${DB_FILE}`,
   pool: {
     max: 5,
     min: 0,

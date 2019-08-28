@@ -1,11 +1,7 @@
-const DB_FILE_DEV = './database/wings-dev.sqlite3'
-const DB_FILE_PROD = './database/wings-prod.sqlite3'
-
-// Exports
-exports.DB_FILE = process.env.NODE_ENV === 'development' ? DB_FILE_DEV : DB_FILE_PROD
 exports.BRAND_URL = 'http://med.stanford.edu/scgpm.html'
 exports.BASE_API_URL = '/api'
 exports.PORT = 8081
+exports.AUTH_FILE_FIELDNAME = 'authFile'
 
 exports.PUBLIC_ROUTES = {
   FASTQ_TO_SAM: '/jobs/fastqtosam',
@@ -20,5 +16,7 @@ exports.API_ROUTES = {
   GATK: "/gatk",
   CNVNATOR: '/cnvnator',
   JOBS: "/jobs",
-  AUTH: "/authenticate"
+  UPDATE_JOBS: "/update_jobs",
+  LOG_IN: "/log_in",
+  LOG_OUT: "/log_out"
 }

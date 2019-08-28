@@ -2,12 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import colors from '../styles/colors'
 
-const headers = ['#', 'Create Time', 'End time', 'Job id', 'Job Name', 'Link to the Log File', 'Status']
+const headers = ['#', 'Job id', 'Job Name', 'Status', 'Create Time', 'End time', 'Link to the Log File']
 
 function Table(props) {
   const title = 'Jobs';
   const { records, loading } = props
-  console.log(records)
   return (
     <div>
       <h3>{title}</h3>
@@ -20,24 +19,18 @@ function Table(props) {
             }
           </tr>
           {records.map((record, i) => (
-            <tr key={i} style={{ color: colors[record[5]] }}>
+            <tr key={i} style={{ color: colors[record.status] }}>
               <td>{i}</td>
-              {record.map((item, j) => {
-                if (j === 4) {
-                  const url = 'https://storage.cloud.google.com/'.concat(item.substring(5), '?authuser=1')
-                  return (
-                    <td key={`cell-${i}-${j}`}>
-                      <a href={url}
-                        rel='noopener noreferrer'
-                        target='_blank'>{item}</a>
-                    </td>
-                  )
-                } else {
-                  return(
-                    <td key={`cell-${i}-${j}`}>{item}</td>
-                  )
-                }
-              })}
+              <td>{record.job_id}</td>
+              <td>{record.name}</td>
+              <td>{record.status}</td>
+              <td>{record.created_at}</td>
+              <td>{record.finished_at}</td>
+              <td>
+                <a href={`https://storage.cloud.google.com/${record.gs_link.substring(5)}?authuser=1`}
+                  rel='noopener noreferrer'
+                  target='_blank'>{record.gs_link}</a>
+              </td>
             </tr>
           ))}
         </tbody>

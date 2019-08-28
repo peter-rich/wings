@@ -3,11 +3,13 @@ const db = require('../database/database')
 
 const Model = Sequelize.Model
 class Job extends Model {}
+
 Job.init({
   // attributes
   job_id: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
+    primaryKey: true
   },
   name: {
     type: Sequelize.STRING,
@@ -22,11 +24,11 @@ Job.init({
     allowNull: false
   },
   created_at: {
-    type: Sequelize.STRING,
+    type: Sequelize.DATE,
     allowNull: false
   },
   finished_at: {
-    type: Sequelize.STRING,
+    type: Sequelize.DATE,
     allowNull: false
   }
 }, {
@@ -38,20 +40,29 @@ Job.init({
   updatedAt: 'record_updated_at',
 })
 
-Job.sync({ force: false }).then(() => {
-  // Now the `jobs` table in the database corresponds to the model definition
-  return Job.create({
-    job_id: "jahsd",
-    name: "129hdas",
-    status: 'suceess',
-    created_at: '18273821312',
-    finished_at: '0103813912',
-    gs_link: 'asdbamnsdb^^^^^^'
-  })
-})
-// Create a new job
-Job.create({ job_id: "kasjdasd", name: "Doe", status: 'failure', created_at: 'alsdkasd', finished_at: 'asdjasdasd', gs_link: 'asdlakdjasj' }).then(job => {
-  console.log("Jane's auto-generated ID:", job.id)
-})
+async function createTable() {
+  try {
+    await Job.sync({ force: false }).then(() => {
+      // Now the `jobs` table in the database corresponds to the model definition
+      return Job.create({
+        job_id: "test_________________",
+        name: "test_________________",
+        status: 'test_________________',
+        created_at: 'test_________________',
+        finished_at: 'test_________________',
+        gs_link: 'test_________________'
+      })
+    })
 
+    Job.destroy({
+      where: {
+        job_id: "test_________________"
+      }
+    })
+  } catch(err) {
+    console.error(err)
+  }
+}
+
+createTable()
 module.exports = Job

@@ -2,10 +2,15 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const exec = require('child_process').exec
-const { API_ROUTES } = require(`${__base}/config`)
-const { execPromise } = require(`${__base}/serverUtils/hoc`)
-const GOOGLE_CRED_PATH = process.env.NODE_ENV == 'development' ? `${__base}/local` : `${__base}/credentials`
-const GOOGLE_CRED_FILE = 'gbsc-gcp-project-annohive-dev-2817dc37f2ed.json'
+const Op = require('sequelize').Op
+const multer = require('multer')
+const uuid = require('uuid')
+const Job = require(`${__base}/models/Job`)
+const query = require(`${__base}/serverUtils/query`)
+const updateJobs = require(`${__base}/tasks/updateJobs`)
+const _ = require('lodash')
+const { API_ROUTES, AUTH_FILE_FIELDNAME } = require(`${__base}/config`)
+const { GOOGLE_CRED_PATH } = require(`${__base}/config-server`)
 
 router.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000/')
@@ -13,39 +18,27 @@ router.use(function(req, res, next) {
   next()
 })
 
+let logged_in_users = {}
+
 // Routing Handling
-router.get('/api/contacts', (req, res) => {
-  return db.Contact.findAll()
-    .then((contacts) => res.send(contacts))
-    .catch((err) => {
-      console.log('There was an error querying contacts', JSON.stringify(err))
-      return res.send(err)
-    });
-})
-
 router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
-  const authFile = fs.readFileSync(`${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE}`)
+  const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
+  const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
   const cred = JSON.parse(authFile)
-  const { project_id }= cred
-  const {
-    time_zone,
-    log_file,
-    sample_name,
-    read_group,
-    platform,
-    input_file_1,
-    input_file_2,
-    output_file
-  } = req.body
 
-  const cmd = `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
-  dsub  --project ${project_id} --min-cores 1 --min-ram 7.5 \
-  --preemptible --boot-disk-size 20 --disk-size 200  --zones ${time_zone} \
-  --logging ${log_file} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
-  --output UBAM=${output_file} --env SM=${sample_name}  \
-  --image broadinstitute/gatk:4.1.0.0 --env RG=${read_group} --env PL=${platform} \
-  --command '/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" ` +
-  "FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} --SAMPLE_NAME ${SM} -RG ${RG} -PL ${PL}'"
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
+    'time_zone',
+    'log_file',
+    'sample_name',
+    'read_group',
+    'platform',
+    'input_file_1',
+    'input_file_2',
+    'output_file'
+  ]), _.pick(cred, ['project_id']))
+
+  console.log(cmdParams)
+  const cmd = query.launchFastqtosam(cmdParams)
   console.log(cmd)
 
   const script = exec(cmd)
@@ -71,47 +64,81 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
 })
 
 router.get(API_ROUTES.JOBS, (req, res) => {
-  const authFile = fs.readFileSync(`${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE}`)
-  const cred = JSON.parse(authFile)
-  const { project_id }= cred
-  const dstatCmd = `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
-  dstat --provider google-v2 --project ${project_id} --status '*' \
-  --full | grep  "job-id\\|job-name\\|status:\\|creat\\|end-time\\|logging: g"`
-  const runScript = async () => {
-    try {
-      const result = await execPromise(dstatCmd)
-      let newJobs = []
-      const numOfCols = 6
-      result.replace(/\r\n/g, "\r").replace(/\n/g, "\r").split(/\r/).forEach((item, i) => {
-        const order = Math.floor(i / numOfCols)
-        const key = item.split(': ')[0].split('').slice(1).join('').trim()
-        let value = item.split(`${key}:`)[1].trim()
-        const colOrder = i % numOfCols
-        if (colOrder === 0) {
-          newJobs.push([])
-        }
-        if (colOrder === 0 || colOrder === 1) {
-          value = value.slice(1, value.length-1)
-        }
-        newJobs[order].push(value)
-      })
-      res.status(200).json({
-        "jobs": newJobs
-      })
-    } catch (err) {
-      console.error(err.message)
+  const { startdate, enddate } = req.query
+  console.log(`Fetching jobs in range: [${startdate ? startdate : '~'} and ${enddate ? enddata : '~'}]`)
+  let whereCondition = {}
+  if (startdate) {
+    whereCondition.created_at = { [Op.gte]: new Date(startdate) }
+  }
+  if (enddate) {
+    whereCondition.finished_at = { [Op.lte]: new Date(enddate) }
+  }
+  console.log(whereCondition)
+  Job
+    .findAll({ where: whereCondition })
+    .then(jobs => {
+      console.log("All jobs:", JSON.stringify(jobs, null))
+      res.status(200).json({ jobs })
+    })
+    .catch((err) => {
       res.status(500).json({
         "error": err
       })
-    }
-  }
-  runScript()
+    })
 })
-router.post(API_ROUTES.AUTH, (req, res) => {
-  console.log(req.body)
-  res.json({
-    "asdads": 1310398
-  })
+
+router.get(API_ROUTES.UPDATE_JOBS, (req, res) => {
+  updateJobs(req.session.client_id)
+})
+
+// Get status
+router.get(API_ROUTES.LOG_IN, (req, res) => {
+  if (logged_in_users[req.session.client_id]) {
+    res.status(200).json({ "success": true })
+  } else {
+    res.status(401).json({ "success": false })
+  }
+})
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, `${GOOGLE_CRED_PATH}`)
+  },
+  filename: function (req, file, cb) {
+    cb(null, uuid.v1() + '.json')
+  }
+})
+
+const upload = multer({ storage: storage })
+// Log in with auth file
+router.post(API_ROUTES.LOG_IN, upload.single(AUTH_FILE_FIELDNAME), (req, res, next) => {
+  // TODO:
+  const file = req.file
+  if (!file) {
+    res.status(400).json({ "error": 'Please upload a json file' })
+  }
+  console.log(file)
+  console.log(req.session)
+  if(!req.session.client_id) {
+    const client_id = file.filename.substring(0, file.filename.length-5)
+    req.session.client_id = client_id
+    logged_in_users[client_id] = client_id
+  }
+
+  res.status(200).json({ "success": true })
+
+})
+
+router.post(API_ROUTES.LOG_OUT, (req, res) => {
+  // TODO:
 })
 
 module.exports = router
+
+// fetch('http://another.com', {
+//   credentials: "include"
+// })
+
+// 200 OK
+// Access-Control-Allow-Origin: https://javascript.info
+// Access-Control-Allow-Credentials: true

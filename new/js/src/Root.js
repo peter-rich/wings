@@ -22,7 +22,10 @@ function Root() {
           path={PUBLIC_ROUTES.GATK}
           component={GATKContainer}/>
         <MainLayoutRoute
-          path={PUBLIC_ROUTES.JOBS}
+          path={PUBLIC_ROUTES.MONITOR}
+          component={MonitorPage}/>
+        <MainLayoutRoute
+          path={PUBLIC_ROUTES.MONITOR_SEARCH}
           component={MonitorPage}/>
         <Redirect from='*' to='/' />
       </Switch>
