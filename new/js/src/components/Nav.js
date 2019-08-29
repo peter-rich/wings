@@ -10,7 +10,7 @@ function Nav () {
           target='_blank'
           rel='noopener noreferrer'
           className="brand-logo">
-          <img src="images/logo.png" alt='stanford bioinformatics logo' />
+          <img src="/images/logo.png" alt='stanford bioinformatics logo' />
           Stanford Genetics
         </a>
         <ul id='nav-mobile' className="right hide-on-med-and-down">

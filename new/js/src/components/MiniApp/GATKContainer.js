@@ -5,8 +5,8 @@ import { API_ROUTES } from '../../constants'
 const title = 'GATK'
 const fields = [
   {
-    key: 'time_zone',
-    title: 'Select a time Zone',
+    key: 'region',
+    title: 'Select a region',
     required: true
   },
   {

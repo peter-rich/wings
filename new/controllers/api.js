@@ -21,13 +21,29 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
+router.post(API_ROUTES.GATK, (req, res) => {
+  const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
+  const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
+  const cred = JSON.parse(authFile)
+
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
+    'region',
+    'bucket_name',
+    'sample_name',
+    'input_file_1',
+    'input_file_2'
+  ]), _.pick(cred, ['project_id']))
+  const cmd = query.launchGATK(cmdParams)
+  res.status(200).send(cmd)
+})
+
 router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
   const cred = JSON.parse(authFile)
 
   const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
-    'time_zone',
+    'region',
     'log_file',
     'sample_name',
     'read_group',
@@ -77,7 +93,6 @@ router.get(API_ROUTES.JOBS, (req, res) => {
   Job
     .findAll({ where: whereCondition })
     .then(jobs => {
-      console.log("All jobs:", JSON.stringify(jobs, null))
       res.status(200).json({ jobs })
     })
     .catch((err) => {
