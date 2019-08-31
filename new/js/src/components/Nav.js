@@ -4,7 +4,7 @@ import { BRAND_URL } from '../constants'
 
 function Nav () {
   return (
-    <nav>
+    <nav style={{ marginBottom: '1.5rem' }}>
       <div className="nav-wrapper">
         <a href={BRAND_URL}
           target='_blank'

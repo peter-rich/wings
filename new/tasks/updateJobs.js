@@ -1,8 +1,8 @@
 const fs = require('fs')
 const { GOOGLE_CRED_PATH, GOOGLE_CRED_FILE } = require(`${__base}/config-server`)
 const Job = require(`${__base}/models/Job`)
-const query = require(`${__base}/serverUtils/query`)
-const { execPromise } = require(`${__base}/serverUtils/hoc`)
+const query = require(`${__base}/serverHelpers/query`)
+const { execPromise } = require(`${__base}/serverHelpers/hoc`)
 
 const runScript = async (client_id) => {
   try {

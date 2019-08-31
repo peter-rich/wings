@@ -1,5 +1,5 @@
 const fs = require('fs')
-
+const util = require(`${__base}/serverHelpers/util`)
 const getAllJobs = (GOOGLE_CRED_PATH, GOOGLE_CRED_FILE, project_id) => (
   `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
 dstat --provider google-v2 --project ${project_id} --status '*' \
@@ -10,7 +10,7 @@ const launchFastqtosam = ({
   GOOGLE_CRED_FILE_PATH,
   project_id,
   region,
-  log_file,
+  logging_dest,
   input_file_1,
   input_file_2,
   output_file,
@@ -20,7 +20,7 @@ const launchFastqtosam = ({
   `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
   dsub  --project ${project_id} --min-cores 1 --min-ram 7.5 \
   --preemptible --boot-disk-size 20 --disk-size 200  --regions ${region} \
-  --logging ${log_file} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
+  --logging ${logging_dest} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
   --output UBAM=${output_file} --env SM=${sample_name}  \
   --image broadinstitute/gatk:4.1.0.0 --env RG=${read_group} --env PL=${platform} \
   --command '/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" ` +
@@ -81,8 +81,61 @@ const launchGATK = ({
   `
 }
 
+
+
+const launchCNVnator= ({
+  region,
+  GOOGLE_CRED_FILE_PATH,
+  sample_id,
+  bin_size,
+  project_id,
+  input_bams_dir,
+  bucket_path
+}) => {
+  input_bams_dir = util.trimTrailingChar(input_bams_dir, '/')
+  bucket_path = util.trimTrailingChar(bucket_path, '/')
+  const IMAGE = 'vandhanak/cnvnator:0.3.3'
+  const JOB_NAME = `cnvnator-sample-${bin_size}bin`
+  const INPUT_BAMS_FOLDER = `${input_bams_dir}/*.bam`
+  const REF_CHROMOSOMES_FILEPATH = `${bucket_path}/CNVnator-chromosomes`
+  const LOGGING_DIR = `${bucket_path}/CNVnator-logs`
+  const OUT_DIR = `${bucket_path}/CNVnator-output/`
+  const script = `
+    export OMP_NUM_THREADS=2 && \
+    mkdir "${sample_id}_${bin_size}bin" && \
+    mkdir "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files" && \
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -tree ${INPUT_BAMS_FOLDER} -unique && \
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -his ${bin_size} -d "${REF_CHROMOSOMES_FILEPATH}" > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.his" && \
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -stat ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.stats" && \
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -eval ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.eval" && \
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -partition ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.partition" &&\
+    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root"  -chrom 1 2 3 4 -call ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.out" && \
+    perl /opt/build/CNVnator_v0.3.3/cnvnator2VCF.pl "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.out" > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.vcf" && \
+    cp -r "${sample_id}_${bin_size}bin" "${OUT_DIR}"
+  `
+  const cmd = `
+    export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
+    dsub \
+      --project "${project_id}" \
+      --regions "${region}" \
+      --logging "${LOGGING_DIR}" \
+      --disk-size 500 \
+      --name "${JOB_NAME}" \
+      --env sample_id="${sample_id}" \
+      --input INPUT_BAMS_FOLDER="${INPUT_BAMS_FOLDER}" \
+      --input-recursive REF_CHROMOSOMES_FILEPATH="${REF_CHROMOSOMES_FILEPATH}" \
+      --output-recursive OUT_DIR="${OUT_DIR}" \
+      --image ${IMAGE} \
+      --command '${script}' \
+      --min-ram 40 \
+      --min-cores 2 \
+  `
+  // const cmd = `sh ${__base}/scripts/CNVnator_SingleSample.sh 1 2 3 4`
+  return cmd
+}
 module.exports = {
   getAllJobs,
   launchFastqtosam,
-  launchGATK
+  launchGATK,
+  launchCNVnator
 }

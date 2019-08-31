@@ -6,7 +6,7 @@ const Op = require('sequelize').Op
 const multer = require('multer')
 const uuid = require('uuid')
 const Job = require(`${__base}/models/Job`)
-const query = require(`${__base}/serverUtils/query`)
+const query = require(`${__base}/serverHelpers/query`)
 const updateJobs = require(`${__base}/tasks/updateJobs`)
 const _ = require('lodash')
 const { API_ROUTES, AUTH_FILE_FIELDNAME } = require(`${__base}/config`)
@@ -21,6 +21,49 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
+router.post(API_ROUTES.CNVNATOR, (req, res) => {
+  const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
+  const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
+  const cred = JSON.parse(authFile)
+
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH, bin_size: 100 }, _.pick(req.body, [
+    'region',
+    'sample_id',
+    'bucket_path',
+    'input_bams_dir',
+  ]), _.pick(cred, ['project_id']))
+  console.log(cmdParams)
+  const cmd = query.launchCNVnator(cmdParams)
+  console.log(cmd)
+
+  const script = exec(cmd)
+  const timestamp = new Date().getTime()
+  script.stdout.on('data', (chunk)=>{
+    console.log('stdout: ', chunk)
+    fs.appendFileSync(`${__base}/logs/CNVnator-stdout-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.log(err)
+      }
+      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
+    })
+  })
+  script.stderr.on('data', (chunk)=>{
+    console.error(chunk)
+    fs.appendFileSync(`${__base}/logs/CNVnator-stderr-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.error(err)
+      }
+      console.error(`❌error appeared when executing "${cmd}!"`)
+    })
+  })
+  script.on('close', code => {
+    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
+    if (code == 0) {
+      res.status(200).json({ success: true })
+    }
+  })
+})
+
 router.post(API_ROUTES.GATK, (req, res) => {
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
@@ -33,8 +76,35 @@ router.post(API_ROUTES.GATK, (req, res) => {
     'input_file_1',
     'input_file_2'
   ]), _.pick(cred, ['project_id']))
+  console.log(cmdParams)
   const cmd = query.launchGATK(cmdParams)
-  res.status(200).send(cmd)
+  console.log(cmd)
+  const script = exec(cmd)
+  const timestamp = new Date().getTime()
+  script.stdout.on('data', (chunk)=>{
+    console.log('stdout: ', chunk)
+    fs.appendFileSync(`${__base}/logs/GATK-stdout-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.log(err)
+      }
+      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
+    })
+  })
+  script.stderr.on('data', (chunk)=>{
+    console.error(chunk)
+    fs.appendFileSync(`${__base}/logs/GATK-stderr-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.error(err)
+      }
+      console.error(`❌error appeared when executing "${cmd}!"`)
+    })
+  })
+  script.on('close', code => {
+    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
+    if (code == 0) {
+      res.status(200).json({ success: true })
+    }
+  })
 })
 
 router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
@@ -44,7 +114,7 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
 
   const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
     'region',
-    'log_file',
+    'logging_dest',
     'sample_name',
     'read_group',
     'platform',
@@ -53,14 +123,14 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
     'output_file'
   ]), _.pick(cred, ['project_id']))
 
-  console.log(cmdParams)
+  console.log(`cmdParams, `, cmdParams)
   const cmd = query.launchFastqtosam(cmdParams)
-  console.log(cmd)
+  console.log(`cmd, `, cmd)
 
   const script = exec(cmd)
   const timestamp = new Date().getTime()
   script.stdout.on('data', (chunk)=>{
-    console.log(chunk)
+    console.log('stdout: ', chunk)
     fs.appendFileSync(`${__base}/logs/fastqtosam-stdout-${timestamp}.txt`, chunk, function(err) {
       if(err) {
         return console.log(err)
@@ -77,11 +147,14 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
       console.error(`❌error appeared when executing "${cmd}!"`)
     })
   })
+  script.on('close', code => {
+    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
+  })
 })
 
 router.get(API_ROUTES.JOBS, (req, res) => {
   const { startdate, enddate } = req.query
-  console.log(`Fetching jobs in range: [${startdate ? startdate : '~'} and ${enddate ? enddata : '~'}]`)
+  console.log(`Fetching jobs in range: [${startdate ? startdate : '~'} and ${enddate ? enddate : '~'}]`)
   let whereCondition = {}
   if (startdate) {
     whereCondition.created_at = { [Op.gte]: new Date(startdate) }
@@ -89,7 +162,6 @@ router.get(API_ROUTES.JOBS, (req, res) => {
   if (enddate) {
     whereCondition.finished_at = { [Op.lte]: new Date(enddate) }
   }
-  console.log(whereCondition)
   Job
     .findAll({ where: whereCondition })
     .then(jobs => {
@@ -115,7 +187,7 @@ router.get(API_ROUTES.LOG_IN, (req, res) => {
   }
 })
 
-const storage = multer.diskStorage({
+const authFileStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, `${GOOGLE_CRED_PATH}`)
   },
@@ -123,10 +195,9 @@ const storage = multer.diskStorage({
     cb(null, uuid.v1() + '.json')
   }
 })
-
-const upload = multer({ storage: storage })
+const authFileUpload = multer({ storage: authFileStorage })
 // Log in with auth file
-router.post(API_ROUTES.LOG_IN, upload.single(AUTH_FILE_FIELDNAME), (req, res, next) => {
+router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req, res, next) => {
   // TODO:
   const file = req.file
   if (!file) {

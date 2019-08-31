@@ -4,10 +4,10 @@ export const PORT = 8081;
 export const AUTH_FILE_FIELDNAME = 'authFile';
 
 export const PUBLIC_ROUTES = {
-  FASTQ_TO_SAM: '/jobs/fastqtosam',
-  FASTQ_TO_SAM_50G: '/jobs/fastqtosam50g',
-  GATK: '/jobs/gatk',
-  CNVNATOR: '/jobs/cnvnator',
+  FASTQ_TO_SAM: '/job/fastqtosam',
+  FASTQ_TO_SAM_50G: '/job/fastqtosam50g',
+  GATK: '/job/gatk',
+  CNVNATOR: '/job/cnvnator',
   MONITOR: '/monitor'
 };
 

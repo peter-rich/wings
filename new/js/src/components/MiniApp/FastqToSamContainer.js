@@ -2,16 +2,16 @@ import React, { Component } from 'react'
 import Form from './Form'
 import { API_ROUTES } from '../../constants'
 
-const title = 'Fastq To Sam'
+const title = 'FastqToSam'
 const fields = [
   {
     key: 'region',
-    title: 'Select a region',
+    title: 'Region',
     required: true
   },
   {
-    key: 'log_file',
-    title: 'Log File. For example, "gs://genomics-public-data/logs"',
+    key: 'logging_dest',
+    title: 'Logging destination. For example, "gs://genomics-public-data/logs"',
     required: true
   },
   {

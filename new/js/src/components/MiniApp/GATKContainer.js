@@ -6,7 +6,7 @@ const title = 'GATK'
 const fields = [
   {
     key: 'region',
-    title: 'Select a region',
+    title: 'Region',
     required: true
   },
   {
@@ -31,7 +31,7 @@ const fields = [
   }
 ]
 
-class FastqToSamContainer extends Component {
+class GATKContainer extends Component {
   render() {
     return (
       <Form title={title}
@@ -42,4 +42,4 @@ class FastqToSamContainer extends Component {
   }
 }
 
-export default FastqToSamContainer
+export default GATKContainer

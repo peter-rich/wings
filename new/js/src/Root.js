@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom";
 import MainLayoutRoute from './layouts/MainLayoutRoute'
 import FastqToSamContainer from './components/MiniApp/FastqToSamContainer'
 import GATKContainer from './components/MiniApp/GATKContainer'
+import CNVnatorContainer from './components/MiniApp/CNVnatorContainer'
 import MonitorPage from './pages/MonitorPage'
 import Home from './Home'
 import { PUBLIC_ROUTES } from './constants'
@@ -21,6 +22,9 @@ function Root() {
         <MainLayoutRoute
           path={PUBLIC_ROUTES.GATK}
           component={GATKContainer}/>
+        <MainLayoutRoute
+          path={PUBLIC_ROUTES.CNVNATOR}
+          component={CNVnatorContainer}/>
         <MainLayoutRoute
           path={PUBLIC_ROUTES.MONITOR}
           component={MonitorPage}/>

@@ -10,6 +10,7 @@ gatk--lektin-stanford-edu--190821-000637-0
 
 gcloud beta compute ssh --project gbsc-gcp-project-annohive-dev --zone us-central1-a wings-transition-lek
 
+gcloud compute scp authentication-server:/var/www/cgi-bin/backend_get.py ~/_CODE_/wings-SCGPM
 
 
 

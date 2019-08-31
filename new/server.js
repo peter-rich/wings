@@ -1,7 +1,7 @@
 global.__base = __dirname
 // Modules
 const config = require(`${__base}/config`)
-const colorizedMorgan = require('./serverUtils/colorizedMorgan')
+const colorizedMorgan = require('./serverHelpers/colorizedMorgan')
 const path = require('path')
 const express = require('express')
 const session = require('express-session')
@@ -21,7 +21,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1000 * 60 * 10,
+    maxAge: 1000 * 60 * 60,
     sameSite: true,
     secure: false,
   }

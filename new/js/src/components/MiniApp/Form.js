@@ -7,45 +7,16 @@ import MC from "materialize-css";
 class Form extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      formData: {
-        region: {
-          required: true,
-          value: null
-        },
-        log_file: {
-          required: true,
-          value: null
-        },
-        sample_name: {
-          required: true,
-          value: null
-        },
-        read_group: {
-          required: true,
-          value: null
-        },
-        platform: {
-          required: true,
-          value: null
-        },
-        input_file_1: {
-          required: true,
-          value: null
-        },
-        input_file_2: {
-          required: true,
-          value: null
-        },
-        output_file: {
-          required: true,
-          value: null
-        },
-        bucket_name: {
-          required: true,
-          value: null
-        },
+    let initialFormData = {}
+    props.fields.forEach(field => {
+      const { key, value, required } = field
+      initialFormData[key] = {
+        value,
+        required
       }
+    })
+    this.state = {
+      formData: initialFormData
     }
     this._onChange = this._onChange.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
@@ -94,12 +65,11 @@ class Form extends Component {
               return (
                 <div key={`form-field-${i}`} className="row">
                   <div className="input-field col s12">
-                    <label htmlFor={field.key}>{field.title}</label>
                     <select name={field.key}
                       className="browser-defa______ult"
                       defaultValue='__placeholder'
                       onChange={this._onChange}>
-                      <option value="__placeholder" disabled>⬇️--- Please select a region ---️️️ ⬇️</option>
+                      <option value="__placeholder" disabled>{field.title}</option>
                       {/* <option value='asia-east1'>asia-east1 (Taiwan)</option>
                       <option value='asia-east2'>asia-east2 (Hong Kong)</option>
                       <option value='asia-northeast1'>asia-northeast1 (Tokyo)</option>
@@ -128,8 +98,9 @@ class Form extends Component {
               return (
                 <div key={`form-field-${i}`} className="row">
                   <div className="input-field col s12">
-                    <label htmlFor={field.key}>{field.title}</label>
-                    <input name={field.key}
+                    <label htmlFor={`form-field-${field.key}`}>{field.title}</label>
+                    <input id={`form-field-${field.key}`}
+                      name={field.key}
                       type="text"
                       className="validate"
                       onChange={this._onChange} />

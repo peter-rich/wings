@@ -121,6 +121,7 @@ class MonitorPage extends Component {
               className="btn-floating waves-effect waves-light">
               <i className="material-icons left">update</i>
             </button>
+            <span>Fetch latest</span>
           </div>
         </div>
         <Table loading={!dataFetched} records={jobs} />

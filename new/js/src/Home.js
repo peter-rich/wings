@@ -13,14 +13,9 @@ const miniApps = [
     description: 'FastqToSam: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'FastqToSam(50G)',
-    link: PUBLIC_ROUTES.FASTQ_TO_SAM_50G,
-    description: 'FastqToSam (50G): xxxx xxxx xxxx xxxx xxxx'
-  },
-  {
     title: 'GATK',
     link: PUBLIC_ROUTES.GATK,
-    description: 'AnnotationHive: A Cloud-based Annotation Engine'
+    description: 'GATK: xxxx xxxx xxxx xxxx xxxx xxxx'
   },
   {
     title: 'CNVnator',
