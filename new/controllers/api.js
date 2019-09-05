@@ -6,6 +6,7 @@ const Op = require('sequelize').Op
 const multer = require('multer')
 const uuid = require('uuid')
 const Job = require(`${__base}/models/Job`)
+const Annotation = require(`${__base}/models/Annotation`)
 const query = require(`${__base}/serverHelpers/query`)
 const updateJobs = require(`${__base}/tasks/updateJobs`)
 const _ = require('lodash')
@@ -21,6 +22,10 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
+router.get(API_ROUTES.CNVNATOR, (req, res) => {
+  
+})
+
 router.post(API_ROUTES.CNVNATOR, (req, res) => {
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
@@ -203,8 +208,6 @@ router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req,
   if (!file) {
     res.status(400).json({ "error": 'Please upload a json file' })
   }
-  console.log(file)
-  console.log(req.session)
   if(!req.session.client_id) {
     const client_id = file.filename.substring(0, file.filename.length-5)
     req.session.client_id = client_id
@@ -212,7 +215,6 @@ router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req,
   }
 
   res.status(200).json({ "success": true })
-
 })
 
 router.post(API_ROUTES.LOG_OUT, (req, res) => {

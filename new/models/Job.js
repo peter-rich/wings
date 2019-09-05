@@ -41,23 +41,23 @@ Job.init({
 })
 
 async function createTable() {
+  const timestamp = Date.now()
+  const singleJob = {
+    job_id: timestamp,
+    name: timestamp,
+    status: timestamp,
+    created_at: timestamp,
+    finished_at: timestamp,
+    gs_link: timestamp
+  }
   try {
     await Job.sync({ force: false }).then(() => {
       // Now the `jobs` table in the database corresponds to the model definition
-      return Job.create({
-        job_id: "test_________________",
-        name: "test_________________",
-        status: 'test_________________',
-        created_at: 'test_________________',
-        finished_at: 'test_________________',
-        gs_link: 'test_________________'
-      })
+      return Job.create(singleJob)
     })
 
     Job.destroy({
-      where: {
-        job_id: "test_________________"
-      }
+      where: singleJob
     })
   } catch(err) {
     console.error(err)
@@ -65,4 +65,5 @@ async function createTable() {
 }
 
 createTable()
+
 module.exports = Job

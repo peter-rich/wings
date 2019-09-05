@@ -41,7 +41,7 @@ const fields = [
   },
   {
     key: 'output_file',
-    title: 'Output File',
+    title: 'Output File (with ".bam" extension)',
     required: true
   },
 ]

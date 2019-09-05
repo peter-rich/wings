@@ -4,37 +4,18 @@ const config = require(`${__base}/config`)
 const colorizedMorgan = require('./serverHelpers/colorizedMorgan')
 const path = require('path')
 const express = require('express')
-const session = require('express-session')
 const app = express()
 const cookieParser = require('cookie-parser')
 const errorhandler = require('errorhandler')
 const bodyParser = require('body-parser')
-const db = require(`${__base}/database/database.js`)
 const api = require(`${__base}/controllers/api`)
-// const scheduler = require(`${__base}/scheduler`)
-// Init scheduler
-// scheduler.start()
-app.use(cookieParser())
-console.log(new Date())
-app.use(session({
-  'secret': '343ji43j4n3jn4jk3n',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60,
-    sameSite: true,
-    secure: false,
-  }
-}))
+const _init = require(`${__base}/_init`)
 
-db.authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.')
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err)
-  })
+// Initialization
+_init(app)
+
 // Parse request body
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 // Enable logging

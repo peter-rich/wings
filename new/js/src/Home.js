@@ -21,6 +21,11 @@ const miniApps = [
     title: 'CNVnator',
     link: PUBLIC_ROUTES.CNVNATOR,
     description: 'CNVnator: xxxx xxxx xxxx xxxx xxxx'
+  },
+  {
+    title: 'AnnotationHive',
+    link: PUBLIC_ROUTES.ANNOTATION_HIVE,
+    description: 'AnnotationHive: xxxx xxxx xxxx xxxx xxxx'
   }
 ]
 class App extends Component {

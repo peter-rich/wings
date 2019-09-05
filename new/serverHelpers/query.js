@@ -81,8 +81,6 @@ const launchGATK = ({
   `
 }
 
-
-
 const launchCNVnator= ({
   region,
   GOOGLE_CRED_FILE_PATH,
@@ -96,22 +94,26 @@ const launchCNVnator= ({
   bucket_path = util.trimTrailingChar(bucket_path, '/')
   const IMAGE = 'vandhanak/cnvnator:0.3.3'
   const JOB_NAME = `cnvnator-sample-${bin_size}bin`
-  const INPUT_BAMS_FOLDER = `${input_bams_dir}/*.bam`
-  const REF_CHROMOSOMES_FILEPATH = `${bucket_path}/CNVnator-chromosomes`
+  // path to a single .bam file
+  const INPUT_BAMS= `${input_bams_dir}`
+  const REF_CHROMOSOMES_PATH = `${bucket_path}/CNVnator-chromosomes`
   const LOGGING_DIR = `${bucket_path}/CNVnator-logs`
-  const OUT_DIR = `${bucket_path}/CNVnator-output/`
+  const OUTPUT_DIR = `${bucket_path}/CNVnator-output/*`
+  const SAMPLE_BASE_DIR = `${sample_id}_100bin`
+  const INTERMEDIATE_FILES_DIR = `${SAMPLE_BASE_DIR}/${SAMPLE_BASE_DIR}_intermediate_files`
   const script = `
     export OMP_NUM_THREADS=2 && \
-    mkdir "${sample_id}_${bin_size}bin" && \
-    mkdir "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files" && \
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -tree ${INPUT_BAMS_FOLDER} -unique && \
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -his ${bin_size} -d "${REF_CHROMOSOMES_FILEPATH}" > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.his" && \
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -stat ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.stats" && \
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -eval ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.eval" && \
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root" -chrom 1 2 3 4 -partition ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.partition" &&\
-    cnvnator -root "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_intermediate_files/my.root"  -chrom 1 2 3 4 -call ${bin_size}  > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.out" && \
-    perl /opt/build/CNVnator_v0.3.3/cnvnator2VCF.pl "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.out" > "${sample_id}_${bin_size}bin/${sample_id}_${bin_size}bin_CNVs.vcf" && \
-    cp -r "${sample_id}_${bin_size}bin" "${OUT_DIR}"
+    mkdir "${SAMPLE_BASE_DIR}" && \
+    mkdir "${INTERMEDIATE_FILES_DIR}" && \
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -tree \${INPUT_BAMS_FOLDER} -unique && \
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -his ${bin_size} -d "\${REF_CHROMOSOMES_FILEPATH}" > "${INTERMEDIATE_FILES_DIR}/my.his" && \
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -stat ${bin_size}  > "${INTERMEDIATE_FILES_DIR}/my.stats" && \
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -eval ${bin_size}  > "${INTERMEDIATE_FILES_DIR}/my.eval" && \
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -partition ${bin_size}  > "${INTERMEDIATE_FILES_DIR}/my.partition" &&\
+    cnvnator -root "${INTERMEDIATE_FILES_DIR}/my.root" -chrom 16 -call ${bin_size}  > "${SAMPLE_BASE_DIR}/${SAMPLE_BASE_DIR}_CNVs.out" && \
+    wait && \
+    perl /opt/build/CNVnator_v0.3.3/cnvnator2VCF.pl "${SAMPLE_BASE_DIR}/${SAMPLE_BASE_DIR}_CNVs.out" > "${SAMPLE_BASE_DIR}/${SAMPLE_BASE_DIR}_CNVs.vcf" && \
+    cp -r "${SAMPLE_BASE_DIR}" "\${OUT_DIR}"
   `
   const cmd = `
     export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
@@ -122,15 +124,14 @@ const launchCNVnator= ({
       --disk-size 500 \
       --name "${JOB_NAME}" \
       --env sample_id="${sample_id}" \
-      --input INPUT_BAMS_FOLDER="${INPUT_BAMS_FOLDER}" \
-      --input-recursive REF_CHROMOSOMES_FILEPATH="${REF_CHROMOSOMES_FILEPATH}" \
-      --output-recursive OUT_DIR="${OUT_DIR}" \
+      --input INPUT_BAMS_FOLDER="${INPUT_BAMS}" \
+      --input-recursive REF_CHROMOSOMES_FILEPATH="${REF_CHROMOSOMES_PATH}" \
+      --output-recursive OUT_DIR="$(dirname "${OUTPUT_DIR}")" \
       --image ${IMAGE} \
       --command '${script}' \
       --min-ram 40 \
       --min-cores 2 \
   `
-  // const cmd = `sh ${__base}/scripts/CNVnator_SingleSample.sh 1 2 3 4`
   return cmd
 }
 module.exports = {

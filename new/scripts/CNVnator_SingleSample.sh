@@ -1,8 +1,4 @@
 #!/bin/sh
-SAMPLE_ID=$1
-INPUT_BAMS_FOLDER=$2
-REF_CHROMOSOMES_FILEPATH=$3
-OUT_DIR=$4
 #If the file name for the bam files follow this pattern - gs://gbsc-gcp-project-abz_disease/Variants/alignment_bams/Sample1_A04/Sample1-DNA_A04.recalibrated.bam, follow the code below else modify accordingly
 export OMP_NUM_THREADS=2
 mkdir "${SAMPLE_ID}_100bin"
