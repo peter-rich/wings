@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import fieldShape from './fieldShape'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
-import MC from "materialize-css";
+import MC from "materialize-css"
 class Form extends Component {
   constructor(props) {
     super(props)

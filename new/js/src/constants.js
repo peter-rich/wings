@@ -2,6 +2,7 @@ export const BRAND_URL = 'http://med.stanford.edu/scgpm.html';
 export const BASE_API_URL = '/api';
 export const PORT = 8081;
 export const AUTH_FILE_FIELDNAME = 'authFile';
+export const SOURCE_TYPES = ['variant', 'generic'];
 
 export const PUBLIC_ROUTES = {
   FASTQ_TO_SAM: '/job/fastqtosam',
@@ -16,7 +17,7 @@ export const API_ROUTES = {
   FASTQ_TO_SAM: "/fastqtosam",
   GATK: "/gatk",
   CNVNATOR: '/cnvnator',
-  ANNOTATION_HIVE: '/annotation_hive',
+  ANNOTATION_LIST: '/annotation_list',
   JOBS: "/jobs",
   UPDATE_JOBS: "/update_jobs",
   LOG_IN: "/log_in",

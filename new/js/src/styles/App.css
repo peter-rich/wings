@@ -9,3 +9,9 @@ nav .brand-logo>img {
 nav {
   background-color: #b1040e;
 }
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}

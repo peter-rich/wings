@@ -10,7 +10,7 @@ const Annotation = require(`${__base}/models/Annotation`)
 const query = require(`${__base}/serverHelpers/query`)
 const updateJobs = require(`${__base}/tasks/updateJobs`)
 const _ = require('lodash')
-const { API_ROUTES, AUTH_FILE_FIELDNAME } = require(`${__base}/config`)
+const { API_ROUTES, AUTH_FILE_FIELDNAME, SOURCE_TYPES } = require(`${__base}/config`)
 const { GOOGLE_CRED_PATH } = require(`${__base}/config-server`)
 
 router.use(function(req, res, next) {
@@ -22,8 +22,42 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
-router.get(API_ROUTES.CNVNATOR, (req, res) => {
-  
+router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
+  if (!req.params.type) {
+    res.status(422).json({ error: 'type is missing'})
+  } else if (!SOURCE_TYPES.includes(req.params.type)) {
+    res.status(422).json({ error: 'wrong or missing type'})
+  } else {
+    const { type } = req.params
+    const {BigQuery} = require('@google-cloud/bigquery')
+    const bigquery = new BigQuery()
+
+    const projectId = 'gbsc-gcp-project-annohive-dev'
+    const datasetId = 'AnnotationHive'
+    const tableId = 'AnnotationList'
+
+    async function queryParamsNamed() {
+      // The SQL query to run
+      const sqlQuery = `
+        SELECT *
+        FROM \`${projectId}.${datasetId}.${tableId}\`
+        WHERE type="${type}"
+      `
+
+      const options = {
+        query: sqlQuery,
+        // Location must match that of the dataset(s) referenced in the query.
+        location: 'US',
+      }
+
+      // Run the query
+      const [rows] = await bigquery.query(options)
+      rows.forEach(row => console.log(row))
+      res.status(200).json(rows)
+    }
+    // [END bigquery_query_params_named]
+    queryParamsNamed()
+  }
 })
 
 router.post(API_ROUTES.CNVNATOR, (req, res) => {

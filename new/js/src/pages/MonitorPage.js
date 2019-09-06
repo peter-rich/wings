@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Table from '../components/Table'
-import { BASE_API_URL } from '../constants'
+import { BASE_API_URL, API_ROUTES } from '../constants'
 
 const UPDATE_STARTDATE = 'UPDATE_STARTDATE'
 const UPDATE_ENDDATE = 'UPDATE_ENDDATE'
@@ -21,12 +21,8 @@ class MonitorPage extends Component {
   }
 
   _updateJobs = () => {
-    fetch(`${BASE_API_URL}/update_jobs`, {
-      method: 'GET',
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json; charset=UTF-8"
-      },
+    fetch(`${BASE_API_URL}${API_ROUTES.UPDATE_JOBS}`, {
+      method: 'GET'
     })
     .then(response => response.json())
     .then(json => {
