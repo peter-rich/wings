@@ -1,11 +1,11 @@
 const session = require('express-session')
 const uuid = require('uuid')
 const db = require(`${__base}/database/database.js`)
-const importAnnotations = require(`${__base}/tasks/importAnnotations.js`)
+// const importAnnotations = require(`${__base}/tasks/importAnnotations.js`)
 
 const _init = (app) => {
   // Init tasks
-  importAnnotations()
+  // importAnnotations()
 
   // const scheduler = require(`${__base}/scheduler`)
   // Init scheduler

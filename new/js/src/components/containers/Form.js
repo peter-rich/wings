@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import Popup from '../Popup'
 import fieldShape from './fieldShape'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
 import MC from "materialize-css"
+
 class Form extends Component {
   constructor(props) {
     super(props)
@@ -16,7 +18,8 @@ class Form extends Component {
       }
     })
     this.state = {
-      formData: initialFormData
+      formData: initialFormData,
+      isSubmitting: false
     }
     this._onChange = this._onChange.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
@@ -24,19 +27,22 @@ class Form extends Component {
 
   _onChange = (e) => {
     let newState = _.cloneDeep(this.state)
-    newState.formData[e.target.name].value = e.target.value
-    console.log(newState.formData)
+    if (e.target.type === 'checkbox') {
+      newState.formData[e.target.name].value = !!e.target.checked
+    } else {
+      newState.formData[e.target.name].value = e.target.value
+    }
     this.setState(newState)
   }
 
   _onSubmit = (e) => {
     e.preventDefault()
-    console.table(this.state.formData)
     const formData = {}
     Object.keys(this.state.formData).forEach(key => {
       formData[key] = this.state.formData[key].value
     })
     const { API_ROUTE } = this.props
+    this.setState(Object.assign({}, this.state, { isSubmitting: true }))
     fetch(`${BASE_API_URL}${API_ROUTE}`, {
       method: 'POST',
       headers: {
@@ -46,7 +52,14 @@ class Form extends Component {
       body: JSON.stringify(formData)
     })
     .then(response => response.json())
-    .then(json => console.log(json))
+    .then(json => {
+      console.log(json)
+      if (json.success === true) {
+        setTimeout(() => {
+          this.setState(Object.assign({}, this.state, { isSubmitting: false }))
+        }, 3000)
+      }
+    })
   }
 
   componentDidMount() {
@@ -54,16 +67,17 @@ class Form extends Component {
   }
 
   render() {
+    const { isSubmitting } = this.state
     const { title, fields } = this.props
     return (
       <div className="row">
         <form onSubmit={this._onSubmit}
-          className="col s12 m10 push-m1 l8 push-l2">
+          className='col s12 m10 push-m1'>
           <h3 className="header">{title}</h3>
           { fields.map((field,i) =>{
             if (field.key === 'region') {
               return (
-                <div key={`form-field-${i}`} className="row">
+                <div key={i} className="row">
                   <div className="input-field col s12">
                     <select name={field.key}
                       className="browser-defa______ult"
@@ -94,15 +108,27 @@ class Form extends Component {
                   </div>
                 </div>
               )
+            } else if (field.type === 'checkbox') {
+              return (
+                <div key={i} className='switch'>
+                  <label>
+                    <input type='checkbox'
+                      name={field.key}
+                      className='filled-in'
+                      onChange={this._onChange} />
+                    <span>{field.title}</span>
+                  </label>
+                </div>
+              )
             } else {
               return (
-                <div key={`form-field-${i}`} className="row">
-                  <div className="input-field col s12">
+                <div key={i} className='row'>
+                  <div className='input-field col s12'>
                     <label htmlFor={`form-field-${field.key}`}>{field.title}</label>
                     <input id={`form-field-${field.key}`}
                       name={field.key}
-                      type="text"
-                      className="validate"
+                      type='text'
+                      className='validate'
                       onChange={this._onChange} />
                   </div>
                 </div>
@@ -114,8 +140,9 @@ class Form extends Component {
             <div className="input-field col s12">
               <button type="submit" name="action"
                 className="btn waves-effect waves-light"
-                onClick={this._onSubmit}>Submit Job
-                <i className="material-icons right">send</i>
+                onClick={this._onSubmit}>
+                { isSubmitting ? 'Submitting ...' : 'Submit Job' }
+                { isSubmitting ? <i className="material-icons right">arrow_upward</i> : <i className="material-icons right">send</i> }
               </button>
             </div>
           </div>
@@ -128,7 +155,7 @@ class Form extends Component {
 Form.propTypes = {
   title: PropTypes.string.isRequired,
   API_ROUTE: PropTypes.string.isRequired,
-  fields: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.shape(fieldShape))),
+  fields: PropTypes.arrayOf(PropTypes.shape(fieldShape)),
 }
 
 export default Form

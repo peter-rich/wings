@@ -47,6 +47,12 @@ const styles = {
     paddingBottom: '1px',
     borderBottom: '2px solid #26a69a',
     marginLeft: '2rem'
+  },
+  selectedEmpty: {
+    color: '#111',
+    paddingBottom: '1px',
+    borderBottom: '2px solid #111',
+    marginLeft: '2rem'
   }
 }
 class SourceList extends Component {
@@ -73,10 +79,10 @@ class SourceList extends Component {
     .then(json => {
       json = json.map(item => {
         let newItem = Object.assign({}, item)
-        const timestamp = Date.now()
-        newItem.source_name = newItem.source_name !== null ? newItem.source_name : `___null__${timestamp}`
-        newItem.source_link = newItem.source_link !== null ? newItem.source_link : `___null__${timestamp}`
-        newItem.bigquery_table = newItem.bigquery_table !== null ? newItem.bigquery_table : `___null__${timestamp}`
+        const item_key = Symbol(null)
+        newItem.source_name = newItem.source_name !== null ? newItem.source_name : item_key
+        newItem.source_link = newItem.source_link !== null ? newItem.source_link : item_key
+        newItem.bigquery_table = newItem.bigquery_table !== null ? newItem.bigquery_table : item_key
         let fields = []
         if (newItem.fields !== null) {
           fields = newItem.fields.split(',').map(field => {
@@ -146,28 +152,28 @@ class SourceList extends Component {
     const { sources, selected, fetched } = this.state
     const { type } = this.props
     return (
-      <>
-        <h3 className='header'>{type.toUpperCase()}</h3>
-        { fetched ?
-          <ul className="collapsible">
-            { sources.map((source, i) => (
-              <li key={i}>
-                <div style={{ backgroundColor: selected === i ? '#eee' : '#fff' }}
-                  className="collapsible-header"
-                  onClick={() => { this._selectTab(i) } }>
-                  <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
-                  {source.source_name ? source.source_name : 'Null'}
-                  <span style={ styles.selectedCount }
-                    className='right'>
-                    {`${source.selected_fields.length} fields selected`}
-                  </span>
-                </div>
-                <div className="collapsible-body clearfix"
-                  style={styles.contentBody}>
-                  <>
-                    { source.fields
-                      .map( (field, j) => {
-                        console.log(field)
+      <div className="row">
+        <div className='col s12 m10 push-m1'>
+          <h4 className='header'>{type.toUpperCase()}</h4>
+          { fetched ?
+            <ul className="collapsible">
+              { sources.map((source, i) => (
+                <li key={i}>
+                  <div style={{ backgroundColor: selected === i ? '#eee' : '#fff' }}
+                    className="collapsible-header"
+                    onClick={() => { this._selectTab(i) } }>
+                    <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
+                    { typeof source.source_name === 'symbol' ? '___Null___': source.source_name }
+                    <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
+                      className='right'>
+                      {`${source.selected_fields.length} fields selected: ${source.selected_fields.join(', ')}`}
+                    </span>
+                  </div>
+                  <div className="collapsible-body clearfix"
+                    style={styles.contentBody}>
+                    <>
+                      { source.fields
+                        .map( (field, j) => {
                           return (
                             field.selected ?
                             <span key={j} style={styles.badge_selected}>
@@ -183,21 +189,21 @@ class SourceList extends Component {
                               onClick={() => { this._selectField(source.source_name, field) } }>
                               {field.value}
                             </span>
-                          )
-                        }
-                      )
-                    }
-                  </>
-                </div>
-              </li>
-            ))}
-          </ul>
-          :
-          <div className="progress">
-            <div className="indeterminate"></div>
-          </div>
-        }
-      </>
+                          )}
+                        )
+                      }
+                    </>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            :
+            <div className="progress">
+              <div className="indeterminate"></div>
+            </div>
+          }
+        </div>
+      </div>
     )
   }
 }

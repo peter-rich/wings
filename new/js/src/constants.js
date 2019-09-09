@@ -17,6 +17,7 @@ export const API_ROUTES = {
   FASTQ_TO_SAM: "/fastqtosam",
   GATK: "/gatk",
   CNVNATOR: '/cnvnator',
+  ANNOTATE: '/annotate',
   ANNOTATION_LIST: '/annotation_list',
   JOBS: "/jobs",
   UPDATE_JOBS: "/update_jobs",

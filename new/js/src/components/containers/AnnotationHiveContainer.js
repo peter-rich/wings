@@ -1,59 +1,63 @@
 import React, { Component } from 'react'
-// import Form from './Form'
-import Popup from '../Popup'
 import SourceList from '../SourceList'
-import { SOURCE_TYPES } from '../../constants'
+import Form from './Form'
+import { SOURCE_TYPES, API_ROUTES } from '../../constants'
 
-// const title = 'Annotation Hive'
-// const fields = [
-//   {
-//     key: 'region',
-//     title: 'Region',
-//     required: true
-//   },
-//   {
-//     key: 'sample_id',
-//     title: 'Sample ID, for example, "Sample1_A04"',
-//     required: true
-//   },
-//   {
-//     key: 'input_bams_dir',
-//     title: 'Path to input Ubam files',
-//     required: true
-//   },
-//   {
-//     key: 'bucket_path',
-//     title: 'Bucket path',
-//     required: true
-//   }
-// ]
-
-const TYPE_1 = Symbol()
-const TYPE_2 = Symbol()
-
-class AnnotationHive extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isFetching: false,
-      [TYPE_1]: false,
-      [TYPE_2]: false,
-      isPopupActive: false
-    }
+const title = 'AnnotationHive'
+const fields = [
+  {
+    key: 'bigQueryDatasetId',
+    title: 'BigQuery Dataset ID, for example, "falcon"',
+    required: true
+  },
+  {
+    key: 'outputBigQueryTable',
+    title: 'Output BigQuery Table, for example, "hg19_acmg_genes_interval_rich_annotated"',
+    required: true
+  },
+  {
+    key: 'bucketAddrAnnotatedVCF',
+    title: ' the full bucket and name address to the output VCF file (e.g., gs://mybucket/outputVCF.vcf)',
+    required: true
+  },
+  {
+    key: 'VCFCanonicalizeRefNames',
+    title: ' the prefix for the reference field in the VCF tables (e.g, "chr"). AnnotationHive automatically canonicalizes the VCF table by removing the prefix in its calculation.',
+    required: true
+  },
+  {
+    key: 'variantAnnotationTables',
+    title: 'Variant Annotation Tables, for example, "gbsc-gcp-project-cba:AnnotationHive_hg19"',
+    required: true
+  },
+  {
+    key: 'VCFTables',
+    title: 'VCF Tables, for example, "gbsc-gcp-project-annohive-dev:swarm.1000genomes"',
+    required: true
+  },
+  {
+    key: 'stagingLocation',
+    title: 'Staging Location, for example, "gs://gbsc-gcp-project-annohive-dev-user-lektin/falcon_dev/"',
+    required: true
+  },
+  {
+    key: 'createVCF',
+    type: 'checkbox',
+    title: 'If you wish to obtain a VCF file, check this flag',
+    required: true
   }
-
+]
+class AnnotationHive extends Component {
   render() {
-    // const type_1 = this.state[TYPE_1]
-    // const type_2 = this.state[TYPE_2]
     return (
-      <div className='col s12 m8 push-m2 l6 push-l3'>
+      <>
+        <Form title={title}
+          fields={fields}
+          API_ROUTE={API_ROUTES.ANNOTATE}
+        />
         <SourceList type={SOURCE_TYPES[0]}/>
         <SourceList type={SOURCE_TYPES[1]}/>
-      </div>
-      // <Form title={title}
-      //   fields={fields}
-      //   API_ROUTE={API_ROUTES.ANNOTATION_LIST}
-      // />
+      </>
     )
   }
 }

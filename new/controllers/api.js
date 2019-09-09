@@ -22,6 +22,11 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
+router.post(`${API_ROUTES.ANNOTATE}`, (req, res) => {
+  console.log(req.body)
+  res.status(200).json({ success: true, data: req.body })
+})
+
 router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
   if (!req.params.type) {
     res.status(422).json({ error: 'type is missing'})
@@ -52,7 +57,6 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
 
       // Run the query
       const [rows] = await bigquery.query(options)
-      rows.forEach(row => console.log(row))
       res.status(200).json(rows)
     }
     // [END bigquery_query_params_named]
