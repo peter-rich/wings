@@ -22,7 +22,57 @@ router.use(function(req, res, next) {
 let logged_in_users = {}
 
 // Routing Handling
-router.post(`${API_ROUTES.ANNOTATE}`, (req, res) => {
+router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
+  console.log(req.body)
+
+  const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
+  const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
+  const cred = JSON.parse(authFile)
+
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
+    'region',
+    'logs_path',
+    'staging_address',
+    'google_genomics_datasetid',
+    'headers',
+    'column_order',
+    'bigQueryVCFTableId',
+    'VCFInputTextBucketAddr',
+    'assembly_id',
+    'sampleIDs'
+  ]), _.pick(cred, ['project_id']))
+  console.log(cmdParams)
+  const cmd = query.importVCF(cmdParams)
+  console.log(cmd)
+  const script = exec(cmd)
+  const timestamp = uuid.v1()
+  script.stdout.on('data', (chunk)=>{
+    console.log('stdout: ', chunk)
+    fs.appendFileSync(`${__base}/logs/Annotation_Import-stdout-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.log(err)
+      }
+      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
+    })
+  })
+  script.stderr.on('data', (chunk)=>{
+    console.error(chunk)
+    fs.appendFileSync(`${__base}/logs/Annotation_Import-stderr-${timestamp}.txt`, chunk, function(err) {
+      if(err) {
+        return console.error(err)
+      }
+      console.error(`❌error appeared when executing "${cmd}!"`)
+    })
+  })
+  script.on('close', code => {
+    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
+    if (code == 0) {
+      res.status(200).json({ success: true })
+    }
+  })
+})
+
+router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
   console.log(req.body)
   res.status(200).json({ success: true, data: req.body })
 })
@@ -80,7 +130,7 @@ router.post(API_ROUTES.CNVNATOR, (req, res) => {
   console.log(cmd)
 
   const script = exec(cmd)
-  const timestamp = new Date().getTime()
+  const timestamp = uuid.v1()
   script.stdout.on('data', (chunk)=>{
     console.log('stdout: ', chunk)
     fs.appendFileSync(`${__base}/logs/CNVnator-stdout-${timestamp}.txt`, chunk, function(err) {
@@ -123,7 +173,7 @@ router.post(API_ROUTES.GATK, (req, res) => {
   const cmd = query.launchGATK(cmdParams)
   console.log(cmd)
   const script = exec(cmd)
-  const timestamp = new Date().getTime()
+  const timestamp = uuid.v1()
   script.stdout.on('data', (chunk)=>{
     console.log('stdout: ', chunk)
     fs.appendFileSync(`${__base}/logs/GATK-stdout-${timestamp}.txt`, chunk, function(err) {
@@ -171,7 +221,7 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
   console.log(`cmd, `, cmd)
 
   const script = exec(cmd)
-  const timestamp = new Date().getTime()
+  const timestamp = uuid.v1()
   script.stdout.on('data', (chunk)=>{
     console.log('stdout: ', chunk)
     fs.appendFileSync(`${__base}/logs/fastqtosam-stdout-${timestamp}.txt`, chunk, function(err) {
@@ -241,7 +291,6 @@ const authFileStorage = multer.diskStorage({
 const authFileUpload = multer({ storage: authFileStorage })
 // Log in with auth file
 router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req, res, next) => {
-  // TODO:
   const file = req.file
   if (!file) {
     res.status(400).json({ "error": 'Please upload a json file' })

@@ -23,9 +23,14 @@ const miniApps = [
     description: 'CNVnator: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'AnnotationHive',
-    link: PUBLIC_ROUTES.ANNOTATION_HIVE,
-    description: 'AnnotationHive: xxxx xxxx xxxx xxxx xxxx'
+    title: 'AnnotationHive Import',
+    link: PUBLIC_ROUTES.ANNOTATION_HIVE_IMPORT,
+    description: 'AnnotationHive Import: xxxx xxxx xxxx xxxx xxxx'
+  },
+  {
+    title: 'AnnotationHive Process',
+    link: PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS,
+    description: 'AnnotationHive Process: xxxx xxxx xxxx xxxx xxxx'
   }
 ]
 class App extends Component {

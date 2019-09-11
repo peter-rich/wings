@@ -15,3 +15,16 @@ nav {
   display: table;
   clear: both;
 }
+
+.input-field.col label {
+  word-break: break-all;
+}
+
+.input-field > label {
+  top: inherit;
+  bottom: 1.5rem;
+}
+
+.input-field > label:not(.label-icon).active {
+  bottom: 1.8rem;
+}

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Popup from '../Popup'
 import fieldShape from './fieldShape'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'

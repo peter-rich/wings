@@ -4,7 +4,8 @@ import MainLayoutRoute from './layouts/MainLayoutRoute'
 import FastqToSamContainer from './components/containers/FastqToSamContainer'
 import GATKContainer from './components/containers/GATKContainer'
 import CNVnatorContainer from './components/containers/CNVnatorContainer'
-import AnnotationHiveContainer from './components/containers/AnnotationHiveContainer'
+import AnnotationImportContainer from './components/containers/AnnotationImportContainer'
+import AnnotationProcessContainer from './components/containers/AnnotationProcessContainer'
 import MonitorPage from './pages/MonitorPage'
 import Home from './Home'
 import { PUBLIC_ROUTES } from './constants'
@@ -27,8 +28,11 @@ function Root() {
           path={PUBLIC_ROUTES.CNVNATOR}
           component={CNVnatorContainer}/>
         <MainLayoutRoute
-          path={PUBLIC_ROUTES.ANNOTATION_HIVE}
-          component={AnnotationHiveContainer}/>
+          path={PUBLIC_ROUTES.ANNOTATION_HIVE_IMPORT}
+          component={AnnotationImportContainer}/>
+        <MainLayoutRoute
+          path={PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS}
+          component={AnnotationProcessContainer}/>
         <MainLayoutRoute
           path={PUBLIC_ROUTES.MONITOR}
           component={MonitorPage}/>

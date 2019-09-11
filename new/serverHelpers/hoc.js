@@ -5,7 +5,7 @@ function execPromise(command) {
       exec(command, (error, stdout, stderr) => {
           if (error) {
               reject(error)
-              return
+              return null
           }
 
           resolve(stdout.trim())

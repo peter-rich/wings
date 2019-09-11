@@ -1,10 +1,74 @@
 const fs = require('fs')
 const util = require(`${__base}/serverHelpers/util`)
+
 const getAllJobs = (GOOGLE_CRED_PATH, GOOGLE_CRED_FILE, project_id) => (
   `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
 dstat --provider google-v2 --project ${project_id} --status '*' \
 --full | grep  "job-id\\|job-name\\|status:\\|creat\\|end-time\\|logging: g"`
 )
+
+const importVCF = ({
+  GOOGLE_CRED_FILE_PATH,
+  project_id,
+  region,
+  logs_path,
+  staging_address,
+  google_genomics_datasetid,
+  headers,
+  column_order,
+  bigQueryVCFTableId,
+  VCFInputTextBucketAddr,
+  assembly_id,
+  sampleIDs
+}) => {
+  const IMAGE = 'annotationhive/annotationhive_public:0.1'
+  logs_path = util.trimTrailingChar(logs_path, '/') + '/'
+  staging_address = util.trimTrailingChar(staging_address, '/')
+  const scriptToCreateVCFList = `
+    mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
+      -Dexec.args="ImportVCFFromGCSToBigQuery \
+      --project=${project_id} \
+      --stagingLocation=${staging_address}/ \
+      --bigQueryDatasetId=${google_genomics_datasetid} \
+      --runner=DataflowRunner \
+      --createVCFListTable=true" \
+    -Pdataflow-runner && \
+  `
+  const scriptToImportVCFs = `
+    cd /AnnotationHive && \
+    mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
+      -Dexec.args="ImportVCFFromGCSToBigQuery \
+        --project=${project_id} \
+        --stagingLocation=${staging_address} \
+        --bigQueryDatasetId=${google_genomics_datasetid} \
+        --header=${headers} \
+        --columnOrder=${column_order} \
+        --base0=no \
+        --bigQueryVCFTableId=${bigQueryVCFTableId} \
+        --VCFInputTextBucketAddr=${VCFInputTextBucketAddr} \
+        --VCFVersion=1.0 \
+        --assemblyId=${assembly_id} \
+        --columnSeparator=\\t \
+        --POS=true \
+        --sampleIDs=${sampleIDs}
+        --runner=DataflowRunner" \
+    -Pdataflow-runner
+  `
+  const cmd = `
+    export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
+    dsub \
+      --provider google-v2 \
+      --project ${project_id} \
+      --logging ${logs_path} \
+      --regions ${region} \
+      --command '${scriptToImportVCFs}' \
+      --image ${IMAGE} \
+      --min-ram 40 \
+      --min-cores 2 \
+  `
+
+  return cmd
+}
 
 const launchFastqtosam = ({
   GOOGLE_CRED_FILE_PATH,
@@ -136,6 +200,7 @@ const launchCNVnator= ({
 }
 module.exports = {
   getAllJobs,
+  importVCF,
   launchFastqtosam,
   launchGATK,
   launchCNVnator

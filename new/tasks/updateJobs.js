@@ -52,6 +52,7 @@ const runScript = async (client_id) => {
         })
         .then(result => {
           console.log(result)
+          return null
         })
         .catch(err => {
           console.error(err)

@@ -9,7 +9,8 @@ export const PUBLIC_ROUTES = {
   FASTQ_TO_SAM_50G: '/job/fastqtosam50g',
   GATK: '/job/gatk',
   CNVNATOR: '/job/cnvnator',
-  ANNOTATION_HIVE: '/job/annotation_hive',
+  ANNOTATION_HIVE_IMPORT: '/job/annotation_hive_import',
+  ANNOTATION_HIVE_PROCESS: '/job/annotation_hive_process',
   MONITOR: '/monitor'
 };
 
@@ -17,7 +18,8 @@ export const API_ROUTES = {
   FASTQ_TO_SAM: "/fastqtosam",
   GATK: "/gatk",
   CNVNATOR: '/cnvnator',
-  ANNOTATE: '/annotate',
+  ANNOTATION_IMPORT: '/annotation_import',
+  ANNOTATION_PROCESS: '/annotation_process',
   ANNOTATION_LIST: '/annotation_list',
   JOBS: "/jobs",
   UPDATE_JOBS: "/update_jobs",
