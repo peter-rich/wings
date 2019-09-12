@@ -23,16 +23,17 @@ const miniApps = [
     description: 'CNVnator: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'AnnotationHive Import',
+    title: 'AnnotationHive - Import(Step 1)',
     link: PUBLIC_ROUTES.ANNOTATION_HIVE_IMPORT,
     description: 'AnnotationHive Import: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'AnnotationHive Process',
+    title: 'AnnotationHive - Process(Step 2)',
     link: PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS,
     description: 'AnnotationHive Process: xxxx xxxx xxxx xxxx xxxx'
   }
 ]
+
 class App extends Component {
   render(){
     return (

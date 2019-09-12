@@ -6,8 +6,23 @@ import { SOURCE_TYPES, API_ROUTES } from '../../constants'
 const title = 'AnnotationHive Process'
 const fields = [
   {
+    key: 'region',
+    title: 'Region',
+    required: true
+  },
+  {
+    key: 'logs_path',
+    title: 'Path to log files, for example, "gs://your_bucket/project_id/logs"',
+    required: true
+  },
+  {
+    key: 'stagingLocation',
+    title: 'Staging Location, for example, "gs://<BUCKET_ID>/AnnotationHive/staging/"',
+    required: true
+  },
+  {
     key: 'bigQueryDatasetId',
-    title: 'BigQuery Dataset ID, for example, "falcon"',
+    title: 'BigQuery DatasetID that will contain the output annotated VCF table, for example, "sample_dataset_id"',
     required: true
   },
   {
@@ -17,12 +32,12 @@ const fields = [
   },
   {
     key: 'bucketAddrAnnotatedVCF',
-    title: ' the full bucket and name address to the output VCF file (e.g., gs://mybucket/outputVCF.vcf)',
+    title: 'The full bucket path to the output VCF file, e.g., "gs://<BUCKET_ID>/outputVCF.vcf"',
     required: true
   },
   {
     key: 'VCFCanonicalizeRefNames',
-    title: ' the prefix for the reference field in the VCF tables (e.g, "chr"). AnnotationHive automatically canonicalizes the VCF table by removing the prefix in its calculation.',
+    title: 'The prefix for the reference field in the VCF tables (e.g, "chr"). AnnotationHive automatically canonicalizes the VCF table by removing the prefix in its calculation.',
     required: true
   },
   {
@@ -32,12 +47,7 @@ const fields = [
   },
   {
     key: 'VCFTables',
-    title: 'VCF Tables, for example, "gbsc-gcp-project-annohive-dev:swarm.1000genomes"',
-    required: true
-  },
-  {
-    key: 'stagingLocation',
-    title: 'Staging Location, for example, "gs://gbsc-gcp-project-annohive-dev-user-lektin/falcon_dev/"',
+    title: 'BigQuery address of the mVCF/VCF table on BigQuery, for example, "gbsc-gcp-project-annohive-dev:swarm.1000genomes"',
     required: true
   },
   {
@@ -47,6 +57,8 @@ const fields = [
     required: true
   }
 ]
+
+
 class AnnotationProcessContainer extends Component {
   render() {
     return (

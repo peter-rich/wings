@@ -23,8 +23,6 @@ let logged_in_users = {}
 
 // Routing Handling
 router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
-  console.log(req.body)
-
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
   const cred = JSON.parse(authFile)
@@ -74,7 +72,25 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
 
 router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
   console.log(req.body)
-  res.status(200).json({ success: true, data: req.body })
+  const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
+  const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
+  const cred = JSON.parse(authFile)
+
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
+    'region',
+    'logs_path',
+    'stagingLocation',
+    'bigQueryDatasetId',
+    'outputBigQueryTable',
+    'bucketAddrAnnotatedVCF',
+    'VCFCanonicalizeRefNames',
+    'variantAnnotationTables',
+    'VCFTables',
+    'createVCF'
+  ]), _.pick(cred, ['project_id']))
+  console.log(cmdParams)
+  const cmd = query.processVCF(cmdParams)
+  console.log(cmd)
 })
 
 router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {

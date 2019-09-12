@@ -70,6 +70,68 @@ const importVCF = ({
   return cmd
 }
 
+
+const processVCF = ({
+  GOOGLE_CRED_FILE_PATH,
+  project_id,
+  region,
+  logs_path,
+  bigQueryDatasetId,
+  outputBigQueryTable,
+  bucketAddrAnnotatedVCF,
+  VCFCanonicalizeRefNames,
+  variantAnnotationTables,
+  VCFTables,
+  stagingLocation,
+  createVCF
+}) => {
+  const IMAGE = 'annotationhive/annotationhive_public:0.1'
+  const script = `
+    cd /AnnotationHive && \
+    mvn compile exec:java \
+    -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
+    -Dexec.args="BigQueryAnnotateVariants \
+      --projectId=${project_id} \
+      --bigQueryDatasetId=${bigQueryDatasetId}  \
+      --outputBigQueryTable=${outputBigQueryTable} \
+      --variantAnnotationTables=${variantAnnotationTables}  \
+      --VCFTables=${VCFTables} \
+      --stagingLocation=${stagingLocation} \
+      --googleVCF=true \
+      --numberSamples=true \
+      --runner=DataflowRunner" \
+    -Pdataflow-runner
+  `
+
+  const sss = `
+    mvn compile exec:java \
+      -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
+      -Dexec.args="BigQueryAnnotateVariants \
+      --projectId=<YOUR_Project_ID> \
+      --runner=DataflowRunner \
+      --bigQueryDatasetId=test  \
+      --outputBigQueryTable=annotate_variant_test_chr17 \
+      --variantAnnotationTables=<YOUR_Project_ID>:test.sample_variant_annotation_chr17:alleleFreq:dbsnpid  \
+      --VCFTables=<YOUR_Project_ID>:test.NA12877_chr17 \
+      --stagingLocation=gs://<Your_Google_Cloud_Bucket_Name>/staging" \
+    -Pdataflow-runner
+  `
+  const cmd = `
+      export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
+      dsub \
+        --provider google-v2 \
+        --project ${project_id} \
+        --logging ${logs_path} \
+        --regions ${region} \
+        --command '${script}' \
+        --image ${IMAGE} \
+        --min-ram 40 \
+        --min-cores 2 \
+    `
+
+    return cmd
+}
+
 const launchFastqtosam = ({
   GOOGLE_CRED_FILE_PATH,
   project_id,
@@ -201,6 +263,7 @@ const launchCNVnator= ({
 module.exports = {
   getAllJobs,
   importVCF,
+  processVCF,
   launchFastqtosam,
   launchGATK,
   launchCNVnator
