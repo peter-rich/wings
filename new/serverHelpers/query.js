@@ -1,53 +1,83 @@
 const fs = require('fs')
 const util = require(`${__base}/serverHelpers/util`)
+const AnnotationHive_IMAGE = 'annotationhive/annotationhive_public:1.4'
 
 const getAllJobs = (GOOGLE_CRED_PATH, GOOGLE_CRED_FILE, project_id) => (
   `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
-dstat --provider google-v2 --project ${project_id} --status '*' \
+dstat --provider google-v2 --project ${project_id} --status '*' --status 'SUCCESS' 'FAILURE' \
 --full | grep  "job-id\\|job-name\\|status:\\|creat\\|end-time\\|logging: g"`
 )
 
-const importVCF = ({
+const createVCFList = ({
   GOOGLE_CRED_FILE_PATH,
   project_id,
   region,
   logs_path,
   staging_address,
-  google_genomics_datasetid,
-  headers,
-  column_order,
-  bigQueryVCFTableId,
-  VCFInputTextBucketAddr,
-  assembly_id,
-  sampleIDs
+  bigQueryDatasetId
 }) => {
-  const IMAGE = 'annotationhive/annotationhive_public:0.1'
   logs_path = util.trimTrailingChar(logs_path, '/') + '/'
   staging_address = util.trimTrailingChar(staging_address, '/')
-  const scriptToCreateVCFList = `
+
+  const script = `
+    cd /AnnotationHive && \
     mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
       -Dexec.args="ImportVCFFromGCSToBigQuery \
       --project=${project_id} \
       --stagingLocation=${staging_address}/ \
-      --bigQueryDatasetId=${google_genomics_datasetid} \
+      --bigQueryDatasetId=${bigQueryDatasetId} \
       --runner=DataflowRunner \
       --createVCFListTable=true" \
     -Pdataflow-runner && \
   `
-  const scriptToImportVCFs = `
+
+  const cmd = `
+    export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
+    dsub \
+      --provider google-v2 \
+      --project ${project_id} \
+      --logging ${logs_path} \
+      --regions ${region} \
+      --command '${script}' \
+      --image ${AnnotationHive_IMAGE} \
+      --min-ram 40 \
+      --min-cores 2 \
+  `
+
+  return cmd
+}
+
+const importVCF = ({
+    GOOGLE_CRED_FILE_PATH,
+    project_id,
+    region,
+    logs_path,
+    staging_address,
+    bigQueryDatasetId,
+    headers,
+    column_order,
+    bigQueryVCFTableId,
+    VCFInputTextBucketAddr,
+    build,
+    sampleIDs
+  }) => {
+  logs_path = util.trimTrailingChar(logs_path, '/') + '/'
+  staging_address = util.trimTrailingChar(staging_address, '/')
+
+  const script = `
     cd /AnnotationHive && \
     mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
       -Dexec.args="ImportVCFFromGCSToBigQuery \
         --project=${project_id} \
         --stagingLocation=${staging_address} \
-        --bigQueryDatasetId=${google_genomics_datasetid} \
+        --bigQueryDatasetId=${bigQueryDatasetId} \
         --header=${headers} \
         --columnOrder=${column_order} \
         --base0=no \
         --bigQueryVCFTableId=${bigQueryVCFTableId} \
         --VCFInputTextBucketAddr=${VCFInputTextBucketAddr} \
         --VCFVersion=1.0 \
-        --assemblyId=${assembly_id} \
+        --build=${build} \
         --columnSeparator=\\t \
         --POS=true \
         --sampleIDs=${sampleIDs}
@@ -61,8 +91,8 @@ const importVCF = ({
       --project ${project_id} \
       --logging ${logs_path} \
       --regions ${region} \
-      --command '${scriptToImportVCFs}' \
-      --image ${IMAGE} \
+      --command '${script}' \
+      --image ${AnnotationHive_IMAGE} \
       --min-ram 40 \
       --min-cores 2 \
   `
@@ -71,21 +101,20 @@ const importVCF = ({
 }
 
 
-const processVCF = ({
+const variantAnnotateVCF = ({
   GOOGLE_CRED_FILE_PATH,
   project_id,
   region,
   logs_path,
   bigQueryDatasetId,
   outputBigQueryTable,
-  bucketAddrAnnotatedVCF,
-  VCFCanonicalizeRefNames,
-  variantAnnotationTables,
+  annotateType,
+  variant,
+  build,
   VCFTables,
   stagingLocation,
   createVCF
 }) => {
-  const IMAGE = 'annotationhive/annotationhive_public:0.1'
   const script = `
     cd /AnnotationHive && \
     mvn compile exec:java \
@@ -94,28 +123,15 @@ const processVCF = ({
       --projectId=${project_id} \
       --bigQueryDatasetId=${bigQueryDatasetId}  \
       --outputBigQueryTable=${outputBigQueryTable} \
-      --variantAnnotationTables=${variantAnnotationTables}  \
+      ${annotateType == 'variant' ? '--variantAnnotationTables=' + variant : ''}  \
       --VCFTables=${VCFTables} \
+      --build=${build} \
+      --createVCF=${createVCF} \
       --stagingLocation=${stagingLocation} \
-      --googleVCF=true \
-      --numberSamples=true \
       --runner=DataflowRunner" \
     -Pdataflow-runner
   `
 
-  const sss = `
-    mvn compile exec:java \
-      -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
-      -Dexec.args="BigQueryAnnotateVariants \
-      --projectId=<YOUR_Project_ID> \
-      --runner=DataflowRunner \
-      --bigQueryDatasetId=test  \
-      --outputBigQueryTable=annotate_variant_test_chr17 \
-      --variantAnnotationTables=<YOUR_Project_ID>:test.sample_variant_annotation_chr17:alleleFreq:dbsnpid  \
-      --VCFTables=<YOUR_Project_ID>:test.NA12877_chr17 \
-      --stagingLocation=gs://<Your_Google_Cloud_Bucket_Name>/staging" \
-    -Pdataflow-runner
-  `
   const cmd = `
       export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
       dsub \
@@ -124,7 +140,7 @@ const processVCF = ({
         --logging ${logs_path} \
         --regions ${region} \
         --command '${script}' \
-        --image ${IMAGE} \
+        --image ${AnnotationHive_IMAGE} \
         --min-ram 40 \
         --min-cores 2 \
     `
@@ -262,8 +278,9 @@ const launchCNVnator= ({
 }
 module.exports = {
   getAllJobs,
+  createVCFList,
   importVCF,
-  processVCF,
+  variantAnnotateVCF,
   launchFastqtosam,
   launchGATK,
   launchCNVnator

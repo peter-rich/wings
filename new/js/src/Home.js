@@ -23,12 +23,12 @@ const miniApps = [
     description: 'CNVnator: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'AnnotationHive - Import(Step 1)',
+    title: 'Annotation Import',
     link: PUBLIC_ROUTES.ANNOTATION_HIVE_IMPORT,
     description: 'AnnotationHive Import: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'AnnotationHive - Process(Step 2)',
+    title: 'Annotation Process(Variant Based)',
     link: PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS,
     description: 'AnnotationHive Process: xxxx xxxx xxxx xxxx xxxx'
   }

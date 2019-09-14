@@ -2,62 +2,71 @@ import React, { Component } from 'react'
 import Form from './Form'
 import { API_ROUTES } from '../../constants'
 
-const title = 'AnnotationHive Import'
+const title = 'Annotation Import'
 const fields = [
   {
     key: 'region',
+    defaultValue: 'us-central1',
+    type: 'dropdown',
     title: 'Region',
-    required: true
+    rules: ['required'],
   },
   {
     key: 'logs_path',
     title: 'Path to log files, for example, "gs://your_bucket/project_id/logs"',
-    required: true
+    type: 'text',
+    rules: ['required', 'gsLink']
   },
   {
     key: 'staging_address',
     title: 'Staging address, for example, "gs://your_bucket/AnnotationHive/staging"',
-    required: true
+    type: 'text',
+    rules: ['required', 'gsLink']
   },
   {
-    key: 'google_genomics_datasetid',
-    title: 'Google Genomics DatasetId, for example, "bigquery-public-data:human_genome_variants"',
-    required: true
+    key: 'bigQueryDatasetId',
+    title: 'BigQuery DatasetId, for example, "AnnotationHive"',
+    type: 'text',
+    rules: ['required']
   },
   {
     key: 'headers',
     title: 'Header values, separated by commas. for example, "CHROM,POS,ID,REF,ALT,QUAL,FILTER,INFO,FORMAT,NA12877"',
-    required: true
+    type: 'text',
+    rules: ['required']
   },
   {
-    key: 'column_order',
+    key: 'columnOrder',
     title: 'Column order, separated by commas. for example, "1,2,2,4,5"',
-    required: true
+    type: 'text',
+    rules: ['required']
   },
   {
     key: 'bigQueryVCFTableId',
     title: 'BigQuery VCF Table ID, for example, "NA12877_chr17"',
-    required: true
+    type: 'text',
+    rules: ['required']
   },
   {
     key: 'VCFInputTextBucketAddr',
     title: 'Path to VCF Input Text, for example, "gs://<YOUR_Google_Bucket_Name>/NA12877-chr17.vcf"',
-    required: true
+    type: 'text',
+    rules: ['required', 'gsLink', 'vcfFile']
   },
   {
-    key: 'assembly_id',
-    title: 'Assembly ID, for example, "hg19"',
-    required: true
-  },
-  {
-    key: 'sampleIDs',
-    title: 'Sample IDs, for example, "RWGS_10_N,RWGS_5_T,RWGS_6_N,RWGS_8_N,RWGS_9_T,WGS_1_T,WGS_2_N,WGS_3_T,WGS_4_N,WGS_7_T"',
-    required: true
-  },
+    key: 'build',
+    type: 'radio',
+    title: 'Build type',
+    rules: ['required'],
+    options: ['hg19', 'hg38'],
+    defaultValue: 'hg19',
+  }
 ]
 
 
-class CNVnator extends Component {
+// createVCFListTable
+
+class AnnotationImportContainer extends Component {
   render() {
     return (
       <Form title={title}
@@ -68,4 +77,4 @@ class CNVnator extends Component {
   }
 }
 
-export default CNVnator
+export default AnnotationImportContainer

@@ -3,7 +3,7 @@ exports.BASE_API_URL = '/api'
 exports.PORT = 8081
 exports.AUTH_FILE_FIELDNAME = 'authFile'
 
-exports.SOURCE_TYPES = ['variant', 'generic']
+exports.ANNOTATE_TYPES = ['variant', 'generic']
 
 exports.PUBLIC_ROUTES = {
   FASTQ_TO_SAM: '/job/fastqtosam',
@@ -24,6 +24,7 @@ exports.API_ROUTES = {
   ANNOTATION_LIST: '/annotation_list',
   JOBS: "/jobs",
   UPDATE_JOBS: "/update_jobs",
+  REQUEST_USER: "/request_user",
   LOG_IN: "/log_in",
   LOG_OUT: "/log_out"
 }

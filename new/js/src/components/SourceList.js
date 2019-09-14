@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
-import { SOURCE_TYPES, BASE_API_URL, API_ROUTES } from '../constants'
+import { ANNOTATE_TYPES, BASE_API_URL, API_ROUTES } from '../constants'
 import _ from 'lodash'
 import MC from "materialize-css"
 
@@ -62,7 +62,8 @@ class SourceList extends Component {
       sources: [],
       selected: false,
       selectedFields: [],
-      fetched: false
+      fetched: false,
+      annotatedFields: {}
     }
     this._selectTab = this._selectTab.bind(this)
     this._selectField = this._selectField.bind(this)
@@ -71,8 +72,8 @@ class SourceList extends Component {
 
   componentDidMount() {
     MC.AutoInit()
-    const { type } = this.props
-    fetch(`${BASE_API_URL}${API_ROUTES.ANNOTATION_LIST}/${type}`, {
+    const { name } = this.props
+    fetch(`${BASE_API_URL}${API_ROUTES.ANNOTATION_LIST}/${name}`, {
       method: 'GET'
     })
     .then(response => response.json())
@@ -116,8 +117,12 @@ class SourceList extends Component {
     }
   }
 
-  _selectField = (source_name, selected_field) => {
+  _selectField = (table, source_name, selected_field) => {
     let newState = Object.assign({}, this.state)
+    if (!newState.annotatedFields[table]) {
+      newState.annotatedFields[table] = []
+    }
+    newState.annotatedFields[table].push(selected_field.value)
     newState.sources = newState.sources.map(source => {
       if (source.source_name !== source_name) return source
       const newFields = source.fields.map(field => {
@@ -129,11 +134,16 @@ class SourceList extends Component {
       source.fields = newFields
       return source
     })
+    newState.annotatedFieldsString = Object.keys(newState.annotatedFields).map(key => {
+      return key + newState.annotatedFields[key].join(':')
+    }).join(',')
     this.setState(newState)
+    this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
 
-  _deselectField = (source_name, field_to_move) => {
+  _deselectField = (table, source_name, field_to_move) => {
     let newState = Object.assign({}, this.state)
+    _.remove(newState.annotatedFields[table], field => field === field_to_move.value )
     newState.sources = newState.sources.map(source => {
       if (source.source_name !== source_name) return source
       const newFields = source.fields.map(field => {
@@ -145,71 +155,76 @@ class SourceList extends Component {
       source.fields = newFields
       return source
     })
+    newState.annotatedFieldsString = Object.keys(newState.annotatedFields).map(key => {
+      return key + newState.annotatedFields[key].join(':')
+    }).join(',')
     this.setState(newState)
+    this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
 
   render() {
-    const { sources, selected, fetched } = this.state
-    const { type } = this.props
+    const { sources, selected, fetched, annotatedFieldsString } = this.state
+    const { title } = this.props
     return (
-      <div className="row">
-        <div className='col s12 m10 push-m1'>
-          <h4 className='header'>{type.toUpperCase()}</h4>
-          { fetched ?
-            <ul className="collapsible">
-              { sources.map((source, i) => (
-                <li key={i}>
-                  <div style={{ backgroundColor: selected === i ? '#eee' : '#fff' }}
-                    className="collapsible-header"
-                    onClick={() => { this._selectTab(i) } }>
-                    <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
-                    { typeof source.source_name === 'symbol' ? '___Null___': source.source_name }
-                    <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
-                      className='right'>
-                      {`${source.selected_fields.length} fields selected: ${source.selected_fields.join(', ')}`}
-                    </span>
-                  </div>
-                  <div className="collapsible-body clearfix"
-                    style={styles.contentBody}>
-                    <>
-                      { source.fields
-                        .map( (field, j) => {
-                          return (
-                            field.selected ?
-                            <span key={j} style={styles.badge_selected}>
-                              {field.value}
-                              <i className="tiny material-icons"
-                                onClick={() => {
-                                  this._deselectField(source.source_name, field)
-                                }
-                              }>close</i>
-                            </span>
-                            :
-                            <span key={j} style={styles.badge_not_selected}
-                              onClick={() => { this._selectField(source.source_name, field) } }>
-                              {field.value}
-                            </span>
-                          )}
-                        )
-                      }
-                    </>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            :
-            <div className="progress">
-              <div className="indeterminate"></div>
-            </div>
-          }
-        </div>
-      </div>
+      <>
+        <div>{annotatedFieldsString}</div>
+        <h5 className='header'>{title}</h5>
+        { fetched ?
+          <ul className="collapsible">
+            { sources.map((source, i) => (
+              <li key={i}>
+                <div style={{ backgroundColor: selected === i ? '#eee' : '#fff', wordBreak: 'break-all' }}
+                  className="collapsible-header"
+                  onClick={() => { this._selectTab(i) } }>
+                  <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
+                  { typeof source.bigquery_table === 'symbol' ? '___Null___': source.bigquery_table }
+                  <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
+                    className='right'>
+                    {`${source.selected_fields.length} fields selected: ${source.selected_fields.join(', ')}`}
+                  </span>
+                </div>
+                <div className="collapsible-body clearfix"
+                  style={styles.contentBody}>
+                  <>
+                    { source.fields
+                      .map( (field, j) => {
+                        return (
+                          field.selected ?
+                          <span key={j} style={styles.badge_selected}>
+                            {field.value}
+                            <i className="tiny material-icons"
+                              onClick={() => {
+                                this._deselectField(source.bigquery_table, source.source_name, field)
+                              }
+                            }>close</i>
+                          </span>
+                          :
+                          <span key={j} style={styles.badge_not_selected}
+                            onClick={() => { this._selectField(source.bigquery_table, source.source_name, field) } }>
+                            {field.value}
+                          </span>
+                        )}
+                      )
+                    }
+                  </>
+                </div>
+              </li>
+            ))}
+          </ul>
+          :
+          <div className="progress">
+            <div className="indeterminate"></div>
+          </div>
+        }
+      </>
     )
   }
 }
 
 SourceList.propTypes = {
-  type: PropTypes.oneOf(SOURCE_TYPES).isRequired
+  name: PropTypes.oneOf(ANNOTATE_TYPES).isRequired,
+  title: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired
 }
 
 export default SourceList

@@ -1,36 +1,92 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import fieldShape from './fieldShape'
+import SourceList from '../SourceList'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
 import MC from "materialize-css"
 
+
+const styles = {
+  error: 'tomato'
+}
 class Form extends Component {
   constructor(props) {
     super(props)
     let initialFormData = {}
     props.fields.forEach(field => {
-      const { key, value, required } = field
-      initialFormData[key] = {
-        value,
-        required
+      const hasDefaultVal = field.defaultValue !== undefined
+      initialFormData[field.key] = {
+        ...field,
+        value: hasDefaultVal ? field.defaultValue : '',
+        isValid: hasDefaultVal || false,
+        errorMsg: '',
+        touched: hasDefaultVal || false
       }
     })
     this.state = {
       formData: initialFormData,
+      isFormValid: false,
       isSubmitting: false
     }
     this._onChange = this._onChange.bind(this)
+    this._onBlur = this._onBlur.bind(this)
+    this._updateFormdata = this._updateFormdata.bind(this)
     this._onSubmit = this._onSubmit.bind(this)
+  }
+
+  _onBlur = (e) => {
+    this._onChange(e)
+  }
+
+  _updateFormdata = (baseField, value) => {
+    baseField.value = value
+    baseField.touched = true
+    baseField.isValid = !!value.length
+    for (let rule of baseField.rules) {
+      switch (rule) {
+        case 'required':
+          baseField.isValid = value.trim().length > 0
+          baseField.errorMsg = baseField.isValid ? '' : 'This field is required'
+          break
+        case 'gsLink':
+          baseField.isValid = value.startsWith('gs://')
+          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a "gs://" link'
+          break
+        case 'bamFile':
+          baseField.isValid = value.endsWith('.bam')
+          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a ".bam" files'
+          break
+        case 'vcfFile':
+          baseField.isValid = value.endsWith('.vcf')
+          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a ".vcf" files'
+          break
+        default:
+          break
+      }
+      if (!baseField.isValid) {
+        break
+      }
+    }
+    return baseField
   }
 
   _onChange = (e) => {
     let newState = _.cloneDeep(this.state)
-    if (e.target.type === 'checkbox') {
-      newState.formData[e.target.name].value = !!e.target.checked
-    } else {
-      newState.formData[e.target.name].value = e.target.value
+    const fieldName = e.target.name
+    const fieldType = e.target.type
+    if (fieldType === 'checkbox') {
+      newState.formData[fieldName].value = !!e.target.checked
+    } else if (['annotate_fields_picker', 'text'].includes(fieldType)){
+      const newField = this._updateFormdata(newState.formData[fieldName], e.target.value)
+      newState.formData[fieldName] = newField
+    } else if (fieldType === 'radio') {
+      newState.formData[fieldName].value = e.target.value
     }
+    newState.formData[fieldName].touched = true
+    newState.isFormValid = Object.values(newState.formData).reduce((flag, obj) => {
+      return flag && obj.touched && obj.isValid
+    }, true)
     this.setState(newState)
   }
 
@@ -66,23 +122,25 @@ class Form extends Component {
   }
 
   render() {
-    const { isSubmitting } = this.state
+    const { isFormValid, isSubmitting, formData } = this.state
     const { title, fields } = this.props
+    console.log(this.state)
     return (
       <div className="row">
         <form onSubmit={this._onSubmit}
           className='col s12 m10 push-m1'>
           <h3 className="header">{title}</h3>
           { fields.map((field,i) =>{
-            if (field.key === 'region') {
+            const formField = formData[field.key]
+            const { touched, isValid, errorMsg } = formField
+            if (formField.type === 'dropdown') {
               return (
                 <div key={i} className="row">
                   <div className="input-field col s12">
-                    <select name={field.key}
-                      className="browser-defa______ult"
-                      defaultValue='__placeholder'
-                      onChange={this._onChange}>
-                      <option value="__placeholder" disabled>{field.title}</option>
+                    <select name={formField.key}
+                      className="browser-default"
+                      onChange={this._onChange}
+                      value={formField.value}>
                       {/* <option value='asia-east1'>asia-east1 (Taiwan)</option>
                       <option value='asia-east2'>asia-east2 (Hong Kong)</option>
                       <option value='asia-northeast1'>asia-northeast1 (Tokyo)</option>
@@ -107,29 +165,71 @@ class Form extends Component {
                   </div>
                 </div>
               )
-            } else if (field.type === 'checkbox') {
+            } else if (formField.type === 'checkbox') {
               return (
-                <div key={i} className='switch'>
-                  <label>
-                    <input type='checkbox'
-                      name={field.key}
-                      className='filled-in'
-                      onChange={this._onChange} />
-                    <span>{field.title}</span>
-                  </label>
+                <div key={i} className='row'>
+                  <div className='input-field col s12'>
+                    <div key={i} className='switch'>
+                      <label>
+                        <input type='checkbox'
+                          name={formField.key}
+                          className='filled-in'
+                          checked={formField.value}
+                          onChange={this._onChange} />
+                        <span>{formField.title}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )
+            } else if (formField.type === 'radio') {
+              return (
+                <div key={i} className='row'>
+                  <div className='col s12'>
+                    <span>{formField.title}</span>
+                    { formField.options.map((option,i) => (
+                      <label key={i}>
+                        <input name={formField.key}
+                          value={option}
+                          type='radio'
+                          checked={formField.value === option}
+                          onChange={this._onChange} />
+                        <span>{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )
+            } else if (formField.type === 'annotationFieldsPicker') {
+              return (
+                <div key={i}>
+                  { touched && !isValid &&
+                    <span style={{ color: styles.error, padding: '0 0.75rem' }}
+                      className='helper-text'>{errorMsg}</span>
+                  }
+                  <SourceList
+                    name={formField.key}
+                    title={formField.title}
+                    onChange={this._onChange}/>
                 </div>
               )
             } else {
               return (
                 <div key={i} className='row'>
                   <div className='input-field col s12'>
-                    <label htmlFor={`form-field-${field.key}`}>{field.title}</label>
-                    <input id={`form-field-${field.key}`}
-                      name={field.key}
+                    <label htmlFor={`form-field-${formField.key}`}>{formField.title}</label>
+                    <input id={`form-field-${formField.key}`}
+                      style={ touched && !isValid ? { borderColor: styles.error, color: styles.error} : {} }
+                      name={formField.key}
+                      value={formField.value}
                       type='text'
-                      className='validate'
+                      onBlur={this._onBlur}
                       onChange={this._onChange} />
                   </div>
+                  { touched && !isValid &&
+                    <span style={{ color: styles.error, padding: '0 0.75rem' }}
+                      className='helper-text'>{errorMsg}</span>
+                  }
                 </div>
               )
             }
@@ -139,6 +239,7 @@ class Form extends Component {
             <div className="input-field col s12">
               <button type="submit" name="action"
                 className="btn waves-effect waves-light"
+                disabled={!isFormValid}
                 onClick={this._onSubmit}>
                 { isSubmitting ? 'Submitting ...' : 'Submit Job' }
                 { isSubmitting ? <i className="material-icons right">arrow_upward</i> : <i className="material-icons right">send</i> }

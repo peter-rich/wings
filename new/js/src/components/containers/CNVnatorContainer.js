@@ -6,23 +6,28 @@ const title = 'CNVnator'
 const fields = [
   {
     key: 'region',
+    defaultValue: 'us-central1',
+    type: 'dropdown',
     title: 'Region',
-    required: true
+    rules: ['required'],
   },
   {
     key: 'sample_id',
     title: 'Sample ID, for example, "Sample1_A04"',
-    required: true
+    type: 'text',
+    rules: ['required'],
   },
   {
     key: 'input_bams_dir',
     title: 'Path to input Ubam files',
-    required: true
+    type: 'text',
+    rules: ['required', 'gsLink'],
   },
   {
     key: 'bucket_path',
     title: 'Bucket path',
-    required: true
+    type: 'text',
+    rules: ['required', 'gsLink'],
   }
 ]
 

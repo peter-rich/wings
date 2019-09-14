@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import _ from 'lodash'
 import { API_ROUTES, BASE_API_URL } from '../constants'
+import { requestUser } from '../datastore/auth/authAction'
+
 class Auth extends Component {
   constructor(props) {
     super(props)
@@ -28,7 +31,6 @@ class Auth extends Component {
   }
 
   _onChange = event => {
-    console.log(event.target.files[0])
     let newState = _.cloneDeep(this.state)
     newState.authFile = event.target.files[0]
     if (event.target.files[0])
@@ -42,9 +44,6 @@ class Auth extends Component {
     e.preventDefault()
     const formDate = new FormData()
     formDate.append('authFile', this.state.authFile)
-    for(var pair of formDate.entries()) {
-      console.log(pair[0]+ ', '+ pair[1])
-    }
     fetch(`${BASE_API_URL}${API_ROUTES.LOG_IN}`, {
       mode: 'no-cors',
       method: 'POST',
@@ -54,13 +53,13 @@ class Auth extends Component {
     .then(json => {
       if (json.success) {
         this.setState(Object.assign({}, this.state, { isLoggedIn: true }))
+        this.props.dispatch(requestUser())
       }
     })
 
   }
 
   render() {
-    console.log(this.state)
     const { authBtnDisabled, isLoggedIn } = this.state
     return(
       <div className='card-panel'>
@@ -93,4 +92,4 @@ class Auth extends Component {
   }
 }
 
-export default Auth
+export default connect()(Auth)

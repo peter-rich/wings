@@ -1,6 +1,5 @@
 const fs = require('fs')
 const d3 = require('d3-dsv')
-const { GOOGLE_CRED_PATH, GOOGLE_CRED_FILE } = require(`${__base}/config-server`)
 const Annotation = require(`${__base}/models/Annotation`)
 
 const runScript = async (client_id) => {

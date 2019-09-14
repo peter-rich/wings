@@ -15,6 +15,7 @@ const runScript = async (client_id) => {
     let newJobs = []
     const numOfCols = 6
     result.replace(/\r\n/g, "\r").replace(/\n/g, "\r").split(/\r/).forEach((item, i) => {
+      console.log(item)
       const order = Math.floor(i / numOfCols)
       const key = item.split(': ')[0].split('').slice(1).join('').trim()
       let value = item.split(`${key}:`)[1].trim()
