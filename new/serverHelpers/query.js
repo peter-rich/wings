@@ -4,7 +4,7 @@ const AnnotationHive_IMAGE = 'annotationhive/annotationhive_public:1.4'
 
 const getAllJobs = (GOOGLE_CRED_PATH, GOOGLE_CRED_FILE, project_id) => (
   `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_PATH}/${GOOGLE_CRED_FILE} && \
-dstat --provider google-v2 --project ${project_id} --status '*' --status 'SUCCESS' 'FAILURE' \
+dstat --provider google-v2 --project ${project_id} --status 'SUCCESS' 'FAILURE' \
 --full | grep  "job-id\\|job-name\\|status:\\|creat\\|end-time\\|logging: g"`
 )
 
@@ -18,7 +18,7 @@ const createVCFList = ({
 }) => {
   logs_path = util.trimTrailingChar(logs_path, '/') + '/'
   staging_address = util.trimTrailingChar(staging_address, '/')
-
+  const JOB_NAME = 'create-vcf-list'
   const script = `
     cd /AnnotationHive && \
     mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
@@ -37,6 +37,7 @@ const createVCFList = ({
       --provider google-v2 \
       --project ${project_id} \
       --logging ${logs_path} \
+      --name "${JOB_NAME}" \
       --regions ${region} \
       --command '${script}' \
       --image ${AnnotationHive_IMAGE} \
@@ -63,7 +64,7 @@ const importVCF = ({
   }) => {
   logs_path = util.trimTrailingChar(logs_path, '/') + '/'
   staging_address = util.trimTrailingChar(staging_address, '/')
-
+  const JOB_NAME = 'import-vcf-files'
   const script = `
     cd /AnnotationHive && \
     mvn compile exec:java -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
@@ -90,6 +91,7 @@ const importVCF = ({
       --provider google-v2 \
       --project ${project_id} \
       --logging ${logs_path} \
+      --name "${JOB_NAME}" \
       --regions ${region} \
       --command '${script}' \
       --image ${AnnotationHive_IMAGE} \
@@ -113,20 +115,20 @@ const variantAnnotateVCF = ({
   build,
   VCFTables,
   stagingLocation,
-  createVCF
 }) => {
+  const JOB_NAME = 'annotate-vcf-file'
   const script = `
     cd /AnnotationHive && \
     mvn compile exec:java \
     -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
     -Dexec.args="BigQueryAnnotateVariants \
       --projectId=${project_id} \
+      --project=${project_id} \
       --bigQueryDatasetId=${bigQueryDatasetId}  \
       --outputBigQueryTable=${outputBigQueryTable} \
       ${annotateType == 'variant' ? '--variantAnnotationTables=' + variant : ''}  \
       --VCFTables=${VCFTables} \
       --build=${build} \
-      --createVCF=${createVCF} \
       --stagingLocation=${stagingLocation} \
       --runner=DataflowRunner" \
     -Pdataflow-runner
@@ -138,6 +140,7 @@ const variantAnnotateVCF = ({
         --provider google-v2 \
         --project ${project_id} \
         --logging ${logs_path} \
+        --name "${JOB_NAME}" \
         --regions ${region} \
         --command '${script}' \
         --image ${AnnotationHive_IMAGE} \
@@ -158,16 +161,23 @@ const launchFastqtosam = ({
   output_file,
   sample_name,
   read_group,
-  platform}) => (
-  `export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
-  dsub  --project ${project_id} --min-cores 1 --min-ram 7.5 \
-  --preemptible --boot-disk-size 20 --disk-size 200  --regions ${region} \
-  --logging ${logging_dest} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
-  --output UBAM=${output_file} --env SM=${sample_name}  \
-  --image broadinstitute/gatk:4.1.0.0 --env RG=${read_group} --env PL=${platform} \
-  --command '/gatk/gatk --java-options "-Xmx8G -Djava.io.tmpdir=bla" ` +
-  "FastqToSam -F1 ${FASTQ_1} -F2 ${FASTQ_2} -O ${UBAM} --SAMPLE_NAME ${SM} -RG ${RG} -PL ${PL}'"
-)
+  platform}) => {
+  const JOB_NAME = 'launch-fastq-to-sam'
+  const script = `
+  export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
+  dsub \
+    --project ${project_id} \
+    --min-cores 1 \
+    --min-ram 7.5 \
+    --preemptible --boot-disk-size 20 --disk-size 200  --regions ${region} \
+    --logging ${logging_dest} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
+    --output UBAM=${output_file} --env SM=${sample_name}  \
+    --image broadinstitute/gatk:4.1.0.0 --env RG=${read_group} --env PL=${platform} \
+    --command '/gatk/gatk \
+      --java-options "-Xmx8G -Djava.io.tmpdir=bla" FastqToSam -F1 \${FASTQ_1} -F2 \${FASTQ_2} -O \${UBAM} \
+      --SAMPLE_NAME \${SM} -RG \${RG} -PL \${PL}'
+    `
+}
 
 const launchGATK = ({
   region,
@@ -179,6 +189,7 @@ const launchGATK = ({
   input_file_2
 }) => {
   const timestamp = Date.now()
+  const JOB_NAME = 'launch-gatk'
   const FILES_DIR = `${__base}/setting-files/gatk-mvp`
   const TEMP_DIR = `${__base}/temp/${timestamp}`
   fs.mkdirSync(TEMP_DIR)
@@ -207,6 +218,7 @@ const launchGATK = ({
       --provider google-v2 \
       --project ${project_id} \
       --regions ${region} \
+      --name "${JOB_NAME}" \
       --min-cores 1 \
       --min-ram 6.5 \
       --image '${mvp_gatk_image}' \

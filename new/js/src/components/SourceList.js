@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { ANNOTATE_TYPES, BASE_API_URL, API_ROUTES } from '../constants'
 import _ from 'lodash'
 import MC from "materialize-css"
+import convertAnnoFieldsToString from '../utils/convertAnnoFieldsToString'
 
 const baseBadgeStyles = {
   fontWeight: '300',
@@ -19,6 +20,7 @@ const baseBadgeStyles = {
   transition: '0.1s all ease-in'
 }
 const styles = {
+  error: 'tomato',
   row: {
     position: 'relative'
   },
@@ -63,9 +65,10 @@ class SourceList extends Component {
       selected: false,
       selectedFields: [],
       fetched: false,
-      annotatedFields: {}
+      annotatedFields: {},
+      annotatedFieldsString: ''
     }
-    this._selectTab = this._selectTab.bind(this)
+    this._toggleTab = this._toggleTab.bind(this)
     this._selectField = this._selectField.bind(this)
     this._deselectField = this._deselectField.bind(this)
   }
@@ -105,7 +108,7 @@ class SourceList extends Component {
     MC.AutoInit()
   }
 
-  _selectTab = (index) => {
+  _toggleTab = (index) => {
     if (index === this.state.selected) {
       this.setState(Object.assign({}, this.state, {
         selected: false
@@ -115,6 +118,13 @@ class SourceList extends Component {
         selected: index
       }))
     }
+    this.props.onChange({
+      target: {
+        type : 'annotate_fields_picker',
+        name: this.props.name,
+        value: this.state.annotatedFieldsString
+      }
+    })
   }
 
   _selectField = (table, source_name, selected_field) => {
@@ -134,9 +144,7 @@ class SourceList extends Component {
       source.fields = newFields
       return source
     })
-    newState.annotatedFieldsString = Object.keys(newState.annotatedFields).map(key => {
-      return key + newState.annotatedFields[key].join(':')
-    }).join(',')
+    newState.annotatedFieldsString = convertAnnoFieldsToString(newState.annotatedFields)
     this.setState(newState)
     this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
@@ -155,27 +163,31 @@ class SourceList extends Component {
       source.fields = newFields
       return source
     })
-    newState.annotatedFieldsString = Object.keys(newState.annotatedFields).map(key => {
-      return key + newState.annotatedFields[key].join(':')
-    }).join(',')
+    if (newState.annotatedFields[table].length === 0) {
+      delete newState.annotatedFields[table]
+    }
+    newState.annotatedFieldsString = convertAnnoFieldsToString(newState.annotatedFields)
     this.setState(newState)
     this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
 
   render() {
     const { sources, selected, fetched, annotatedFieldsString } = this.state
-    const { title } = this.props
+    const { title, hasError, errorMsg } = this.props
     return (
       <>
         <div>{annotatedFieldsString}</div>
-        <h5 className='header'>{title}</h5>
+        <h5 className='header' style={ hasError ? {color: styles.error} : {} }>{title}</h5>
+        { hasError &&
+          <span style={{ color: styles.error }} className='helper-text'>{errorMsg}</span>
+        }
         { fetched ?
           <ul className="collapsible">
             { sources.map((source, i) => (
               <li key={i}>
                 <div style={{ backgroundColor: selected === i ? '#eee' : '#fff', wordBreak: 'break-all' }}
                   className="collapsible-header"
-                  onClick={() => { this._selectTab(i) } }>
+                  onClick={() => { this._toggleTab(i) } }>
                   <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
                   { typeof source.bigquery_table === 'symbol' ? '___Null___': source.bigquery_table }
                   <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
@@ -223,6 +235,8 @@ class SourceList extends Component {
 
 SourceList.propTypes = {
   name: PropTypes.oneOf(ANNOTATE_TYPES).isRequired,
+  hasError: PropTypes.bool.isRequired,
+  errorMsg: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 }

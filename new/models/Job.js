@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const db = require('../database/database')
+const uuid = require('uuid')
 
 const Model = Sequelize.Model
 class Job extends Model {}
@@ -13,23 +14,23 @@ Job.init({
   },
   name: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   status: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   gs_link: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: true
   },
   created_at: {
     type: Sequelize.DATE,
-    allowNull: false
+    allowNull: true
   },
   finished_at: {
     type: Sequelize.DATE,
-    allowNull: false
+    allowNull: true
   }
 }, {
   sequelize: db,
@@ -41,14 +42,12 @@ Job.init({
 })
 
 async function createTable() {
-  const timestamp = Date.now()
+  const id = uuid.v1()
   const singleJob = {
-    job_id: timestamp,
-    name: timestamp,
-    status: timestamp,
-    created_at: timestamp,
-    finished_at: timestamp,
-    gs_link: timestamp
+    job_id: id,
+    name: id,
+    status: id,
+    gs_link: id
   }
   try {
     await Job.sync({ force: false }).then(() => {

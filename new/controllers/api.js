@@ -132,21 +132,20 @@ router.post(`${API_ROUTES.ANNOTATION_PROCESS}/:annotateType`, (req, res) => {
     'variant',
     'build',
     'VCFTables',
-    'createVCF'
   ]), _.pick(cred, ['project_id']))
   console.log(cmdParams)
   const cmd = query.variantAnnotateVCF(cmdParams)
   console.log(cmd)
   const timestamp = uuid.v1()
   let result
-  const runScript = async () => {
-    try {
-      result = await execPromise(cmd, 'annotate_variant_process', timestamp)
-    } catch (err) {
-      console.error(err.message)
-    }
-  }
-  runScript()
+  // const runScript = async () => {
+  //   try {
+  //     result = await execPromise(cmd, 'annotate_variant_process', timestamp)
+  //   } catch (err) {
+  //     console.error(err.message)
+  //   }
+  // }
+  // runScript()
   res.status(200).json({ success: true })
   console.log('result:', result)
 })
@@ -171,9 +170,16 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
     async function queryParamsNamed() {
       // The SQL query to run
       const sqlQuery = `
-        SELECT *
-        FROM \`${project_id}.${datasetId}.${tableId}\`
-        WHERE type="${type}"
+        SELECT
+          *
+        FROM
+          \`${project_id}.${datasetId}.${tableId}\`
+        WHERE
+          (
+            type="${type}"
+          AND
+            bigquery_table IS NOT NULL
+          )
       `
 
       const options = {
@@ -380,12 +386,26 @@ router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req,
     req.session.client_id = client_id
     logged_in_users[client_id] = client_id
   }
-
-  res.status(200).json({ "success": true })
+  let isValidAuthFile = true
+  if (isValidAuthFile) {
+    res.status(200).json({ "success": true })
+  } else {
+    res.status(200).json({ "success": false, error: 'Incorrect auth file uploaded.' })
+  }
 })
 
 router.post(API_ROUTES.LOG_OUT, (req, res) => {
-  // TODO:
+  // TODO: delete session ID
+  // TODO: delete auth file
+  if(req.session.client_id) {
+    const client_id = req.session.client_id
+    console.log(`deleting "${__base}/credentials/${client_id}.json"`)
+    // fs.unlink(`${__base}/credentials/${client_id}.json`)
+    delete logged_in_users[client_id]
+    res.status(200).json({ "success": true })
+  } else {
+    res.status(304).json({ "success": false, error: `Session ID doesn't exist.` })
+  }
 })
 
 module.exports = router

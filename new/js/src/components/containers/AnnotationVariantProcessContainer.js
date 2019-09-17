@@ -61,13 +61,13 @@ const fields = [
     options: ['hg19', 'hg38'],
     defaultValue: 'hg19',
   },
-  {
-    key: 'createVCF',
-    type: 'checkbox',
-    title: 'If you wish to obtain a VCF file, check this flag',
-    rules: ['required'],
-    defaultValue: false
-  },
+  // {
+  //   key: 'createVCF',
+  //   type: 'checkbox',
+  //   title: 'If you wish to obtain a VCF file, check this flag',
+  //   rules: ['required'],
+  //   defaultValue: false
+  // },
   {
     key: 'variant',
     type: 'annotationFieldsPicker',

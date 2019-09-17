@@ -10,6 +10,7 @@ import MC from "materialize-css"
 const styles = {
   error: 'tomato'
 }
+
 class Form extends Component {
   constructor(props) {
     super(props)
@@ -40,35 +41,36 @@ class Form extends Component {
   }
 
   _updateFormdata = (baseField, value) => {
-    baseField.value = value
-    baseField.touched = true
-    baseField.isValid = !!value.length
-    for (let rule of baseField.rules) {
+    let newBase = _.cloneDeep(baseField)
+    newBase.value = value
+    newBase.touched = true
+    newBase.isValid = !!value.length
+    for (let rule of newBase.rules) {
       switch (rule) {
         case 'required':
-          baseField.isValid = value.trim().length > 0
-          baseField.errorMsg = baseField.isValid ? '' : 'This field is required'
+          newBase.isValid = value.trim().length > 0
+          newBase.errorMsg = newBase.isValid ? '' : 'This field is required'
           break
         case 'gsLink':
-          baseField.isValid = value.startsWith('gs://')
-          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a "gs://" link'
+          newBase.isValid = value.startsWith('gs://')
+          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a "gs://" link'
           break
         case 'bamFile':
-          baseField.isValid = value.endsWith('.bam')
-          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a ".bam" files'
+          newBase.isValid = value.endsWith('.bam')
+          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".bam" files'
           break
         case 'vcfFile':
-          baseField.isValid = value.endsWith('.vcf')
-          baseField.errorMsg = baseField.isValid ? '' : 'You should be providing a ".vcf" files'
+          newBase.isValid = value.endsWith('.vcf')
+          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".vcf" files'
           break
         default:
           break
       }
-      if (!baseField.isValid) {
+      if (!newBase.isValid) {
         break
       }
     }
-    return baseField
+    return newBase
   }
 
   _onChange = (e) => {
@@ -133,6 +135,7 @@ class Form extends Component {
           { fields.map((field,i) =>{
             const formField = formData[field.key]
             const { touched, isValid, errorMsg } = formField
+            const hasError = !!(touched && !isValid)
             if (formField.type === 'dropdown') {
               return (
                 <div key={i} className="row">
@@ -202,16 +205,12 @@ class Form extends Component {
               )
             } else if (formField.type === 'annotationFieldsPicker') {
               return (
-                <div key={i}>
-                  { touched && !isValid &&
-                    <span style={{ color: styles.error, padding: '0 0.75rem' }}
-                      className='helper-text'>{errorMsg}</span>
-                  }
-                  <SourceList
-                    name={formField.key}
-                    title={formField.title}
-                    onChange={this._onChange}/>
-                </div>
+                <SourceList key={i}
+                  hasError={hasError}
+                  errorMsg={errorMsg}
+                  name={formField.key}
+                  title={formField.title}
+                  onChange={this._onChange}/>
               )
             } else {
               return (
@@ -219,14 +218,14 @@ class Form extends Component {
                   <div className='input-field col s12'>
                     <label htmlFor={`form-field-${formField.key}`}>{formField.title}</label>
                     <input id={`form-field-${formField.key}`}
-                      style={ touched && !isValid ? { borderColor: styles.error, color: styles.error} : {} }
+                      style={ hasError ? { borderColor: styles.error, color: styles.error} : {} }
                       name={formField.key}
                       value={formField.value}
                       type='text'
                       onBlur={this._onBlur}
                       onChange={this._onChange} />
                   </div>
-                  { touched && !isValid &&
+                  { hasError &&
                     <span style={{ color: styles.error, padding: '0 0.75rem' }}
                       className='helper-text'>{errorMsg}</span>
                   }

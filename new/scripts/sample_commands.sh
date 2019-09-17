@@ -46,10 +46,17 @@ mvn compile exec:java \
 
 
 ## Variant-based annotate VCF
+# 1) change gbsc-gcp-project-cba:AnnotationHive_public => gbsc-gcp-project-cba:AnnotationHive_hg19
+# 2) no --createVCF=true 
+# 3) --build=hg19 (edited) 
+# 4) add --project=   --projectId=
+# also, you should remove VCF_NA12877_chr17_Test_Lek_Output
+# can you check before running the code if the output table exists VCF_NA12877_chr17_Test_Lek_Output?
 mvn compile exec:java \
   -Dexec.mainClass=com.google.cloud.genomics.cba.StartAnnotationHiveEngine \
   -Dexec.args="BigQueryAnnotateVariants   \
     --projectId=gbsc-gcp-project-annohive-dev   \
+    --project=gbsc-gcp-project-annohive-dev   \
     --bigQueryDatasetId=AnnotationHive        \
     --outputBigQueryTable=VCF_NA12877_chr17_Test_Lek_Output       \
     --variantAnnotationTables=gbsc-gcp-project-cba:AnnotationHive_hg19.hg19_Cosmic70:ID  \
