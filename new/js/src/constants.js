@@ -4,6 +4,19 @@ export const PORT = 8081;
 export const AUTH_FILE_FIELDNAME = 'authFile';
 export const ANNOTATE_TYPES = ['variant', 'generic'];
 
+export const SERVICE_ACCOUNT_KEYS = [
+  "type",
+  "project_id",
+  "private_key_id",
+  "private_key",
+  "client_email",
+  "client_id",
+  "auth_uri",
+  "token_uri",
+  "auth_provider_x509_cert_url",
+  "client_x509_cert_url"
+];
+
 export const PUBLIC_ROUTES = {
   FASTQ_TO_SAM: '/job/fastqtosam',
   FASTQ_TO_SAM_50G: '/job/fastqtosam50g',

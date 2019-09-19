@@ -39,6 +39,7 @@
   "devDependencies": {
     "materialize-css": "^1.0.0-rc.2",
     "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1"
+    "react-router-dom": "^5.0.1",
+    "react-transition-group": "^4.3.0"
   }
 }

@@ -19,13 +19,13 @@ class Nav extends Component {
             rel='noopener noreferrer'
             className="brand-logo">
             <img src="/images/logo.png" alt='stanford bioinformatics logo' />
-            Stanford Genetics
+            Stanford Center for Genetics and Personalized Medicine
           </a>
           <ul id='nav-mobile' className="right hide-on-med-and-down">
             { user ?
               <li style={{ backgroundColor: '#26a69a', padding: '0 10px' }}>Project ID: {user.project_id}</li>
               :
-              <li style={{ backgroundColor: '#ffab40', padding: '0 10px' }}>Please Log In</li>
+              <li style={{ backgroundColor: '#ffab40', padding: '0 10px' }}>Please log in below</li>
             }
             <li><NavLink to='/'>Apps</NavLink></li>
             <li><NavLink to='/monitor'>Monitor</NavLink></li>

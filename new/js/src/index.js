@@ -18,7 +18,16 @@ const store = createStore(
   ))
 )
 
-ReactDOM.render(<Root store={store} />, document.getElementById('root'))
+ReactDOM.render(
+  <Root store={store} />,
+  document.getElementById('root'),
+  () => {
+    setTimeout(() => {
+      document.getElementById('preloader').remove()
+      document.getElementById('preloader-style').remove()
+    }, 300)
+  }
+)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

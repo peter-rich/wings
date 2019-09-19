@@ -66,11 +66,14 @@ class SourceList extends Component {
       selectedFields: [],
       fetched: false,
       annotatedFields: {},
-      annotatedFieldsString: ''
+      annotatedFieldsString: '',
+      filteredText: '',
+      filteredSources: new Set([])
     }
     this._toggleTab = this._toggleTab.bind(this)
     this._selectField = this._selectField.bind(this)
     this._deselectField = this._deselectField.bind(this)
+    this._filterSources = this._filterSources.bind(this)
   }
 
   componentDidMount() {
@@ -81,12 +84,16 @@ class SourceList extends Component {
     })
     .then(response => response.json())
     .then(json => {
+      const filteredText = this.state.filteredText.toLowerCase()
+      let newFilteredSources = new Set([])
       json = json.map(item => {
         let newItem = Object.assign({}, item)
-        const item_key = Symbol(null)
-        newItem.source_name = newItem.source_name !== null ? newItem.source_name : item_key
-        newItem.source_link = newItem.source_link !== null ? newItem.source_link : item_key
-        newItem.bigquery_table = newItem.bigquery_table !== null ? newItem.bigquery_table : item_key
+        newItem.source_name = newItem.source_name !== null ? newItem.source_name : ''
+        newItem.source_link = newItem.source_link !== null ? newItem.source_link : ''
+        newItem.bigquery_table = newItem.bigquery_table !== null ? newItem.bigquery_table : ''
+        if (newItem.bigquery_table.toLowerCase().includes(filteredText)) {
+          newFilteredSources.add(newItem.bigquery_table)
+        }
         let fields = []
         if (newItem.fields !== null) {
           fields = newItem.fields.split(',').map(field => {
@@ -100,12 +107,33 @@ class SourceList extends Component {
         newItem.selected_fields = []
         return newItem
       })
-      this.setState(Object.assign({}, this.state, { sources: json, fetched: true }))
+
+      this.setState(Object.assign({}, this.state, { sources: json, fetched: true, filteredSources: newFilteredSources }))
     })
   }
 
   componentDidUpdate() {
     MC.AutoInit()
+  }
+
+  _filterSources = (e) => {
+    // const new
+    const text = e.target.value.toLowerCase()
+
+    let newFilteredSources = new Set([])
+    const { sources } = this.state
+    sources.forEach(source => {
+      // const { source_name, source_link, bigquery_table, fields } = source
+      // const concatenatedFileds = Object.values(fields).map(field => field.value).join(',')
+      // const textFound = [source_name, source_link, bigquery_table, concatenatedFileds].some(val => {
+      //   return val.toLowerCase().includes(text)
+      // })
+      const textFound = source.search_string.toLowerCase().includes(text)
+      if (textFound) {
+        newFilteredSources.add(source.bigquery_table)
+      }
+    })
+    this.setState(Object.assign({}, this.state, { filteredSources: newFilteredSources, filteredText: text }))
   }
 
   _toggleTab = (index) => {
@@ -172,57 +200,73 @@ class SourceList extends Component {
   }
 
   render() {
-    const { sources, selected, fetched, annotatedFieldsString } = this.state
+    const { sources, selected, fetched, filteredText, filteredSources } = this.state
+    const noMatchingSources = filteredSources.size === 0
     const { title, hasError, errorMsg } = this.props
     return (
       <>
-        <div>{annotatedFieldsString}</div>
         <h5 className='header' style={ hasError ? {color: styles.error} : {} }>{title}</h5>
         { hasError &&
           <span style={{ color: styles.error }} className='helper-text'>{errorMsg}</span>
         }
         { fetched ?
-          <ul className="collapsible">
-            { sources.map((source, i) => (
-              <li key={i}>
-                <div style={{ backgroundColor: selected === i ? '#eee' : '#fff', wordBreak: 'break-all' }}
-                  className="collapsible-header"
-                  onClick={() => { this._toggleTab(i) } }>
-                  <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
-                  { typeof source.bigquery_table === 'symbol' ? '___Null___': source.bigquery_table }
-                  <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
-                    className='right'>
-                    {`${source.selected_fields.length} fields selected: ${source.selected_fields.join(', ')}`}
-                  </span>
-                </div>
-                <div className="collapsible-body clearfix"
-                  style={styles.contentBody}>
-                  <>
-                    { source.fields
-                      .map( (field, j) => {
-                        return (
-                          field.selected ?
-                          <span key={j} style={styles.badge_selected}>
-                            {field.value}
-                            <i className="tiny material-icons"
-                              onClick={() => {
-                                this._deselectField(source.bigquery_table, source.source_name, field)
-                              }
-                            }>close</i>
+          <>
+            <div className='input-field'>
+              <input value={filteredText} type='text'
+                placeholder='Type in keyword to filter...'
+                onChange={this._filterSources} />
+            </div>
+            { noMatchingSources ?
+              <blockquote>
+                <h4>No matching sources</h4>
+              </blockquote> :
+              <div style={{ maxHeight: '800px', overflow: 'scroll' }}>
+                <ul className="collapsible">
+                  {sources
+                    .filter(source => filteredSources.has(source.bigquery_table) )
+                    .map((source, i) => (
+                      <li key={i}>
+                        <div style={{ backgroundColor: selected === i ? '#eee' : '#fff', wordBreak: 'break-all' }}
+                          className="collapsible-header"
+                          onClick={() => { this._toggleTab(i) } }>
+                          <i className="material-icons">{selected === i ? 'expand_less' : 'expand_more'}</i>
+                          { typeof source.bigquery_table === 'symbol' ? '___Null___': source.bigquery_table }
+                          <span style={ source.selected_fields.length > 0 ? styles.selectedCount : styles.selectedEmpty }
+                            className='right'>
+                            {`${source.selected_fields.length} fields selected: ${source.selected_fields.join(', ')}`}
                           </span>
-                          :
-                          <span key={j} style={styles.badge_not_selected}
-                            onClick={() => { this._selectField(source.bigquery_table, source.source_name, field) } }>
-                            {field.value}
-                          </span>
-                        )}
-                      )
-                    }
-                  </>
-                </div>
-              </li>
-            ))}
-          </ul>
+                        </div>
+                        <div className="collapsible-body clearfix"
+                          style={styles.contentBody}>
+                          <>
+                            { source.fields
+                              .map((field, j) => {
+                                return (
+                                  field.selected ?
+                                  <span key={j} style={styles.badge_selected}>
+                                    {field.value}
+                                    <i className="tiny material-icons"
+                                      onClick={() => {
+                                        this._deselectField(source.bigquery_table, source.source_name, field)
+                                      }
+                                    }>close</i>
+                                  </span>
+                                  :
+                                  <span key={j} style={styles.badge_not_selected}
+                                    onClick={() => { this._selectField(source.bigquery_table, source.source_name, field) } }>
+                                    {field.value}
+                                  </span>
+                                )}
+                              )
+                            }
+                          </>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            }
+          </>
           :
           <div className="progress">
             <div className="indeterminate"></div>

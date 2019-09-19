@@ -11,7 +11,7 @@ const query = require(`${__base}/serverHelpers/query`)
 const updateJobs = require(`${__base}/tasks/updateJobs`)
 const { execPromise } = require(`${__base}/serverHelpers/hoc`)
 const _ = require('lodash')
-const { API_ROUTES, AUTH_FILE_FIELDNAME, ANNOTATE_TYPES } = require(`${__base}/config`)
+const { API_ROUTES, AUTH_FILE_FIELDNAME, ANNOTATE_TYPES, SERVICE_ACCOUNT_KEYS } = require(`${__base}/config`)
 const { GOOGLE_CRED_PATH } = require(`${__base}/config-server`)
 
 router.use(function(req, res, next) {
@@ -116,38 +116,39 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
     })
 })
 
-router.post(`${API_ROUTES.ANNOTATION_PROCESS}/:annotateType`, (req, res) => {
+router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
   console.log(req.body)
-  const { annotateType } = req.params
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
   const cred = JSON.parse(authFile)
 
-  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH, annotateType }, _.pick(req.body, [
+  const cmdParams = Object.assign({ GOOGLE_CRED_FILE_PATH }, _.pick(req.body, [
     'region',
     'logs_path',
     'stagingLocation',
     'bigQueryDatasetId',
     'outputBigQueryTable',
+    'googleVCF',
     'variant',
+    'generic',
     'build',
     'VCFTables',
   ]), _.pick(cred, ['project_id']))
   console.log(cmdParams)
-  const cmd = query.variantAnnotateVCF(cmdParams)
+  const cmd = query.annotateVCF(cmdParams)
   console.log(cmd)
   const timestamp = uuid.v1()
   let result
-  // const runScript = async () => {
-  //   try {
-  //     result = await execPromise(cmd, 'annotate_variant_process', timestamp)
-  //   } catch (err) {
-  //     console.error(err.message)
-  //   }
-  // }
-  // runScript()
-  res.status(200).json({ success: true })
-  console.log('result:', result)
+  const runScript = async () => {
+    try {
+      result = await execPromise(cmd, 'annotate_variant_process', timestamp)
+      res.status(200).json({ success: true, result })
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).json({ success: false, error: err })
+    }
+  }
+  runScript()
 })
 
 router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
@@ -169,17 +170,27 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
 
     async function queryParamsNamed() {
       // The SQL query to run
-      const sqlQuery = `
+      const alias = 'List'
+      const view = `
         SELECT
-          *
+          *, CONCAT(${alias}.source_name, '-', ${alias}.source_link,  '-', ${alias}.bigquery_table, '-', ${alias}.type, '-', ${alias}.fields) as search_string
         FROM
-          \`${project_id}.${datasetId}.${tableId}\`
+          \`${project_id}.${datasetId}.${tableId}\` as ${alias}
         WHERE
           (
             type="${type}"
           AND
             bigquery_table IS NOT NULL
           )
+      `
+      const sqlQuery = `
+        SELECT
+          *
+        FROM (
+          ${view}
+        )
+        WHERE
+          search_string IS NOT NULL
       `
 
       const options = {
@@ -383,14 +394,17 @@ router.post(API_ROUTES.LOG_IN, authFileUpload.single(AUTH_FILE_FIELDNAME), (req,
   }
   if(!req.session.client_id) {
     const client_id = file.filename.substring(0, file.filename.length-5)
-    req.session.client_id = client_id
-    logged_in_users[client_id] = client_id
-  }
-  let isValidAuthFile = true
-  if (isValidAuthFile) {
-    res.status(200).json({ "success": true })
-  } else {
-    res.status(200).json({ "success": false, error: 'Incorrect auth file uploaded.' })
+    const newAuthFile = fs.readFileSync(file.path)
+    const newCred = JSON.parse(newAuthFile)
+    if (file.mimetype !== 'application/json') {
+      res.status(200).json({ "success": false, error: 'Incorrect auth file type uploaded.' })
+    } else if (JSON.stringify(Object.keys(newCred)) === JSON.stringify(SERVICE_ACCOUNT_KEYS)) {
+      req.session.client_id = client_id
+      logged_in_users[client_id] = client_id
+      res.status(200).json({ "success": true })
+    } else {
+      res.status(200).json({ "success": false, error: `Incorrect service account file uploaded. It misses one or some keys from the following list: ${SERVICE_ACCOUNT_KEYS}` })
+    }
   }
 })
 

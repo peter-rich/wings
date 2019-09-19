@@ -28,3 +28,11 @@ nav {
 .input-field > label:not(.label-icon).active {
   bottom: 1.8rem;
 }
+
+[type="radio"]:not(:checked) + span, [type="radio"]:checked + span {
+  padding-left: 25px;
+}
+
+nav .brand-logo {
+  font-size: 1.8rem;
+}

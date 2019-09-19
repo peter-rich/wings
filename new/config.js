@@ -5,6 +5,19 @@ exports.AUTH_FILE_FIELDNAME = 'authFile'
 
 exports.ANNOTATE_TYPES = ['variant', 'generic']
 
+exports.SERVICE_ACCOUNT_KEYS = [
+  "type",
+  "project_id",
+  "private_key_id",
+  "private_key",
+  "client_email",
+  "client_id",
+  "auth_uri",
+  "token_uri",
+  "auth_provider_x509_cert_url",
+  "client_x509_cert_url"
+]
+
 exports.PUBLIC_ROUTES = {
   FASTQ_TO_SAM: '/job/fastqtosam',
   FASTQ_TO_SAM_50G: '/job/fastqtosam50g',

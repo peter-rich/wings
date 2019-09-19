@@ -103,7 +103,7 @@ const importVCF = ({
 }
 
 
-const variantAnnotateVCF = ({
+const annotateVCF = ({
   GOOGLE_CRED_FILE_PATH,
   project_id,
   region,
@@ -112,6 +112,8 @@ const variantAnnotateVCF = ({
   outputBigQueryTable,
   annotateType,
   variant,
+  generic,
+  googleVCF,
   build,
   VCFTables,
   stagingLocation,
@@ -126,9 +128,11 @@ const variantAnnotateVCF = ({
       --project=${project_id} \
       --bigQueryDatasetId=${bigQueryDatasetId}  \
       --outputBigQueryTable=${outputBigQueryTable} \
-      ${annotateType == 'variant' ? '--variantAnnotationTables=' + variant : ''}  \
+      ${variant ? '--variantAnnotationTables=' + variant : ''}  \
+      ${generic ? '--genericAnnotationTables=' + generic : ''}  \
       --VCFTables=${VCFTables} \
       --build=${build} \
+      --googleVCF=${googleVCF} \
       --stagingLocation=${stagingLocation} \
       --runner=DataflowRunner" \
     -Pdataflow-runner
@@ -292,7 +296,7 @@ module.exports = {
   getAllJobs,
   createVCFList,
   importVCF,
-  variantAnnotateVCF,
+  annotateVCF,
   launchFastqtosam,
   launchGATK,
   launchCNVnator

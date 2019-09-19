@@ -1,7 +1,7 @@
 import React from "react"
 import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom"
 import PropTypes from 'prop-types'
-import MainLayoutRoute from './layouts/MainLayoutRoute'
+import MainProtectedRoute from './layouts/MainProtectedRoute'
 import FastqToSamContainer from './components/containers/FastqToSamContainer'
 import GATKContainer from './components/containers/GATKContainer'
 import CNVnatorContainer from './components/containers/CNVnatorContainer'
@@ -17,26 +17,26 @@ const Root = ({ store }) => (
   <Provider store={store}>
     <Router>
       <Switch>
-        <MainLayoutRoute exact path="/" component={Home} />
-        <MainLayoutRoute
+        <MainProtectedRoute exact path="/" component={Home} />
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.FASTQ_TO_SAM}
           component={FastqToSamContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.FASTQ_TO_SAM_50G}
           component={FastqToSamContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.GATK}
           component={GATKContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.CNVNATOR}
           component={CNVnatorContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.ANNOTATION_HIVE_IMPORT}
           component={AnnotationImportContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS}
           component={AnnotationVariantProcessContainer}/>
-        <MainLayoutRoute
+        <MainProtectedRoute
           path={PUBLIC_ROUTES.MONITOR}
           component={MonitorPage}/>
         <Redirect from='*' to='/' />

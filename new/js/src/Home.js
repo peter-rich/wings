@@ -4,7 +4,6 @@ import './materialize.css';
 import './styles/App.css';
 import { PUBLIC_ROUTES } from './constants'
 import MiniApp from './components/MiniApp'
-import Auth from './components/Auth'
 
 const miniApps = [
   {
@@ -28,7 +27,7 @@ const miniApps = [
     description: 'AnnotationHive Import: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'Annotation Process(Variant Based)',
+    title: 'AnnotationHive Process',
     link: PUBLIC_ROUTES.ANNOTATION_HIVE_PROCESS,
     description: 'AnnotationHive Process: xxxx xxxx xxxx xxxx xxxx'
   }
@@ -49,8 +48,6 @@ class App extends Component {
           ))
           }
         </div>
-        <div className="divider"></div>
-        <Auth />
       </>
     )
   }
