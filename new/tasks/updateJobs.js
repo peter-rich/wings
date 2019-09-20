@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { GOOGLE_CRED_PATH, GOOGLE_CRED_FILE } = require(`${__base}/config-server`)
+const { GOOGLE_CRED_PATH } = require(`${__base}/config-server`)
 const Job = require(`${__base}/models/Job`)
 const query = require(`${__base}/serverHelpers/query`)
 const { execPromise } = require(`${__base}/serverHelpers/hoc`)
@@ -14,35 +14,43 @@ const runScript = async (client_id) => {
     const result = await execPromise(dstatCmd)
     let newJobs = []
     const numOfCols = 6
-    result.replace(/\r\n/g, "\r").replace(/\n/g, "\r").split(/\r/).forEach((item, i) => {
-      console.log('item:', item)
-      const order = Math.floor(i / numOfCols)
-      const key = item.split(': ')[0].split('').slice(1).join('').trim()
-      let value = item.split(`${key}:`)[1].trim()
-      const colOrder = i % numOfCols
-      if (colOrder === 0) {
+    const headers = ['- create-time:', 'end-time:', 'job-id:', 'job-name:', 'logging:', 'status:']
+    i = -1
+    let value
+    result.replace(/\r\n/g, "\r").replace(/\n/g, "\r").split(/\r/).forEach(item=> {
+      const startsWithHeader = headers.some(header => item.trim().startsWith(header))
+      if (startsWithHeader) {
+        i++
+        const key = item.split(': ')[0].split('').slice(1).join('').trim()
+        value = item.split(`${key}:`)[1].trim()
+      } else{
+        value += item
+      }
+      const row = Math.floor(i / numOfCols)
+      const column = i % numOfCols
+      console.log(item, 'row:', row, 'column:', column)
+      if (column === 0) {
         newJobs.push({})
       }
-      if (colOrder === 0 || colOrder === 1) {
+      if (column === 0 || column === 1) {
         value = value.slice(1, value.length-1)
       }
-      switch (colOrder) {
+      switch (column) {
         case 0:
-          newJobs[order].created_at = value
+          newJobs[row].created_at = value
         case 1:
-          newJobs[order].finished_at = value
+          newJobs[row].finished_at = value
         case 2:
-          newJobs[order].job_id = value
+          newJobs[row].job_id = value
         case 3:
-          newJobs[order].name = value
+          newJobs[row].name = value
         case 4:
-          newJobs[order].gs_link = value
+          newJobs[row].gs_link = value
         case 5:
-          newJobs[order].status = value
+          newJobs[row].status = value
       }
     })
     newJobs.forEach(job => {
-      console.log(job)
       Job.findOne({ where: { job_id: job.job_id } })
         .then(function(obj) {
           if (obj) {

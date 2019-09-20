@@ -173,6 +173,7 @@ const launchFastqtosam = ({
     --project ${project_id} \
     --min-cores 1 \
     --min-ram 7.5 \
+    --name "${JOB_NAME}" \
     --preemptible --boot-disk-size 20 --disk-size 200  --regions ${region} \
     --logging ${logging_dest} --input FASTQ_1=${input_file_1} --input FASTQ_2=${input_file_2} \
     --output UBAM=${output_file} --env SM=${sample_name}  \

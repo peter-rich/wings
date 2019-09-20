@@ -4,12 +4,16 @@ import fieldShape from './fieldShape'
 import SourceList from '../SourceList'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
-import MC from "materialize-css"
+import MC from 'materialize-css'
 
 
 const styles = {
   error: 'tomato'
 }
+
+
+let initialState = {}
+
 
 class Form extends Component {
   constructor(props) {
@@ -25,20 +29,14 @@ class Form extends Component {
         touched: hasDefaultVal || false
       }
     })
-    this.state = {
-      formData: initialFormData,
-      hasFormResult: false,
-      formResult: '',
-      isFormValid: false,
-      isSubmitting: false,
-      totalGroups: props.fields.length,
-      activeGroup: 0
-    }
-    this._onChange = this._onChange.bind(this)
-    this._selectGroup = this._selectGroup.bind(this)
-    this._onBlur = this._onBlur.bind(this)
-    this._updateFormdata = this._updateFormdata.bind(this)
-    this._onSubmit = this._onSubmit.bind(this)
+    initialState.formData = initialFormData
+    initialState.hasFormResult = false
+    initialState.formResult = ''
+    initialState.isFormValid = false
+    initialState.isSubmitting = false
+    initialState.totalGroups = props.fields.length
+    initialState.activeGroup = 0
+    this.state = initialState
   }
 
   _selectGroup = (e, group) => {
@@ -63,6 +61,7 @@ class Form extends Component {
           break
         case 'fieldRequired':
           newBase.isValid = value.trim().length > 0
+          // newBase.isValid = fieldRequired
           newBase.errorMsg = newBase.isValid ? '' : 'At least 1 field needs to be selected'
           break
         case 'gsLink':
@@ -96,7 +95,7 @@ class Form extends Component {
     } else if (['annotate_fields_picker', 'text'].includes(fieldType)){
       const newField = this._updateFormdata(newState.formData[fieldName], e.target.value)
       newState.formData[fieldName] = newField
-    } else if (['radio', 'dropdown'].includes(fieldType)) {
+    } else if (['radio', 'select-one'].includes(fieldType)) {
       newState.formData[fieldName].value = e.target.value
     }
     newState.formData[fieldName].touched = true
@@ -140,6 +139,10 @@ class Form extends Component {
     })
   }
 
+  _resetForm = () => {
+    this.setState(initialState)
+  }
+
   componentDidMount() {
     MC.AutoInit()
   }
@@ -154,9 +157,8 @@ class Form extends Component {
       formResult,
       formData
     } = this.state
-    const { title,
-      fields } = this.props
-    console.log(this.state)
+    const { title, fields } = this.props
+    // console.log(this.state)
     return (
       <div className="row">
         <form onSubmit={this._onSubmit}
@@ -293,19 +295,28 @@ class Form extends Component {
               </div>
             )
           })}
-          { hasFormResult &&
-            <blockquote>
-              <p>{formResult}</p>
-            </blockquote>
+          { isSubmitting &&
+            <div className='card-panel'>
+              <div className='progress'>
+                <div className='indeterminate'></div>
+              </div>
+            </div>
           }
-          <div className="row">
-            <div className="input-field col s12">
-              <button type="submit" name="action"
-                className="btn waves-effect waves-light"
+          { hasFormResult &&
+            <div id='formResultBox' className='card-panel' style={{ position: 'relative' }}>
+              <span style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer' }}
+                onClick={this._resetForm}><i className='material-icons'>close</i></span>
+              <p><span style={{ fontWeight: 'bold' }}>Result:</span> {formResult}</p>
+            </div>
+          }
+          <div className='row'>
+            <div className='input-field col s12'>
+              <button type='submit' name='action'
+                className='btn waves-effect waves-light'
                 disabled={!isFormValid || isSubmitting}
                 onClick={this._onSubmit}>
                 { isSubmitting ? 'Submitting ...' : 'Submit Job' }
-                { isSubmitting ? <i className="material-icons right">arrow_upward</i> : <i className="material-icons right">send</i> }
+                { isSubmitting ? <i className='material-icons right'>arrow_upward</i> : <i className='material-icons right'>send</i> }
               </button>
             </div>
           </div>

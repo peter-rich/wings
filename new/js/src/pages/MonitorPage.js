@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Table from '../components/Table'
+import JobViewer from '../components/JobViewer'
 import { BASE_API_URL, API_ROUTES } from '../constants'
 
 const UPDATE_STARTDATE = 'UPDATE_STARTDATE'
@@ -120,7 +120,7 @@ class MonitorPage extends Component {
             <span>Fetch latest</span>
           </div>
         </div>
-        <Table loading={!dataFetched} records={jobs} />
+        <JobViewer loading={!dataFetched} records={jobs} />
       </>
     )
   }

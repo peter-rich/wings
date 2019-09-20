@@ -3,6 +3,9 @@ const exec = require('child_process').exec
 
 function execPromise(command, name, id) {
   return new Promise(function(resolve, reject) {
+      // setTimeout(() => {
+      //   resolve('Dummy message, yeehaw 🤠')
+      // }, 3000)
       exec(command, (error, stdout, stderr) => {
           if (error) {
               reject(error)

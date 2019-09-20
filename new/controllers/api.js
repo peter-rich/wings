@@ -55,60 +55,33 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
         console.log(cmd)
         const script = exec(cmd)
         const timestamp = uuid.v1()
-        script.stdout.on('data', (chunk)=>{
-          console.log('stdout: ', chunk)
-          fs.appendFileSync(`${__base}/logs/Annotation_Import-stdout-${timestamp}.txt`, chunk, function(err) {
-            if(err) {
-              return console.log(err)
-            }
-            console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
-          })
-        })
-        script.stderr.on('data', (chunk)=>{
-          console.error(chunk)
-          fs.appendFileSync(`${__base}/logs/Annotation_Import-stderr-${timestamp}.txt`, chunk, function(err) {
-            if(err) {
-              return console.error(err)
-            }
-            console.error(`❌error appeared when executing "${cmd}!"`)
-          })
-        })
-        script.on('close', code => {
-          console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
-          if (code == 0) {
-            res.status(200).json({ success: true })
+        let result
+        const runScript = async () => {
+          try {
+            result = await execPromise(cmd, 'annotation_Import', timestamp)
+            res.status(200).json({ success: true, result })
+          } catch (err) {
+            console.error(err.message)
+            res.status(500).json({ success: false, error: err })
           }
-        })
+        }
+        runScript()
       } else {
         console.log(`Table "${tableId}" doesn't exist!!!`)
         cmd = query.createVCFList(cmdParams)
         console.log(cmd)
-        const script = exec(cmd)
         const timestamp = uuid.v1()
-        script.stdout.on('data', (chunk)=>{
-          console.log('stdout: ', chunk)
-          fs.appendFileSync(`${__base}/logs/Annotation_create_VCFList-stdout-${timestamp}.txt`, chunk, function(err) {
-            if(err) {
-              return console.log(err)
-            }
-            console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
-          })
-        })
-        script.stderr.on('data', (chunk)=>{
-          console.error(chunk)
-          fs.appendFileSync(`${__base}/logs/Annotation_create_VCFList-stderr-${timestamp}.txt`, chunk, function(err) {
-            if(err) {
-              return console.error(err)
-            }
-            console.error(`❌error appeared when executing "${cmd}!"`)
-          })
-        })
-        script.on('close', code => {
-          console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
-          if (code == 0) {
-            res.status(200).json({ success: true })
+        let result
+        const runScript = async () => {
+          try {
+            result = await execPromise(cmd, 'annotation_create_VCFList', timestamp)
+            res.status(200).json({ success: true, result })
+          } catch (err) {
+            console.error(err.message)
+            res.status(500).json({ success: false, error: err })
           }
-        })
+        }
+        runScript()
       }
     })
     .catch(err => {
@@ -222,33 +195,18 @@ router.post(API_ROUTES.CNVNATOR, (req, res) => {
   console.log(cmdParams)
   const cmd = query.launchCNVnator(cmdParams)
   console.log(cmd)
-
-  const script = exec(cmd)
   const timestamp = uuid.v1()
-  script.stdout.on('data', (chunk)=>{
-    console.log('stdout: ', chunk)
-    fs.appendFileSync(`${__base}/logs/CNVnator-stdout-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.log(err)
-      }
-      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
-    })
-  })
-  script.stderr.on('data', (chunk)=>{
-    console.error(chunk)
-    fs.appendFileSync(`${__base}/logs/CNVnator-stderr-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.error(err)
-      }
-      console.error(`❌error appeared when executing "${cmd}!"`)
-    })
-  })
-  script.on('close', code => {
-    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
-    if (code == 0) {
-      res.status(200).json({ success: true })
+  let result
+  const runScript = async () => {
+    try {
+      result = await execPromise(cmd, 'CNVnator', timestamp)
+      res.status(200).json({ success: true, result })
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).json({ success: false, error: err })
     }
-  })
+  }
+  runScript()
 })
 
 router.post(API_ROUTES.GATK, (req, res) => {
@@ -266,32 +224,18 @@ router.post(API_ROUTES.GATK, (req, res) => {
   console.log(cmdParams)
   const cmd = query.launchGATK(cmdParams)
   console.log(cmd)
-  const script = exec(cmd)
   const timestamp = uuid.v1()
-  script.stdout.on('data', (chunk)=>{
-    console.log('stdout: ', chunk)
-    fs.appendFileSync(`${__base}/logs/GATK-stdout-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.log(err)
-      }
-      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
-    })
-  })
-  script.stderr.on('data', (chunk)=>{
-    console.error(chunk)
-    fs.appendFileSync(`${__base}/logs/GATK-stderr-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.error(err)
-      }
-      console.error(`❌error appeared when executing "${cmd}!"`)
-    })
-  })
-  script.on('close', code => {
-    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
-    if (code == 0) {
-      res.status(200).json({ success: true })
+  let result
+  const runScript = async () => {
+    try {
+      result = await execPromise(cmd, 'GATK', timestamp)
+      res.status(200).json({ success: true, result })
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).json({ success: false, error: err })
     }
-  })
+  }
+  runScript()
 })
 
 router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
@@ -313,30 +257,18 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
   console.log(`cmdParams, `, cmdParams)
   const cmd = query.launchFastqtosam(cmdParams)
   console.log(`cmd, `, cmd)
-
-  const script = exec(cmd)
   const timestamp = uuid.v1()
-  script.stdout.on('data', (chunk)=>{
-    console.log('stdout: ', chunk)
-    fs.appendFileSync(`${__base}/logs/fastqtosam-stdout-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.log(err)
-      }
-      console.log(`✅"${cmd}!" executed successfully. Log file saved. `)
-    })
-  })
-  script.stderr.on('data', (chunk)=>{
-    console.error(chunk)
-    fs.appendFileSync(`${__base}/logs/fastqtosam-stderr-${timestamp}.txt`, chunk, function(err) {
-      if(err) {
-        return console.error(err)
-      }
-      console.error(`❌error appeared when executing "${cmd}!"`)
-    })
-  })
-  script.on('close', code => {
-    console.log(`${API_ROUTES.FASTQ_TO_SAM} script closed with : ${code}`)
-  })
+  let result
+  const runScript = async () => {
+    try {
+      result = await execPromise(cmd, 'fastqtosam', timestamp)
+      res.status(200).json({ success: true, result })
+    } catch (err) {
+      console.error(err.message)
+      res.status(500).json({ success: false, error: err })
+    }
+  }
+  runScript()
 })
 
 router.get(API_ROUTES.JOBS, (req, res) => {
@@ -423,11 +355,3 @@ router.post(API_ROUTES.LOG_OUT, (req, res) => {
 })
 
 module.exports = router
-
-// fetch('http://another.com', {
-//   credentials: "include"
-// })
-
-// 200 OK
-// Access-Control-Allow-Origin: https://javascript.info
-// Access-Control-Allow-Credentials: true
