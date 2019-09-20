@@ -59,11 +59,10 @@ class Form extends Component {
           newBase.isValid = value.trim().length > 0
           newBase.errorMsg = newBase.isValid ? '' : 'This field is required'
           break
-        case 'fieldRequired':
-          newBase.isValid = value.trim().length > 0
-          // newBase.isValid = fieldRequired
-          newBase.errorMsg = newBase.isValid ? '' : 'At least 1 field needs to be selected'
-          break
+        // case 'oneOfMoreFields':
+        //   newBase.isValid = value.length > 0
+        //   newBase.errorMsg = newBase.isValid ? '' : 'Click on previous/next panel. At least 1 field needs to be selected.'
+        //   break
         case 'gsLink':
           newBase.isValid = value.startsWith('gs://')
           newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a "gs://" link'
@@ -92,9 +91,28 @@ class Form extends Component {
     const fieldType = e.target.type
     if (fieldType === 'checkbox') {
       newState.formData[fieldName].value = !!e.target.checked
-    } else if (['annotate_fields_picker', 'text'].includes(fieldType)){
+    } else if (['text'].includes(fieldType)){
       const newField = this._updateFormdata(newState.formData[fieldName], e.target.value)
       newState.formData[fieldName] = newField
+    } else if (fieldType === 'annotationFieldsPicker') {
+      let newFormData = _.cloneDeep(newState.formData)
+      newFormData[fieldName].value = e.target.value
+      const annotatedFieldKeys = Object.values(newFormData)
+                                .filter( field => field.type === 'annotationFieldsPicker' && field.rules.includes('oneOfMoreFields') )
+                                .map(field => field.key)
+      const joinedFields = annotatedFieldKeys
+                            .map(key => newFormData[key].value)
+                            .join('')
+                            .trim()
+      const isValid = joinedFields.length > 0 ? true : false
+      const errorMsg = isValid ? '' : 'Click on previous/next button. At least 1 field needs to be selected.'
+      annotatedFieldKeys
+        .forEach(key => {
+          newFormData[key].isValid = isValid
+          newFormData[key].errorMsg = errorMsg
+          newFormData[key].touched = true
+        })
+      newState.formData = newFormData
     } else if (['radio', 'select-one'].includes(fieldType)) {
       newState.formData[fieldName].value = e.target.value
     }
@@ -194,30 +212,14 @@ class Form extends Component {
                     return (
                       <div key={i} className="row">
                         <div className="input-field col s12">
+                          <p>{formField.title}</p>
                           <select name={formField.key}
                             className="browser-default"
                             onChange={this._onChange}
                             value={formField.value}>
-                            {/* <option value='asia-east1'>asia-east1 (Taiwan)</option>
-                            <option value='asia-east2'>asia-east2 (Hong Kong)</option>
-                            <option value='asia-northeast1'>asia-northeast1 (Tokyo)</option>
-                            <option value='asia-northeast2'>asia-northeast2 (Osaka)</option>
-                            <option value='asia-south1'>asia-south1 (Mumbai)</option>
-                            <option value='asia-southeast1'>asia-southeast1 (Singapore)</option>
-                            <option value='australia-southeast1'>australia-southeast1 (Sydney)</option>
-                            <option value='europe-north1'>europe-north1 (Finland)</option>
-                            <option value='europe-west1'>europe-west1 (Belgium)</option>
-                            <option value='europe-west2'>europe-west2 (London)</option>
-                            <option value='europe-west3'>europe-west3 (Frankfurt)</option>
-                            <option value='europe-west4'>europe-west4 (Netherlands)</option>
-                            <option value='europe-west6'>europe-west6 (Zürich)</option>
-                            <option value='northamerica-northeast1'>northamerica-northeast1 (Montréal)</option>
-                            <option value='southamerica-east1 '>southamerica-east1 (São Paulo)'</option> */}
-                            <option value='us-central1'>us-central1 (Iowa)</option>
-                            <option value='us-east1'>us-east1 (South Carolina)</option>
-                            <option value='us-east4'>us-east4 (Northern Virginia)</option>
-                            <option value='us-west1'>us-west1 (Oregon)</option>
-                            <option value='us-west2'>us-west2 (Los Angeles)</option>
+                            { formField.options.map((option, i) =>
+                              <option key={i} value={option.key}>{option.displayName}</option>
+                            )}
                           </select>
                         </div>
                       </div>
@@ -247,11 +249,11 @@ class Form extends Component {
                           { formField.options.map((option,i) => (
                             <label key={i} style={{ margin: '0 1rem' }}>
                               <input name={formField.key}
-                                value={option}
+                                value={option.key}
                                 type='radio'
-                                checked={formField.value === option}
+                                checked={formField.value === option.key}
                                 onChange={this._onChange} />
-                              <span>{option}</span>
+                              <span>{option.displayName}</span>
                             </label>
                           ))}
                         </div>

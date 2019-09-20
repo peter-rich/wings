@@ -70,10 +70,6 @@ class SourceList extends Component {
       filteredText: '',
       filteredSources: new Set([])
     }
-    this._toggleTab = this._toggleTab.bind(this)
-    this._selectField = this._selectField.bind(this)
-    this._deselectField = this._deselectField.bind(this)
-    this._filterSources = this._filterSources.bind(this)
   }
 
   componentDidMount() {
@@ -117,17 +113,11 @@ class SourceList extends Component {
   }
 
   _filterSources = (e) => {
-    // const new
     const text = e.target.value.toLowerCase()
 
     let newFilteredSources = new Set([])
     const { sources } = this.state
     sources.forEach(source => {
-      // const { source_name, source_link, bigquery_table, fields } = source
-      // const concatenatedFileds = Object.values(fields).map(field => field.value).join(',')
-      // const textFound = [source_name, source_link, bigquery_table, concatenatedFileds].some(val => {
-      //   return val.toLowerCase().includes(text)
-      // })
       const textFound = source.search_string.toLowerCase().includes(text)
       if (textFound) {
         newFilteredSources.add(source.bigquery_table)
@@ -148,7 +138,7 @@ class SourceList extends Component {
     }
     this.props.onChange({
       target: {
-        type : 'annotate_fields_picker',
+        type : 'annotationFieldsPicker',
         name: this.props.name,
         value: this.state.annotatedFieldsString
       }
@@ -174,7 +164,7 @@ class SourceList extends Component {
     })
     newState.annotatedFieldsString = convertAnnoFieldsToString(newState.annotatedFields)
     this.setState(newState)
-    this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
+    this.props.onChange({ target: { type : 'annotationFieldsPicker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
 
   _deselectField = (table, source_name, field_to_move) => {
@@ -196,7 +186,7 @@ class SourceList extends Component {
     }
     newState.annotatedFieldsString = convertAnnoFieldsToString(newState.annotatedFields)
     this.setState(newState)
-    this.props.onChange({ target: { type : 'annotate_fields_picker', name: this.props.name, value: newState.annotatedFieldsString } })
+    this.props.onChange({ target: { type : 'annotationFieldsPicker', name: this.props.name, value: newState.annotatedFieldsString } })
   }
 
   render() {

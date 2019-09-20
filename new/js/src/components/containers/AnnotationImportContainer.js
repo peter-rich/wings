@@ -59,7 +59,10 @@ const fields = [
       type: 'radio',
       title: 'Build type',
       rules: ['required'],
-      options: ['hg19', 'hg38'],
+      options: [
+        { key: 'hg19', displayName: 'HG19' },
+        { key: 'hg38', displayName: 'HG38' }
+      ],
       defaultValue: 'hg19',
     }
   ]

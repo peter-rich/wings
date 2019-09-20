@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import Form from './Form'
-import { API_ROUTES, ANNOTATE_TYPES } from '../../constants'
+import { API_ROUTES, ANNOTATE_TYPES, GENE_MODES, REGIONS } from '../../constants'
 import { requestUser } from '../../datastore/auth/authAction'
 const title = 'Annotation Process'
 // Array of groups of fields
@@ -11,6 +11,7 @@ const fields = [
       key: 'region',
       defaultValue: 'us-central1',
       type: 'dropdown',
+      options: REGIONS,
       title: 'Region',
       rules: ['required'],
     },
@@ -56,7 +57,10 @@ const fields = [
       type: 'radio',
       title: 'Build type:',
       rules: ['required'],
-      options: ['hg19', 'hg38'],
+      options: [
+        { key: 'hg19', displayName: 'HG19' },
+        { key: 'hg38', displayName: 'HG38' }
+      ],
       defaultValue: 'hg19',
     }
   ],
@@ -65,7 +69,7 @@ const fields = [
       key: ANNOTATE_TYPES[0],
       type: 'annotationFieldsPicker',
       title: 'Variant-based Annotation, pick fields from the annotation tables below.',
-      rules: ['fieldRequired'],
+      rules: ['oneOfMoreFields'],
     }
   ],
   [
@@ -73,7 +77,28 @@ const fields = [
       key: ANNOTATE_TYPES[1],
       type: 'annotationFieldsPicker',
       title: 'Interval-based Annotation, pick fields from the annotation tables below.',
-      rules: ['fieldRequired'],
+      rules: ['oneOfMoreFields'],
+    }
+  ],
+  [
+    {
+      key: 'gene_mode',
+      defaultValue: 'ucsc_ref_gene',
+      type: 'dropdown',
+      options: GENE_MODES,
+      title: 'Gene Mode',
+      rules: ['required'],
+    },
+    {
+      key: 'gene_type',
+      defaultValue: 'inter_genetic',
+      options: [
+        { key: 'inter_genetic', displayName: 'Variant Type' },
+        { key: 'exonic_genetic', displayName: 'Exonic Variant Type' }
+      ],
+      type: 'radio',
+      title: 'Gene-based Annotation Type:',
+      rules: ['required'],
     }
   ]
 ]
