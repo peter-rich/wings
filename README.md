@@ -1,46 +1,85 @@
-# wings
+# Project Title
+Stanford Center for Genomics and Personalized Medicine
 
-## Document
+## Getting Started
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-https://docs.google.com/document/d/1BhynelsLiLd_dWbu7-W97-tZv0bKK4HfI4Y2kaxYqVg
+### Prerequisites
+Log in using an authorized GCP account
+```bash
+gcloud auth login
+```
+For example
+```bash
+> gcloud auth login --no-launch-browser
+You are running on a Google Compute Engine virtual machine.
+It is recommended that you use service accounts for authentication.
+You can run:
+  $ gcloud config set account `ACCOUNT`
+to switch accounts if necessary.
+Your credentials may be visible to others with access to this
+virtual machine. Are you sure you want to authenticate with
+your personal account?
+Do you want to continue (Y/n)?  y
+Go to the following link in your browser:
+    https://accounts.google.com/o/oauth2/auth?redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob&prompt=select_account&response_type=code&client_id=32555940559.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute&access_type=offline
 
-## IP address
+Enter verification code:
 
-IP address: http://34.66.182.191/
+You are now logged in as [user@example.com].
+Your current project is [None].  You can change this setting by running:
+  $ gcloud config set project PROJECT_ID
+```
 
-## Log In
+### Installing
+```bash
+sh ./install.sh
+```
+## Running the tests
 
-Service Account Key
+Explain how to run the automated tests for this system
 
-User Name
+### Break down into end to end tests
 
-### Change the Picture
+Explain what these tests test and why
 
-`/html/index.html`  ---> Start from `Line:62  <img .... >`.
+```
+Give an example
+```
 
-## Submit Job by different tools
+### And coding style tests
 
-Time Zone:
+Explain what these tests test and why
 
-Log file:
+```
+Give an example
+```
 
-Input File:
+## Deployment
 
-Output file:
+Add additional notes about how to deploy this on a live system
 
-Image file:
+## Built With
 
-`~~~~~~~~`
+* Front-end framework : [Materalize CSS](https://materializecss.com/)
+* Back-end: [Node.js](https://maven.apache.org/)
 
-Actually, we can add a new task accoring to different tools by add the code at 
-`cgi-bin\backend_get.py` -> `line:159` and `line:217`
+## Contributing
 
-## Monitor
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-Finihsed List the Jobs
+## Authors
 
-Still making it looks better.
+* **Lek Tin** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
-## CopyRight
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
-Use the colorlib template
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+* Inspiration
+* etc

@@ -2,3 +2,5 @@ node_modules
 credentials
 logs
 temp
+new/database/wings-prod.sqlite3
+new/database/wings-dev.sqlite3

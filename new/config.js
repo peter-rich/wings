@@ -1,6 +1,5 @@
 exports.BRAND_URL = 'http://med.stanford.edu/scgpm.html'
 exports.BASE_API_URL = '/api'
-exports.PORT = 8081
 exports.AUTH_FILE_FIELDNAME = 'authFile'
 
 exports.ANNOTATE_TYPES = ['variant', 'generic']

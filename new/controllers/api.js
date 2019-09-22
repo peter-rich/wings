@@ -14,12 +14,6 @@ const _ = require('lodash')
 const { API_ROUTES, AUTH_FILE_FIELDNAME, ANNOTATE_TYPES, SERVICE_ACCOUNT_KEYS } = require(`${__base}/config`)
 const { GOOGLE_CRED_PATH } = require(`${__base}/config-server`)
 
-router.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000/')
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-  next()
-})
-
 let logged_in_users = {}
 
 // Routing Handling
