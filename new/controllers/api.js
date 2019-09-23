@@ -84,7 +84,6 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
 })
 
 router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
-  console.log(req.body)
   const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
   const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
   const cred = JSON.parse(authFile)
@@ -125,13 +124,16 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
     res.status(422).json({ error: 'wrong or missing type'})
   } else {
     const { type } = req.params
-    const {BigQuery} = require('@google-cloud/bigquery')
-    const bigquery = new BigQuery()
+    const { BigQuery } = require('@google-cloud/bigquery')
     const GOOGLE_CRED_FILE_PATH = `${GOOGLE_CRED_PATH}/${req.session.client_id}.json`
     const authFile = fs.readFileSync(GOOGLE_CRED_FILE_PATH)
     const cred = JSON.parse(authFile)
-
     const { project_id } = cred
+
+    const bigquery = new BigQuery({
+      keyFilename: GOOGLE_CRED_FILE_PATH,
+      projectId: project_id
+    })
     const datasetId = 'AnnotationHive'
     const tableId = 'AnnotationList'
 
@@ -165,9 +167,14 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
         // Location must match that of the dataset(s) referenced in the query.
         location: 'US',
       }
+      console.log('SQL job options:')
+      console.log(options.query)
+      /// Run the query as a job
+      const [job] = await bigquery.createQueryJob(options)
+      console.log(`Job ${job.id} started.`)
 
-      // Run the query
-      const [rows] = await bigquery.query(options)
+      // Wait for the query to finish
+      const [rows] = await job.getQueryResults()
       res.status(200).json(rows)
     }
     // [END bigquery_query_params_named]
