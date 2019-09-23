@@ -1,6 +1,6 @@
 global.__base = __dirname
 // Modules
-const config = require(`${__base}/config`)
+const config = require(`${__base}/config-server`)
 const colorizedMorgan = require('./serverHelpers/colorizedMorgan')
 const path = require('path')
 const express = require('express')
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'prod') {
   app.use(errorhandler());
 }
 // Routes
-app.use('/api', api)
+app.use(config.BASE_API_URL, api)
 // Default route
 app.use('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/js/build/index.html'))

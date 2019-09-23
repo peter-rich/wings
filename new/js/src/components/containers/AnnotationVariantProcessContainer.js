@@ -86,7 +86,7 @@ const fields = [
       defaultValue: 'ucsc_ref_gene',
       type: 'dropdown',
       options: GENE_MODES,
-      title: 'Gene Mode',
+      title: 'Gene Mode (Coming soon)',
       rules: ['required'],
     },
     {

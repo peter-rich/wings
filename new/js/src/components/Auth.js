@@ -57,14 +57,22 @@ class Auth extends Component {
       const readFile = new FileReader()
       readFile.onloadend = event => {
         const contents = event.target.result
-        const json = JSON.parse(contents)
-        if (JSON.stringify(Object.keys(json)) === JSON.stringify(SERVICE_ACCOUNT_KEYS)) {
-          newState.hasError = false
-        } else {
+        let json
+        try {
+          json = JSON.parse(contents)
+          if (JSON.stringify(Object.keys(json)) === JSON.stringify(SERVICE_ACCOUNT_KEYS)) {
+            newState.hasError = false
+          } else {
+            newState.hasError = true
+            newState.errorMsg = `Incorrect service account file uploaded. It misses one or some keys from the following list: ${SERVICE_ACCOUNT_KEYS}`
+          }
+          this.setState(newState)
+        } catch(err) {
           newState.hasError = true
-          newState.errorMsg = `Incorrect service account file uploaded. It misses one or some keys from the following list: ${SERVICE_ACCOUNT_KEYS}`
+          newState.errorMsg = `Error in JSON file: ${err}`
+          this.setState(newState)
+          return null
         }
-        this.setState(newState)
       }
       readFile.readAsText(newState.authFile)
     } else {

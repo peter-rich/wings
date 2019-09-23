@@ -1,6 +1,6 @@
 ## Not working yet ...
 # Dockerfile References: https://docs.docker.com/engine/reference/builder/
-FROM golang:1.11-alpine
+FROM ubuntu:18.04
 
 # Add Maintainer Info
 LABEL maintainer="Lek Tin <lektin@stanford.com>"

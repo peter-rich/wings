@@ -1,6 +1,5 @@
 export const BRAND_URL = 'http://med.stanford.edu/scgpm.html';
 export const BASE_API_URL = '/api';
-export const PORT = 8081;
 export const AUTH_FILE_FIELDNAME = 'authFile';
 export const ANNOTATE_TYPES = ['variant', 'generic'];
 
@@ -22,8 +21,8 @@ export const REGIONS = [
   // { key: 'europe-west3', displayName: 'europe-west3 (Frankfurt)' },
   // { key: 'europe-west4', displayName: 'europe-west4 (Netherlands)' },
   // { key: 'europe-west6', displayName: 'europe-west6 (Zürich)' },
-  { key: 'northamerica-northeast1', displayName: 'northamerica-northeast1 (Montréal)' },
-  { key: 'southamerica-east1', displayName: 'southamerica-east1 (São Paulo)' },
+  // { key: 'northamerica-northeast1', displayName: 'northamerica-northeast1 (Montréal)' },
+  // { key: 'southamerica-east1', displayName: 'southamerica-east1 (São Paulo)' },
   { key: 'us-central1', displayName: 'us-central1 (Iowa)' },
   { key: 'us-east1', displayName: 'us-east1 (South Carolina)' },
   { key: 'us-east4', displayName: 'us-east4 (Northern Virginia)' },
