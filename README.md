@@ -5,11 +5,18 @@ Stanford Center for Genomics and Personalized Medicine
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Set-up
+Pull the latest code base into a working folder of your choosing
 ```bash
-git checkout master
-git pull
+# Skip the this line if git is already installed
+sudo apt install git-all
+# Pull project
+git clone https://github.com/StanfordBioinformatics/wings.git wings
+cd wings
+git checkout dev
+```
+Run the setup script
+```bash
 sh setup.sh
-docker run --rm -d -p <PORT_ON_HOST>:8081 --name wings_web <DOCKER_IMAGE_ID>
 ```
 Now go to `<HOST_IP>/<PORT_ON_HOST` to use the deployed app.
 
