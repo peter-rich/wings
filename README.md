@@ -18,7 +18,14 @@ Run the setup script
 ```bash
 sh setup.sh
 ```
-Now go to `<HOST_IP>/<PORT_ON_HOST` to use the deployed app.
+Start the container
+```bash
+# Choose a port on the host machine that you want to run the application on
+sudo docker run --rm -d -p <PORT_ON_HOST>:8081 --name wings_web wings_scgpm
+# if you using a GCP instance, use the default public port: 80
+sudo docker run --rm -d -p 80:8081 --name wings_web wings_scgpm
+```
+Now the wings application should be up and running at `<HOST_IP>/<PORT_ON_HOST`.
 
 ## Running the tests
 To be added
