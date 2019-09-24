@@ -14,7 +14,7 @@ const styles = {
   }
 }
 function JobViewer(props) {
-  const title = 'Jobs      filter: “Job Name”, “Job status type”'
+  const title = 'Jobs'
   const { records, loading } = props
 
   const _clickToCopy = (e) => {

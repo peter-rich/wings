@@ -4,5 +4,5 @@
 cd ~/Downloads/dsub-master
 # virtualenv --python=python2.7 dsub_libs
 source dsub_libs/bin/activate
-cd ~/_CODE_/wings-SCGPM/new
+cd ~/_CODE_/wings-SCGPM/app
 # deactivate
