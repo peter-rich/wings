@@ -23,7 +23,7 @@ wget https://github.com/StanfordBioinformatics/wings/archive/lek.zip
 unzip lek.zip
 rm lek.zip
 npm install forever -g
-cd new/js
+cd app/js
 npm i
 npm run build
 cd ../

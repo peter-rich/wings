@@ -7,7 +7,7 @@ gcloud compute scp authentication-server:/var/www/cgi-bin/backend_get.py ~/_CODE
 
 ## VCF Import
 ### Step 1: create VCFList
-export GOOGLE_APPLICATION_CREDENTIALS=/Users/li/_CODE_/wings-SCGPM/new/credentials/e0afafd0-d416-11e9-982c-37e2ae65ac76.json && \
+export GOOGLE_APPLICATION_CREDENTIALS=/Users/li/_CODE_/wings-SCGPM/app/credentials/e0afafd0-d416-11e9-982c-37e2ae65ac76.json && \
 dsub \
   --provider google-v2 \
   --project gbsc-gcp-project-annohive-dev \

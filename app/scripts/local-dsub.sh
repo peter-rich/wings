@@ -20,7 +20,7 @@ source dsub_libs/bin/activate
 pip install dsub
 dsub
 cd ../../
-export GOOGLE_APPLICATION_CREDENTIALS=/Users/li/_CODE_/wings-SCGPM/new/local/gbsc-gcp-project-annohive-dev-2817dc37f2ed.json
+export GOOGLE_APPLICATION_CREDENTIALS=/Users/li/_CODE_/wings-SCGPM/app/local/gbsc-gcp-project-annohive-dev-2817dc37f2ed.json
 echo $GOOGLE_APPLICATION_CREDENTIALS
 echo $project_id
 echo $time_zone
