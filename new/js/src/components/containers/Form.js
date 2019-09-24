@@ -2,14 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import fieldShape from './fieldShape'
 import SourceList from '../SourceList'
+import { SUCCESS as success_color, FAILURE as error_color } from '../../styles/colors'
 import _ from 'lodash'
 import { BASE_API_URL } from '../../constants'
 import MC from 'materialize-css'
 
-
-const styles = {
-  error: 'tomato'
-}
 
 
 let initialState = {}
@@ -31,6 +28,7 @@ class Form extends Component {
     })
     initialState.formData = initialFormData
     initialState.hasFormResult = false
+    initialState.hasFormResultError = false
     initialState.formResult = ''
     initialState.isFormValid = false
     initialState.isSubmitting = false
@@ -144,16 +142,26 @@ class Form extends Component {
       if (json.success === true) {
         this.setState(Object.assign({}, this.state, {
           hasFormResult: true,
+          hasFormResultError: false,
           formResult: json.result,
           isSubmitting: false
         }))
       } else {
         this.setState(Object.assign({}, this.state, {
           hasFormResult: true,
+          hasFormResultError: true,
           formResult: json.error,
           isSubmitting: false
         }))
       }
+    })
+    .catch(error => {
+      this.setState(Object.assign({}, this.state, {
+        hasFormResult: true,
+        hasFormResultError: true,
+        formResult: error,
+        isSubmitting: false
+      }))
     })
   }
 
@@ -172,6 +180,7 @@ class Form extends Component {
       activeGroup,
       totalGroups,
       hasFormResult,
+      hasFormResultError,
       formResult,
       formData
     } = this.state
@@ -278,7 +287,7 @@ class Form extends Component {
                         <div className='input-field col s12'>
                           <label htmlFor={`form-field-${formField.key}`}>{formField.title}</label>
                           <input id={`form-field-${formField.key}`}
-                            style={ hasError ? { borderColor: styles.error, color: styles.error} : {} }
+                            style={ hasError ? { borderColor: error_color, color: error_color} : {} }
                             name={formField.key}
                             value={formField.value}
                             type='text'
@@ -286,7 +295,7 @@ class Form extends Component {
                             onChange={this._onChange} />
                         </div>
                         { hasError &&
-                          <span style={{ color: styles.error, padding: '0 0.75rem' }}
+                          <span style={{ color: error_color, padding: '0 0.75rem' }}
                             className='helper-text'>{errorMsg}</span>
                         }
                       </div>
@@ -308,7 +317,7 @@ class Form extends Component {
             <div id='formResultBox' className='card-panel' style={{ position: 'relative' }}>
               <span style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer' }}
                 onClick={this._resetForm}><i className='material-icons'>close</i></span>
-              <p><span style={{ fontWeight: 'bold' }}>Result:</span> {formResult}</p>
+              <p><span style={{ fontWeight: 'bold', color: hasFormResultError ? error_color : success_color }}>{hasFormResultError ? 'Error' : 'Result'}:</span> {formResult}</p>
             </div>
           }
           <div className='row'>

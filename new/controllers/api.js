@@ -35,7 +35,11 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
   console.log(cmdParams)
 
   const { BigQuery } = require('@google-cloud/bigquery')
-  const bigquery = new BigQuery()
+  const bigquery = new BigQuery({
+    keyFilename: GOOGLE_CRED_FILE_PATH,
+    projectId: cred.project_id
+  })
+
   const tableId = 'VCFList'
   const dataset = bigquery.dataset(req.body.bigQueryDatasetId)
   const table = dataset.table(tableId)
@@ -108,10 +112,9 @@ router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
   const runScript = async () => {
     try {
       result = await execPromise(cmd, 'annotate_variant_process', timestamp)
-      res.status(200).json({ success: true, result })
+      res.status(200).json(result)
     } catch (err) {
-      console.error(err.message)
-      res.status(500).json({ success: false, error: err })
+      res.status(500).json(err)
     }
   }
   runScript()
@@ -167,18 +170,20 @@ router.get(`${API_ROUTES.ANNOTATION_LIST}/:type`, (req, res) => {
         // Location must match that of the dataset(s) referenced in the query.
         location: 'US',
       }
-      console.log('SQL job options:')
-      console.log(options.query)
       /// Run the query as a job
       const [job] = await bigquery.createQueryJob(options)
-      console.log(`Job ${job.id} started.`)
+      console.log(`SQL Job ${job.id} started.`)
 
       // Wait for the query to finish
       const [rows] = await job.getQueryResults()
       res.status(200).json(rows)
     }
     // [END bigquery_query_params_named]
-    queryParamsNamed()
+    try {
+      queryParamsNamed()
+    } catch (err) {
+      res.status(500).json(err)
+    }
   }
 })
 
