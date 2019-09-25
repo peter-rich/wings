@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <style id="preloader-style">
+
+      /* -----------------------------------------
+        =CSS3 Loading animations
+      -------------------------------------------- */
+
+      /* =Elements style
+      ---------------------- */
+      .loader__wrap {
+        float: left;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* height: 100px; */
+        margin: 0 10px 10px 0;
+        padding: 20px 20px 20px;
+        border-radius: 5px;
+        text-align: center;
+        color: #ddd;
+        background-color: #2d303a;
+        z-index: 999;
+      }
+      .loader__line {
+          display: inline-block;
+          width: 200px;
+          height: 30px;
+          border-radius: 30px;
+          background-color: #b1040e;
+      }
+
+      /* =Animate the stuff
+      ------------------------ */
+      .loader__animation {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+      }
+      .loader__animation .loader__line:nth-last-child(1) {animation: loadingB 1.5s 1s infinite;}
+      .loader__animation .loader__line:nth-last-child(2) {animation: loadingB 1.5s .5s infinite;}
+      .loader__animation .loader__line:nth-last-child(3) {animation: loadingB 1.5s 0s infinite;}
+      @keyframes loadingB {
+          0 {width: 0px; }
+          50% {width: 100px; }
+          100% {width: 200px; }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #292929;
+      padding-top: 50px;
+    }
+
+    *, *:before, *:after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .strain {
+      width: 155px;
+      height: 3px;
+      background-color: #dbdbdb;
+      position: relative;
+      margin: 0px auto;
+      margin-top: 28px;
+      margin-bottom: 28px;
+      -webkit-animation-name: rotate-strain;
+              animation-name: rotate-strain;
+      -webkit-animation-duration: 1.7s;
+              animation-duration: 1.7s;
+      -webkit-animation-timing-function: linear;
+              animation-timing-function: linear;
+      -webkit-animation-iteration-count: infinite;
+              animation-iteration-count: infinite;
+      -webkit-animation-play-state: running;
+              animation-play-state: running;
+    }
+    .strain:before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: #b1040e;
+      left: 0;
+      margin-top: -9px;
+      margin-left: -9px;
+      -webkit-animation-name: strain-size-left;
+              animation-name: strain-size-left;
+      -webkit-animation-duration: 1.7s;
+              animation-duration: 1.7s;
+      -webkit-animation-timing-function: linear;
+              animation-timing-function: linear;
+      -webkit-animation-iteration-count: infinite;
+              animation-iteration-count: infinite;
+      -webkit-animation-play-state: running;
+              animation-play-state: running;
+    }
+    .strain:after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: #b1040e;
+      right: 0;
+      margin-top: -9px;
+      margin-right: -9px;
+      -webkit-animation-name: strain-size-right;
+              animation-name: strain-size-right;
+      -webkit-animation-duration: 1.7s;
+              animation-duration: 1.7s;
+      -webkit-animation-timing-function: linear;
+              animation-timing-function: linear;
+      -webkit-animation-iteration-count: infinite;
+              animation-iteration-count: infinite;
+      -webkit-animation-play-state: running;
+              animation-play-state: running;
+    }
+    .strain:nth-child(1), .strain:nth-child(1):before, .strain:nth-child(1):after {
+      -webkit-animation-delay: 0.15s;
+              animation-delay: 0.15s;
+    }
+    .strain:nth-child(2), .strain:nth-child(2):before, .strain:nth-child(2):after {
+      -webkit-animation-delay: 0.3s;
+              animation-delay: 0.3s;
+    }
+    .strain:nth-child(3), .strain:nth-child(3):before, .strain:nth-child(3):after {
+      -webkit-animation-delay: 0.45s;
+              animation-delay: 0.45s;
+    }
+    .strain:nth-child(4), .strain:nth-child(4):before, .strain:nth-child(4):after {
+      -webkit-animation-delay: 0.6s;
+              animation-delay: 0.6s;
+    }
+    .strain:nth-child(5), .strain:nth-child(5):before, .strain:nth-child(5):after {
+      -webkit-animation-delay: 0.75s;
+              animation-delay: 0.75s;
+    }
+    .strain:nth-child(6), .strain:nth-child(6):before, .strain:nth-child(6):after {
+      -webkit-animation-delay: 0.9s;
+              animation-delay: 0.9s;
+    }
+    .strain:nth-child(7), .strain:nth-child(7):before, .strain:nth-child(7):after {
+      -webkit-animation-delay: 1.05s;
+              animation-delay: 1.05s;
+    }
+    .strain:nth-child(8), .strain:nth-child(8):before, .strain:nth-child(8):after {
+      -webkit-animation-delay: 1.2s;
+              animation-delay: 1.2s;
+    }
+    .strain:nth-child(9), .strain:nth-child(9):before, .strain:nth-child(9):after {
+      -webkit-animation-delay: 1.35s;
+              animation-delay: 1.35s;
+    }
+    .strain:nth-child(10), .strain:nth-child(10):before, .strain:nth-child(10):after {
+      -webkit-animation-delay: 1.5s;
+              animation-delay: 1.5s;
+    }
+    .strain:nth-child(11), .strain:nth-child(11):before, .strain:nth-child(11):after {
+      -webkit-animation-delay: 1.65s;
+              animation-delay: 1.65s;
+    }
+    .strain:nth-child(12), .strain:nth-child(12):before, .strain:nth-child(12):after {
+      -webkit-animation-delay: 1.8s;
+              animation-delay: 1.8s;
+    }
+    .strain:nth-child(13), .strain:nth-child(13):before, .strain:nth-child(13):after {
+      -webkit-animation-delay: 1.95s;
+              animation-delay: 1.95s;
+    }
+    .strain:nth-child(14), .strain:nth-child(14):before, .strain:nth-child(14):after {
+      -webkit-animation-delay: 2.1s;
+              animation-delay: 2.1s;
+    }
+    .strain:nth-child(15), .strain:nth-child(15):before, .strain:nth-child(15):after {
+      -webkit-animation-delay: 2.25s;
+              animation-delay: 2.25s;
+    }
+
+    @-webkit-keyframes rotate-strain {
+      0% {
+        width: 155px;
+      }
+      25% {
+        width: 0;
+      }
+      50% {
+        width: 155px;
+      }
+      75% {
+        width: 0;
+      }
+      100% {
+        width: 155px;
+      }
+    }
+
+    @keyframes rotate-strain {
+      0% {
+        width: 155px;
+      }
+      25% {
+        width: 0;
+      }
+      50% {
+        width: 155px;
+      }
+      75% {
+        width: 0;
+      }
+      100% {
+        width: 155px;
+      }
+    }
+    @-webkit-keyframes strain-size-left {
+      0% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+      25% {
+        -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+      }
+      50% {
+        -webkit-transform: scale(1) translateX(155px);
+                transform: scale(1) translateX(155px);
+      }
+      75% {
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+      }
+      100% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+    }
+    @keyframes strain-size-left {
+      0% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+      25% {
+        -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+      }
+      50% {
+        -webkit-transform: scale(1) translateX(155px);
+                transform: scale(1) translateX(155px);
+      }
+      75% {
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+      }
+      100% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+    }
+    @-webkit-keyframes strain-size-right {
+      0% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+      25% {
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+      }
+      50% {
+        -webkit-transform: scale(1) translateX(-155px);
+                transform: scale(1) translateX(-155px);
+      }
+      75% {
+        -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+      }
+      100% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+    }
+    @keyframes strain-size-right {
+      0% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+      25% {
+        -webkit-transform: scale(1.5);
+                transform: scale(1.5);
+      }
+      50% {
+        -webkit-transform: scale(1) translateX(-155px);
+                transform: scale(1) translateX(-155px);
+      }
+      75% {
+        -webkit-transform: scale(0.5);
+                transform: scale(0.5);
+      }
+      100% {
+        -webkit-transform: scale(1) translateX(0px);
+                transform: scale(1) translateX(0px);
+      }
+    }
+    </style>
+    <div id="preloader" class="loader__wrap">
+      <div class="loader__animation">
+        <h1 class="loader__title">Stanford Center for Genetics and Personalized Medicine</h1>
+        <h2 class="loader__subtitle">Wings - your one-stop app center</h2>
+        <!-- <div class="loader__line"></div>
+        <div class="loader__line"></div>
+        <div class="loader__line"></div> -->
+        <div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+          <div class="strain"></div>
+        </div>
+      </div>
+    </div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>

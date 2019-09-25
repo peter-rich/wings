@@ -1,0 +1,6 @@
+node_modules
+credentials
+logs
+temp
+app/database/wings-prod.sqlite3
+app/database/wings-dev.sqlite3

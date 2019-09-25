@@ -1,0 +1,38 @@
+nav .brand-logo {
+  padding: 6px 15px 0;
+}
+
+nav .brand-logo>img {
+  width: 50px;
+}
+
+nav {
+  background-color: #b1040e;
+}
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.input-field.col label {
+  word-break: break-all;
+}
+
+.input-field > label {
+  top: inherit;
+  bottom: 1.5rem;
+}
+
+.input-field > label:not(.label-icon).active {
+  bottom: 1.8rem;
+}
+
+[type="radio"]:not(:checked) + span, [type="radio"]:checked + span {
+  padding-left: 25px;
+}
+
+nav .brand-logo {
+  font-size: 1.8rem;
+}

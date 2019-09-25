@@ -1,51 +1,78 @@
-# wings
+# Wings: one-stop orchestration app
 
-## Document
+Stanford Center for Genomics and Personalized Medicine
 
-https://docs.google.com/document/d/1BhynelsLiLd_dWbu7-W97-tZv0bKK4HfI4Y2kaxYqVg
+## Getting Started
 
-## IP address
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-IP address: http://34.66.182.191/
+### Set-up
 
-## Log In
+Pull the latest code base into a working folder of your choosing
+```bash
+# Skip the this line if git is already installed
+sudo apt install git-all -yq
+# Pull project
+git clone https://github.com/StanfordBioinformatics/wings.git wings
+cd wings
+git checkout master
+```
+Run the setup script
+```bash
+sh setup.sh
+```
+Start the container
+```bash
+# Choose a port on the host machine that you want to run the application on
+sudo docker run --rm -d -p <PORT_ON_HOST>:8081 --name wings_web wings_scgpm
+# if you using a GCP instance, use the default public port: 80
+sudo docker run --rm -d -p 80:8081 --name wings_web wings_scgpm
+```
+Now the wings application should be up and running at `<HOST_IP>/<PORT_ON_HOST>`.
 
-Service Account Key
+## Running the tests
 
-User Name
+To be added
 
-### Change the Picture
+### Break down into end to end tests
 
-`/html/index.html`  ---> Start from `Line:62  <img .... >`.
+To be added
 
-## Submit Job by different tools
+### And coding style tests
 
-Time Zone:
+[![NPM Version][npm-image]][npm-url]
 
-Log file:
+```
+Give an example
+```
 
-Input File:
+## Deployment
 
-Output file:
+Add additional notes about how to deploy this on a live system
 
-Image file:
+## Built With
 
-`~~~~~~~~`
+* Front-end style : [Materalize CSS](https://materializecss.com/)
+* Front-end framework : [React.js](https://reactjs.org/), [Redux](https://redux.js.org/)
+* Back-end: [Node.js](https://www.nodejs.org/)
+* Docker: [Docker](https://www.docker.com/)
 
-Actually, we can add a new task accoring to different tools by add the code
+## Authors
 
-## Monitor
+* **Lek Tin** - [Lek Tin](https://github.com/lek-tin)
+* **Zhanfu Zhang** - [Zhanfu Zhang](https://github.com/peter-rich)
 
-Finihsed List the Jobs
+## License
 
-Still making it looks better.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Database
+## Acknowledgments
+To be added
 
-This is an empty file for the database.
-
-record.db
-
-## CopyRight
-
-Use the colorlib template
+<!-- Markdown link & img dfn's -->
+[npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/datadog-metrics
+[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
+[wiki]: https://github.com/yourname/yourproject/wiki
