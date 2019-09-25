@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Form from './Form'
 import { API_ROUTES, REGIONS } from '../../constants'
 
-const title = 'GATK'
+const title = '$5 GATK'
 const fields = [
   [
     {
