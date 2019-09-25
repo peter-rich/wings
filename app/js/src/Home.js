@@ -12,7 +12,7 @@ const miniApps = [
     description: 'FastqToSam: xxxx xxxx xxxx xxxx xxxx'
   },
   {
-    title: 'GATK',
+    title: '$5 GATK',
     link: PUBLIC_ROUTES.GATK,
     description: 'GATK: xxxx xxxx xxxx xxxx xxxx xxxx'
   },
