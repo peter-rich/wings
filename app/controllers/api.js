@@ -40,51 +40,47 @@ router.post(`${API_ROUTES.ANNOTATION_IMPORT}`, (req, res) => {
     projectId: cred.project_id
   })
 
-  const tableId = 'VCFList'
-  const dataset = bigquery.dataset(req.body.bigQueryDatasetId)
-  const table = dataset.table(tableId)
-  let cmd
+  function checkVCFListTable() {
+    const tableId = 'VCFList'
+    const dataset = bigquery.dataset(req.body.bigQueryDatasetId)
+    const table = dataset.table(tableId)
+    return new Promise(function(resolve, reject) {
+      table.exists()
+        .then(exists => {
+          if (!exists[0]) {
+            console.log(`Table "${tableId}" doesn't exist!!!`)
+            cmd = query.createVCFList(cmdParams)
+            resolve(cmd)
+          } else {
+            resolve('')
+          }
+        })
+        .catch(err => {
+          console.log(`err occured while querying table ${tableId}: ${err}`)
+          reject(err)
+        })
+    })
+  }
 
-  table.exists()
-    .then(exists => {
-      if (exists[0]) {
-        console.log(`Table "${tableId}" exists!!!`)
-        cmd = query.importVCF(cmdParams)
-        console.log(cmd)
-        const script = exec(cmd)
-        const timestamp = uuid.v1()
-        let result
-        const runScript = async () => {
-          try {
-            result = await execPromise(cmd, 'annotation_Import', timestamp)
-            res.status(200).json({ success: true, result })
-          } catch (err) {
-            console.error(err.message)
-            res.status(500).json({ success: false, error: err })
-          }
-        }
-        runScript()
+  const runScript = async () => {
+    try {
+      let cmd = ''
+      cmd = await checkVCFListTable()
+      cmd += query.importVCF(cmdParams)
+      console.log(cmd)
+      const timestamp = uuid.v1()
+      result = await execPromise(cmd, 'annotation_Import', timestamp)
+      if (result.success) {
+        res.status(200).json(result)
       } else {
-        console.log(`Table "${tableId}" doesn't exist!!!`)
-        cmd = query.createVCFList(cmdParams)
-        console.log(cmd)
-        const timestamp = uuid.v1()
-        let result
-        const runScript = async () => {
-          try {
-            result = await execPromise(cmd, 'annotation_create_VCFList', timestamp)
-            res.status(200).json({ success: true, result })
-          } catch (err) {
-            console.error(err.message)
-            res.status(500).json({ success: false, error: err })
-          }
-        }
-        runScript()
+        res.status(400).json(result)
       }
-    })
-    .catch(err => {
-      console.log(`err occured while querying table ${tableId}: ${err}`)
-    })
+    } catch (err) {
+      console.error(err.error)
+      res.status(500).json(err)
+    }
+  }
+  runScript()
 })
 
 router.post(`${API_ROUTES.ANNOTATION_PROCESS}`, (req, res) => {
@@ -206,10 +202,14 @@ router.post(API_ROUTES.CNVNATOR, (req, res) => {
   const runScript = async () => {
     try {
       result = await execPromise(cmd, 'CNVnator', timestamp)
-      res.status(200).json({ success: true, result })
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
     } catch (err) {
-      console.error(err.message)
-      res.status(500).json({ success: false, error: err })
+      console.error(err.error)
+      res.status(500).json(err)
     }
   }
   runScript()
@@ -231,14 +231,17 @@ router.post(API_ROUTES.GATK, (req, res) => {
   const cmd = query.launchGATK(cmdParams)
   console.log(cmd)
   const timestamp = uuid.v1()
-  let result
   const runScript = async () => {
     try {
       result = await execPromise(cmd, 'GATK', timestamp)
-      res.status(200).json({ success: true, result })
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
     } catch (err) {
-      console.error(err.message)
-      res.status(500).json({ success: false, error: err })
+      console.error(err.error)
+      res.status(500).json(err)
     }
   }
   runScript()
@@ -260,18 +263,21 @@ router.post(API_ROUTES.FASTQ_TO_SAM, (req, res) => {
     'output_file'
   ]), _.pick(cred, ['project_id']))
 
-  console.log(`cmdParams, `, cmdParams)
+  console.log(cmdParams)
   const cmd = query.launchFastqtosam(cmdParams)
-  console.log(`cmd, `, cmd)
+  console.log(cmd)
   const timestamp = uuid.v1()
-  let result
   const runScript = async () => {
     try {
-      result = await execPromise(cmd, 'fastqtosam', timestamp)
-      res.status(200).json({ success: true, result })
+      const result = await execPromise(cmd, 'fastqtosam', timestamp)
+      if (result.success) {
+        res.status(200).json(result)
+      } else {
+        res.status(400).json(result)
+      }
     } catch (err) {
-      console.error(err.message)
-      res.status(500).json({ success: false, error: err })
+      console.error(err)
+      res.status(500).json(err)
     }
   }
   runScript()
@@ -300,7 +306,15 @@ router.get(API_ROUTES.JOBS, (req, res) => {
 })
 
 router.get(API_ROUTES.UPDATE_JOBS, (req, res) => {
-  updateJobs(req.session.client_id)
+  const runScript = async () => {
+    try {
+      result = await updateJobs(req.session.client_id)
+      res.status(200).json(result)
+    } catch (err) {
+      res.status(500).json(err)
+    }
+  }
+  runScript()
 })
 
 // Get status

@@ -50,35 +50,38 @@ class Form extends Component {
     let newBase = _.cloneDeep(baseField)
     newBase.value = value
     newBase.touched = true
-    newBase.isValid = !!value.length
-    for (let rule of newBase.rules) {
-      switch (rule) {
-        case 'required':
-          newBase.isValid = value.trim().length > 0
-          newBase.errorMsg = newBase.isValid ? '' : 'This field is required'
+    if (newBase.rules.length > 0) {
+      for (let rule of newBase.rules) {
+        switch (rule) {
+          case 'required':
+            newBase.isValid = value.trim().length > 0
+            newBase.errorMsg = newBase.isValid ? '' : 'This field is required'
+            break
+          // case 'oneOfMoreFields':
+          //   newBase.isValid = value.length > 0
+          //   newBase.errorMsg = newBase.isValid ? '' : 'Click on previous/next panel. At least 1 field needs to be selected.'
+          //   break
+          case 'gsLink':
+            newBase.isValid = value.startsWith('gs://')
+            newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a "gs://" link'
+            break
+          case 'bamFile':
+            newBase.isValid = value.endsWith('.bam')
+            newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".bam" files'
+            break
+          case 'vcfFile':
+            newBase.isValid = value.endsWith('.vcf')
+            newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".vcf" files'
+            break
+          default:
+            break
+        }
+        if (!newBase.isValid) {
           break
-        // case 'oneOfMoreFields':
-        //   newBase.isValid = value.length > 0
-        //   newBase.errorMsg = newBase.isValid ? '' : 'Click on previous/next panel. At least 1 field needs to be selected.'
-        //   break
-        case 'gsLink':
-          newBase.isValid = value.startsWith('gs://')
-          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a "gs://" link'
-          break
-        case 'bamFile':
-          newBase.isValid = value.endsWith('.bam')
-          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".bam" files'
-          break
-        case 'vcfFile':
-          newBase.isValid = value.endsWith('.vcf')
-          newBase.errorMsg = newBase.isValid ? '' : 'You should be providing a ".vcf" files'
-          break
-        default:
-          break
+        }
       }
-      if (!newBase.isValid) {
-        break
-      }
+    } else {
+      newBase.isValid = true
     }
     return newBase
   }
@@ -128,7 +131,11 @@ class Form extends Component {
       formData[key] = this.state.formData[key].value
     })
     const { API_ROUTE } = this.props
-    this.setState(Object.assign({}, this.state, { isSubmitting: true }))
+    this.setState(Object.assign({}, this.state, {
+      isSubmitting: true,
+      hasFormResult: false,
+      hasFormResultError: false
+    }))
     fetch(`${BASE_API_URL}${API_ROUTE}`, {
       method: 'POST',
       headers: {
@@ -213,7 +220,7 @@ class Form extends Component {
             return (
               <div key={i} style={{ display: i===activeGroup ? 'block' : 'none'}}>
                 <>
-                { group.flat().map((field,i) =>{
+                { group.map((field,i) =>{
                   const formField = formData[field.key]
                   const { touched, isValid, errorMsg } = formField
                   const hasError = !!(touched && !isValid)

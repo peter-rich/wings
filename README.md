@@ -8,11 +8,11 @@ These instructions will get you a copy of the project up and running on your loc
 Pull the latest code base into a working folder of your choosing
 ```bash
 # Skip the this line if git is already installed
-sudo apt install git-all
+sudo apt install git-all -yq
 # Pull project
 git clone https://github.com/StanfordBioinformatics/wings.git wings
 cd wings
-git checkout dev
+git checkout master
 ```
 Run the setup script
 ```bash
@@ -25,7 +25,7 @@ sudo docker run --rm -d -p <PORT_ON_HOST>:8081 --name wings_web wings_scgpm
 # if you using a GCP instance, use the default public port: 80
 sudo docker run --rm -d -p 80:8081 --name wings_web wings_scgpm
 ```
-Now the wings application should be up and running at `<HOST_IP>/<PORT_ON_HOST`.
+Now the wings application should be up and running at `<HOST_IP>/<PORT_ON_HOST>`.
 
 ## Running the tests
 To be added

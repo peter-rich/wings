@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Form from './Form'
-import { API_ROUTES } from '../../constants'
+import { API_ROUTES, REGIONS } from '../../constants'
 
 const title = 'GATK'
 const fields = [
@@ -9,12 +9,13 @@ const fields = [
       key: 'region',
       defaultValue: 'us-central1',
       type: 'dropdown',
+      options: REGIONS,
       title: 'Region',
       rules: ['required'],
     },
     {
       key: 'sample_name',
-      title: 'Sample Name, for example, ""',
+      title: 'Sample Name, for example, "ERR250256"',
       type: 'text',
       rules: ['required']
     },
@@ -34,7 +35,7 @@ const fields = [
       key: 'input_file_2',
       title: 'Input ".bam" File 2. For example, "gs://genomics-public-data/platinum-genomes/fastq/ERR194159_2.fastq.bam"',
       type: 'text',
-      rules: ['required', 'gsLink', 'bamFile']
+      rules: []
     }
   ]
 ]

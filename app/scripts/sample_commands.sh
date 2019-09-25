@@ -5,6 +5,9 @@ gcloud beta compute ssh --project gbsc-gcp-project-annohive-dev --zone us-centra
 ## GCP copy
 gcloud compute scp authentication-server:/var/www/cgi-bin/backend_get.py ~/_CODE_/wings-SCGPM
 
+## Fastq To Sam
+
+
 ## VCF Import
 ### Step 1: create VCFList
 export GOOGLE_APPLICATION_CREDENTIALS=/Users/li/_CODE_/wings-SCGPM/app/credentials/e0afafd0-d416-11e9-982c-37e2ae65ac76.json && \
