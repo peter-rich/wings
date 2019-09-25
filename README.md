@@ -1,10 +1,13 @@
-# Project Title
+# Wings: one-stop orchestration app
+
 Stanford Center for Genomics and Personalized Medicine
 
 ## Getting Started
+
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Set-up
+
 Pull the latest code base into a working folder of your choosing
 ```bash
 # Skip the this line if git is already installed
@@ -28,12 +31,15 @@ sudo docker run --rm -d -p 80:8081 --name wings_web wings_scgpm
 Now the wings application should be up and running at `<HOST_IP>/<PORT_ON_HOST>`.
 
 ## Running the tests
+
 To be added
 
 ### Break down into end to end tests
+
 To be added
 
 ### And coding style tests
+
 [![NPM Version][npm-image]][npm-url]
 
 ```
