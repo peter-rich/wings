@@ -42,7 +42,7 @@ const createVCFList = ({
       --command '${script}' \
       --image ${AnnotationHive_IMAGE} \
       --min-ram 40 \
-      --min-cores 2 \
+      --min-cores 2 && \
   `
 
   return cmd
@@ -56,11 +56,10 @@ const importVCF = ({
     staging_address,
     bigQueryDatasetId,
     headers,
-    column_order,
+    columnOrder,
     bigQueryVCFTableId,
     VCFInputTextBucketAddr,
-    build,
-    sampleIDs
+    build
   }) => {
   logs_path = util.trimTrailingChar(logs_path, '/') + '/'
   staging_address = util.trimTrailingChar(staging_address, '/')
@@ -73,15 +72,14 @@ const importVCF = ({
         --stagingLocation=${staging_address} \
         --bigQueryDatasetId=${bigQueryDatasetId} \
         --header=${headers} \
-        --columnOrder=${column_order} \
+        --columnOrder=${columnOrder} \
         --base0=no \
         --bigQueryVCFTableId=${bigQueryVCFTableId} \
         --VCFInputTextBucketAddr=${VCFInputTextBucketAddr} \
         --VCFVersion=1.0 \
-        --build=${build} \
+        --assemblyId=${build} \
         --columnSeparator=\\t \
         --POS=true \
-        --sampleIDs=${sampleIDs}
         --runner=DataflowRunner" \
     -Pdataflow-runner
   `
@@ -96,7 +94,7 @@ const importVCF = ({
       --command '${script}' \
       --image ${AnnotationHive_IMAGE} \
       --min-ram 40 \
-      --min-cores 2 \
+      --min-cores 2
   `
 
   return cmd
@@ -166,7 +164,7 @@ const launchFastqtosam = ({
   sample_name,
   read_group,
   platform}) => {
-  const JOB_NAME = 'launch-fastq-to-sam'
+  const JOB_NAME = 'fastq-to-sam'
   const script = `
   export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_CRED_FILE_PATH} && \
   dsub \
@@ -182,6 +180,8 @@ const launchFastqtosam = ({
       --java-options "-Xmx8G -Djava.io.tmpdir=bla" FastqToSam -F1 \${FASTQ_1} -F2 \${FASTQ_2} -O \${UBAM} \
       --SAMPLE_NAME \${SM} -RG \${RG} -PL \${PL}'
     `
+
+  return script
 }
 
 const launchGATK = ({
@@ -194,10 +194,16 @@ const launchGATK = ({
   input_file_2
 }) => {
   const timestamp = Date.now()
-  const JOB_NAME = 'launch-gatk'
+  const JOB_NAME = 'gatk'
   const FILES_DIR = `${__base}/setting-files/gatk-mvp`
-  const TEMP_DIR = `${__base}/temp/${timestamp}`
-  fs.mkdirSync(TEMP_DIR)
+  const TEMP_DIR_1 = `${__base}/temp`
+  const TEMP_DIR_2 = `${__base}/temp/${timestamp}`
+  if (!fs.existsSync(TEMP_DIR_1)){
+    fs.mkdirSync(TEMP_DIR_1)
+  }
+  if (!fs.existsSync(TEMP_DIR_2)){
+    fs.mkdirSync(TEMP_DIR_2)
+  }
   const mvp_gatk_image = 'jinasong/wdl_runner:latest'
   const hg38_inputs_raw = fs.readFileSync(`${FILES_DIR}/mvp.hg38.inputs.json`)
   const hg38_inputs = JSON.parse(hg38_inputs_raw)
@@ -212,7 +218,7 @@ const launchGATK = ({
   hg38_inputs['germline_single_sample_workflow.base_file_name'] = sample_name
   hg38_inputs['germline_single_sample_workflow.final_vcf_base_name'] = sample_name
   hg38_inputs['germline_single_sample_workflow.flowcell_unmapped_bams'] = input_files
-  const new_hg38_file_path = `${TEMP_DIR}/${sample_name}.hg38.inputs.json`
+  const new_hg38_file_path = `${TEMP_DIR_2}/${sample_name}.hg38.inputs.json`
   fs.writeFileSync(new_hg38_file_path, JSON.stringify(hg38_inputs), 'utf8')
 
   return `
@@ -236,7 +242,7 @@ const launchGATK = ({
       --env MYproject=${project_id} \
       --env ROOT=gs://${bucket_name}/${sample_name}/output \
       --command 'java -Dconfig.file=\${CFG} -Dbackend.providers.JES.config.project=\${MYproject} -Dbackend.providers.JES.config.root=\${ROOT} -jar /cromwell/cromwell.jar run \${WDL} --inputs \${INPUT} --options \${OPTION}' &&\
-    rm -rf ${TEMP_DIR}
+    rm -rf ${TEMP_DIR_2}
   `
 }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Form from './Form'
-import { API_ROUTES } from '../../constants'
+import { API_ROUTES, REGIONS } from '../../constants'
 
 const title = 'AnnotationHive VCF Import'
 const fields = [
@@ -9,6 +9,7 @@ const fields = [
       key: 'region',
       defaultValue: 'us-central1',
       type: 'dropdown',
+      options: REGIONS,
       title: 'Region',
       rules: ['required'],
     },

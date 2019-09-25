@@ -1,20 +1,6 @@
 const fs = require('fs')
 const exec = require('child_process').exec
 
-function get_line(text, line_no, callback) {
-  console.log(text)
-  var lines = text.split("\n");
-  if(+line_no > lines.length){
-    throw new Error('File end reached without finding line')
-  }
-  console.log('------------------------------')
-  console.log("lines:")
-  console.log(lines[+line_no])
-  console.log('------------------------------')
-
-  callback(null, lines[+line_no])
-}
-
 function execPromise(command, name, id) {
   return new Promise(function(resolve, reject) {
     exec(command, (error, stdout, stderr) => {

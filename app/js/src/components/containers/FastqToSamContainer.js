@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Form from './Form'
-import { API_ROUTES } from '../../constants'
+import { API_ROUTES, REGIONS } from '../../constants'
 
 const title = 'FastqToSam'
 const fields = [
@@ -9,6 +9,7 @@ const fields = [
       key: 'region',
       defaultValue: 'us-central1',
       type: 'dropdown',
+      options: REGIONS,
       title: 'Region',
       rules: ['required'],
     },
@@ -20,7 +21,7 @@ const fields = [
     },
     {
       key: 'sample_name',
-      title: 'Sample Name',
+      title: 'Sample Name, for example "ERR250256"',
       type: 'text',
       rules: ['required']
     },

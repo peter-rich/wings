@@ -5,13 +5,16 @@ import MC from "materialize-css"
 
 const headers = ['#', 'Job ID', 'Job Name', 'Status', 'Detail', 'Create Time', 'End time', 'Link to the Log File']
 
-const styles = {
-  table_cell: {
-    maxHeight: '100px',
-    padding: '5px',
-    overflow: 'scroll',
-    cursor: 'copy'
-  }
+const baseTableCellStyles = {
+  maxHeight: '100px',
+  maxWidth: '150px',
+  padding: '5px',
+  overflow: 'scroll',
+  cursor: 'copy'
+}
+let styles = {
+  table_cell: baseTableCellStyles,
+  table_cell_link: Object.assign({}, baseTableCellStyles, { cursor: 'pointer' })
 }
 function JobViewer(props) {
   const title = 'Jobs'
@@ -73,8 +76,10 @@ function JobViewer(props) {
                 <td><div onClick={_clickToCopy} style={styles.table_cell}>{record.created_at}</div></td>
                 <td><div onClick={_clickToCopy} style={styles.table_cell}>{record.finished_at}</div></td>
                 <td>
-                  <a href={linkToLog} rel='noopener noreferrer'
-                    target='_blank'>{record.gs_link}</a>
+                  <div style={styles.table_cell_link}>
+                    <a href={linkToLog} rel='noopener noreferrer'
+                      target='_blank'>{record.gs_link}</a>
+                  </div>
                 </td>
               </tr>
             )}

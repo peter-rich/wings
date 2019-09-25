@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Form from './Form'
-import { API_ROUTES } from '../../constants'
+import { API_ROUTES, REGIONS } from '../../constants'
 
 const title = 'CNVnator'
 const fields = [
@@ -9,6 +9,7 @@ const fields = [
       key: 'region',
       defaultValue: 'us-central1',
       type: 'dropdown',
+      options: REGIONS,
       title: 'Region',
       rules: ['required'],
     },
@@ -20,13 +21,13 @@ const fields = [
     },
     {
       key: 'input_bams_dir',
-      title: 'Path to input Ubam files',
+      title: 'Path to input Ubam files, For example, "gs://CNVnator-dev/bams"',
       type: 'text',
       rules: ['required', 'gsLink'],
     },
     {
       key: 'bucket_path',
-      title: 'Bucket path',
+      title: 'Bucket path, For example, "gs://CNVnator-dev"',
       type: 'text',
       rules: ['required', 'gsLink'],
     }
