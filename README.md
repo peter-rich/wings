@@ -60,7 +60,7 @@ Add additional notes about how to deploy this on a live system
 ## Authors
 
 * **Lek Tin** - [Lek Tin](https://github.com/lek-tin)
-* **Zhanfu Zhang** - [Zhanfu Zhang](https://github.com/peter-rich)
+* **Zhanfu Yang** - [Zhanfu Yang](https://github.com/peter-rich)
 
 ## License
 
